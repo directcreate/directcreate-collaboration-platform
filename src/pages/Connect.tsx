@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Maker {
   id: string;
@@ -17,74 +17,36 @@ interface Maker {
 const Connect = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [message, setMessage] = useState("");
-  const [isSending, setIsSending] = useState(false);
+  const intent = location.state?.intent || "";
+  const selectedMakers: Maker[] = location.state?.selectedMakers || [];
   
-  const { intent = "", selectedMakers = [] } = location.state || {};
+  const [message, setMessage] = useState(`Dear ${selectedMakers.map(maker => maker.name).join(', ')},
 
-  // Generate personalized message based on intent and selected makers
-  const generateMessage = () => {
-    const makerNames = selectedMakers.map((maker: Maker) => maker.name).join(", ");
-    const specialties = [...new Set(selectedMakers.map((maker: Maker) => maker.specialty))];
+I hope this message finds you well. I came across your beautiful work and was inspired by your craftsmanship and attention to detail.
+
+${intent ? `I'm looking to create: "${intent}"` : 'I have a creative project in mind that I believe would benefit from your expertise.'}
+
+I would be honored to collaborate with you on this project. I'm open to your creative guidance on materials, techniques, and timeline. Your expertise aligns perfectly with what I'm envisioning.
+
+Would you be interested in discussing this collaboration? I'd love to hear your thoughts and learn about your approach to this type of project.
+
+Looking forward to the possibility of creating something beautiful together.
+
+With respect and anticipation,`);
+
+  const handleSend = () => {
+    // In a real app, this would send the message to the selected makers
+    console.log("Sending message to makers:", selectedMakers);
+    console.log("Message:", message);
     
-    let personalizedMessage = `Hi ${makerNames},\n\n`;
-    personalizedMessage += `I came across your work and I'm really impressed by your craftsmanship. `;
-    
-    if (intent) {
-      personalizedMessage += `I have a project in mind: ${intent}\n\n`;
-    }
-    
-    if (specialties.length === 1) {
-      personalizedMessage += `Your expertise in ${specialties[0].toLowerCase()} seems like a perfect fit for what I'm envisioning. `;
-    } else {
-      personalizedMessage += `Your combined expertise would be perfect for bringing this vision to life. `;
-    }
-    
-    personalizedMessage += `I'd love to discuss this project with you and see if we might collaborate.\n\n`;
-    personalizedMessage += `Looking forward to hearing from you!\n\nBest regards`;
-    
-    return personalizedMessage;
+    // Navigate to confirmation page
+    navigate("/", { 
+      state: { 
+        messageSent: true,
+        makers: selectedMakers.map(maker => maker.name).join(', ')
+      } 
+    });
   };
-
-  useState(() => {
-    setMessage(generateMessage());
-  });
-
-  const handleSend = async () => {
-    if (!message.trim()) return;
-    
-    setIsSending(true);
-    
-    // Simulate sending message
-    setTimeout(() => {
-      setIsSending(false);
-      toast({
-        title: "Messages sent!",
-        description: `Your message has been sent to ${selectedMakers.length} maker${selectedMakers.length !== 1 ? "s" : ""}.`,
-      });
-      
-      // Navigate back to home after success
-      setTimeout(() => {
-        navigate("/");
-      }, 1500);
-    }, 2000);
-  };
-
-  if (selectedMakers.length === 0) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-light text-foreground mb-4">
-            No makers selected
-          </h2>
-          <Button onClick={() => navigate("/discover")} variant="outline">
-            Choose Makers
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -101,7 +63,7 @@ const Connect = () => {
             Back
           </Button>
           
-          <h1 className="text-lg font-semibold">Connect</h1>
+          <h1 className="text-lg font-semibold">Connect with Makers</h1>
           
           <div className="w-16" /> {/* Spacer for center alignment */}
         </div>
@@ -110,83 +72,97 @@ const Connect = () => {
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-light text-foreground mb-6">
-            Ready to start
+          <h2 className="text-3xl md:text-4xl font-light text-foreground mb-4">
+            Ready to start your
             <br />
-            your collaboration?
+            collaboration?
           </h2>
+          {selectedMakers.length > 0 && (
+            <p className="text-lg text-muted-foreground">
+              Your message to {selectedMakers.length} selected maker{selectedMakers.length !== 1 ? 's' : ''}
+            </p>
+          )}
         </div>
 
         {/* Selected Makers */}
-        <div className="mb-8">
-          <h3 className="text-lg font-medium text-foreground mb-4">
-            Your message to:
-          </h3>
-          <div className="flex flex-wrap gap-4">
-            {selectedMakers.map((maker: Maker) => (
-              <div
-                key={maker.id}
-                className="flex items-center bg-accent rounded-full py-2 px-4"
-              >
-                <img
-                  src={maker.image}
-                  alt={maker.name}
-                  className="w-8 h-8 rounded-full mr-3 object-cover"
-                />
-                <div className="text-left">
-                  <p className="font-medium text-sm text-foreground">
-                    {maker.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {maker.specialty}
-                  </p>
+        {selectedMakers.length > 0 && (
+          <div className="bg-card rounded-3xl p-8 mb-8">
+            <h3 className="text-xl font-semibold text-foreground mb-6">
+              Selected Makers
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {selectedMakers.map((maker) => (
+                <div key={maker.id} className="flex items-center gap-4">
+                  <img
+                    src={maker.image}
+                    alt={maker.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <h4 className="font-semibold text-foreground">
+                      {maker.name}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">
+                      {maker.specialty} • {maker.location}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Message Compose */}
+        {/* Message Composer */}
         <div className="bg-card rounded-3xl p-8 mb-8">
-          <textarea
+          <h3 className="text-xl font-semibold text-foreground mb-6">
+            Your Message
+          </h3>
+          <Textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder="Write your message..."
-            className="w-full h-80 text-base border-none bg-transparent resize-none focus:outline-none placeholder:text-muted-foreground leading-relaxed"
-            autoFocus
+            className="min-h-[400px] text-base leading-relaxed resize-none border-border rounded-2xl"
+            placeholder="Write a thoughtful message to introduce yourself and your project..."
           />
+        </div>
+
+        {/* Collaboration Understanding */}
+        <div className="bg-accent/30 rounded-3xl p-8 mb-8">
+          <h3 className="text-xl font-semibold text-foreground mb-6">
+            🤝 Collaboration Understanding
+          </h3>
+          
+          <div className="space-y-4 text-muted-foreground">
+            <div className="flex items-start gap-3">
+              <span className="text-primary mt-1">•</span>
+              <span>This is an invitation to explore a creative collaboration together</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-primary mt-1">•</span>
+              <span>The maker may offer creative alternatives and suggestions to enhance your vision</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-primary mt-1">•</span>
+              <span>Pricing and final timeline will be discussed after the maker expresses interest</span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span className="text-primary mt-1">•</span>
+              <span>Both parties can shape the creative direction through respectful collaboration</span>
+            </div>
+          </div>
         </div>
 
         {/* Send Button */}
         <div className="text-center">
           <Button
             onClick={handleSend}
-            disabled={!message.trim() || isSending}
+            disabled={!message.trim() || selectedMakers.length === 0}
             size="lg"
             className="h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            {isSending ? (
-              <>
-                <div className="w-5 h-5 mr-2 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                Sending...
-              </>
-            ) : (
-              <>
-                <Send className="w-5 h-5 mr-2" />
-                Send Messages
-              </>
-            )}
+            <Send className="w-5 h-5 mr-2" />
+            Send Messages
           </Button>
         </div>
-
-        {/* Intent Reminder */}
-        {intent && (
-          <div className="mt-12 text-center">
-            <p className="text-sm text-muted-foreground italic">
-              Your vision: "{intent}"
-            </p>
-          </div>
-        )}
       </main>
     </div>
   );
