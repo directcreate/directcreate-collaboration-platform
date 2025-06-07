@@ -1,22 +1,42 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Palette, Package, Users } from "lucide-react";
+import { Camera, Palette, Package, Users, Hammer, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [intent, setIntent] = useState("");
   const navigate = useNavigate();
 
-  const handleContinue = () => {
-    if (intent.trim()) {
-      navigate("/discover", { state: { intent } });
-    }
+  const handleStartCreating = () => {
+    // Scroll to collaboration options
+    const collaborationSection = document.getElementById('collaboration-options');
+    collaborationSection?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleShowUs = () => {
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    fileInput?.click();
+  const handleCollaborationOption = (type: string) => {
+    switch (type) {
+      case 'visual':
+        navigate('/collaborate/visual/upload');
+        break;
+      case 'use-case':
+        navigate('/collaborate/use-case');
+        break;
+      case 'craft':
+        navigate('/collaborate/craft');
+        break;
+      case 'material':
+        navigate('/collaborate/material');
+        break;
+      case 'technique':
+        navigate('/collaborate/technique');
+        break;
+      case 'product':
+        navigate('/collaborate/product');
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -28,78 +48,99 @@ const Index = () => {
         </h1>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 max-w-2xl mx-auto w-full">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-light text-foreground mb-6 leading-tight">
-            What do you want
-            <br />
-            to create?
-          </h2>
-          <p className="text-xl text-muted-foreground font-light">
-            Share your vision and connect with makers who can bring it to life.
-          </p>
-        </div>
-
-        {/* Intent Input */}
-        <div className="w-full mb-12">
-          <textarea
-            value={intent}
-            onChange={(e) => setIntent(e.target.value)}
-            placeholder="I want to create something beautiful..."
-            className="w-full h-32 px-6 py-4 text-lg border border-border rounded-2xl bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 placeholder:text-muted-foreground"
-            autoFocus
-          />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-4 justify-center mb-8">
-          <Button
-            variant="outline"
-            size="lg"
-            className="h-14 px-6 rounded-full border-border hover:bg-accent transition-all duration-200"
-            onClick={handleShowUs}
-          >
-            <Camera className="w-5 h-5 mr-2" />
-            Show us
-          </Button>
-          
-          <Button
-            variant="outline"
-            size="lg"
-            className="h-14 px-6 rounded-full border-border hover:bg-accent transition-all duration-200"
-          >
-            <Palette className="w-5 h-5 mr-2" />
-            Browse
-          </Button>
-          
-          <Button
-            variant="outline"
-            size="lg"
-            className="h-14 px-6 rounded-full border-border hover:bg-accent transition-all duration-200"
-          >
-            <Package className="w-5 h-5 mr-2" />
-            Products
-          </Button>
-        </div>
-
-        {/* Hidden file input */}
-        <input type="file" className="hidden" accept="image/*" />
-
-        {/* Find Makers Button */}
+      {/* Hero Section */}
+      <section className="py-20 text-center">
+        <h1 className="text-6xl font-light text-foreground mb-6 tracking-tight leading-tight">
+          Transform Your Ideas
+          <br />
+          Into Reality
+        </h1>
+        <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto font-light">
+          Connect with master craftspeople through AI-powered collaboration
+        </p>
         <Button
-          onClick={handleContinue}
-          disabled={!intent.trim()}
+          onClick={handleStartCreating}
           size="lg"
-          className="h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="h-14 px-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-lg transition-all duration-200"
         >
-          <Users className="w-5 h-5 mr-2" />
-          Find Makers
+          Start Creating
         </Button>
-      </main>
+      </section>
+
+      {/* Collaboration Starting Points */}
+      <section id="collaboration-options" className="py-20 max-w-6xl mx-auto px-6 w-full">
+        <h2 className="text-4xl font-light text-center text-foreground mb-16">
+          Choose Your Starting Point
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Visual Intelligence - Featured */}
+          <div 
+            onClick={() => handleCollaborationOption('visual')}
+            className="col-span-1 md:col-span-2 lg:col-span-1 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-8 text-white cursor-pointer hover:scale-105 transition-transform duration-200"
+          >
+            <div className="text-4xl mb-4">📸</div>
+            <h3 className="text-2xl font-semibold mb-3">Visual Intelligence</h3>
+            <p className="text-lg opacity-90 mb-6">Upload inspiration images</p>
+            <span className="bg-white text-purple-600 px-3 py-1 rounded-full text-sm font-medium">
+              Most Popular
+            </span>
+          </div>
+
+          {/* Use Case Analysis */}
+          <div 
+            onClick={() => handleCollaborationOption('use-case')}
+            className="bg-card rounded-3xl p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200"
+          >
+            <div className="text-4xl mb-4">💡</div>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Use Case Analysis</h3>
+            <p className="text-muted-foreground">Describe your needs</p>
+          </div>
+
+          {/* Craft First */}
+          <div 
+            onClick={() => handleCollaborationOption('craft')}
+            className="bg-card rounded-3xl p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200"
+          >
+            <div className="text-4xl mb-4">🔨</div>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Craft First</h3>
+            <p className="text-muted-foreground">Traditional approach</p>
+          </div>
+
+          {/* Material First */}
+          <div 
+            onClick={() => handleCollaborationOption('material')}
+            className="bg-card rounded-3xl p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200"
+          >
+            <div className="text-4xl mb-4">🧱</div>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Material First</h3>
+            <p className="text-muted-foreground">Start with materials</p>
+          </div>
+
+          {/* Technique First */}
+          <div 
+            onClick={() => handleCollaborationOption('technique')}
+            className="bg-card rounded-3xl p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200"
+          >
+            <div className="text-4xl mb-4">⚙️</div>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Technique First</h3>
+            <p className="text-muted-foreground">Choose your method</p>
+          </div>
+
+          {/* Product Browser */}
+          <div 
+            onClick={() => handleCollaborationOption('product')}
+            className="bg-card rounded-3xl p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200"
+          >
+            <div className="text-4xl mb-4">📦</div>
+            <h3 className="text-xl font-semibold text-foreground mb-3">Product Browser</h3>
+            <p className="text-muted-foreground">Explore existing work</p>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="pb-8 text-center">
+      <footer className="pb-8 text-center mt-auto">
         <p className="text-sm text-muted-foreground">
           Connecting visionaries with craftspeople
         </p>
