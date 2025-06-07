@@ -14,6 +14,11 @@ const Index = () => {
     }
   };
 
+  const handleShowUs = () => {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    fileInput?.click();
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
@@ -53,7 +58,7 @@ const Index = () => {
             variant="outline"
             size="lg"
             className="h-14 px-6 rounded-full border-border hover:bg-accent transition-all duration-200"
-            onClick={() => document.querySelector('input[type="file"]')?.click()}
+            onClick={handleShowUs}
           >
             <Camera className="w-5 h-5 mr-2" />
             Show us
