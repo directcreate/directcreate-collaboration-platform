@@ -138,10 +138,10 @@ const TechniqueFirst = () => {
                 <div
                   key={technique.id}
                   onClick={() => setSelectedTechnique(technique.id)}
-                  className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                  className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg border-2 ${
                     selectedTechnique === technique.id
-                      ? 'ring-2 ring-primary shadow-lg'
-                      : 'hover:shadow-md'
+                      ? 'border-primary shadow-lg'
+                      : 'border-transparent hover:border-border'
                   }`}
                 >
                   <div className="text-center">
@@ -149,10 +149,14 @@ const TechniqueFirst = () => {
                     <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                       {technique.name}
                     </h3>
-                    <p className="text-muted-foreground text-xs sm:text-sm font-medium mb-2">
+                    <p className="text-muted-foreground text-xs sm:text-sm font-medium mb-3">
                       {technique.description}
                     </p>
                     <div className="text-xs text-muted-foreground space-y-1">
+                      <div className="flex justify-between">
+                        <span>Category:</span>
+                        <span className="font-medium">{technique.category}</span>
+                      </div>
                       <div className="flex justify-between">
                         <span>Difficulty:</span>
                         <span className="font-medium">{technique.difficulty}</span>
@@ -160,6 +164,12 @@ const TechniqueFirst = () => {
                       <div className="flex justify-between">
                         <span>Time:</span>
                         <span className="font-medium">{technique.time_required}</span>
+                      </div>
+                      <div className="mt-2 pt-2 border-t border-border/30">
+                        <span className="text-xs text-muted-foreground/80">
+                          Tools: {Array.isArray(technique.tools_needed) ? technique.tools_needed.slice(0, 2).join(", ") : technique.tools_needed}
+                          {Array.isArray(technique.tools_needed) && technique.tools_needed.length > 2 && "..."}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -173,10 +183,10 @@ const TechniqueFirst = () => {
               <div
                 key={technique.id}
                 onClick={() => setSelectedTechnique(technique.id)}
-                className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg border-2 ${
                   selectedTechnique === technique.id
-                    ? 'ring-2 ring-primary shadow-lg'
-                    : 'hover:shadow-md'
+                    ? 'border-primary shadow-lg'
+                    : 'border-transparent hover:border-border'
                 }`}
               >
                 <div className="text-center">
@@ -184,10 +194,14 @@ const TechniqueFirst = () => {
                   <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                     {technique.name}
                   </h3>
-                  <p className="text-muted-foreground text-xs sm:text-sm font-medium mb-2">
+                  <p className="text-muted-foreground text-xs sm:text-sm font-medium mb-3">
                     {technique.description}
                   </p>
                   <div className="text-xs text-muted-foreground space-y-1">
+                    <div className="flex justify-between">
+                      <span>Category:</span>
+                      <span className="font-medium">{technique.category}</span>
+                    </div>
                     <div className="flex justify-between">
                       <span>Difficulty:</span>
                       <span className="font-medium">{technique.difficulty}</span>
@@ -195,6 +209,12 @@ const TechniqueFirst = () => {
                     <div className="flex justify-between">
                       <span>Time:</span>
                       <span className="font-medium">{technique.time_required}</span>
+                    </div>
+                    <div className="mt-2 pt-2 border-t border-border/30">
+                      <span className="text-xs text-muted-foreground/80">
+                        Tools: {Array.isArray(technique.tools_needed) ? technique.tools_needed.slice(0, 2).join(", ") : technique.tools_needed}
+                        {Array.isArray(technique.tools_needed) && technique.tools_needed.length > 2 && "..."}
+                      </span>
                     </div>
                   </div>
                 </div>
