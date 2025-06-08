@@ -16,35 +16,14 @@ const TechniqueFirst = () => {
   const [loading, setLoading] = useState(true);
 
   // Category icon mapping
-  const getTechniqueIcon = (name) => {
+  const getTechniqueIcon = (category) => {
     const iconMap = {
-      "Japanese Joinery": "🪚",
-      "Sashiko Stitching": "🪡",
-      "Raku Firing": "🔥",
-      "Hand Carving": "🪚",
-      "Wheel Throwing": "🏺",
-      "Weaving": "🧵",
-      "Forging": "🔨",
-      "Glass Blowing": "💨",
-      "Hand Stitching": "🪡",
-      "Hand Building": "👐",
-      "Wood Turning": "🌪️",
-      "Engraving": "🔍",
-      "Embossing": "📄",
-      "Braiding": "🔗",
-      "Spinning": "🌀",
-      "Lost Wax Casting": "🕯️",
-      "Cloisonné": "🎨",
-      "Damascening": "⚔️",
-      "Marquetry": "🧩",
-      "Gilding": "✨",
-      "Repoussé": "🔨",
-      "Niello": "⚫",
-      "Granulation": "🔴",
-      "Filigree": "🕸️",
-      "Champlevé": "🎭"
+      "Hand Tools": "🔨",
+      "Machine Work": "⚙️",
+      "Traditional Methods": "🏺",
+      "Modern Techniques": "🖥️"
     };
-    return iconMap[name] || "🔧";
+    return iconMap[category] || "🔧";
   };
 
   useEffect(() => {
@@ -58,10 +37,12 @@ const TechniqueFirst = () => {
           const transformedTechniques = response.data.map(technique => ({
             id: technique.id.toString(),
             name: technique.name,
-            icon: getTechniqueIcon(technique.name),
+            icon: getTechniqueIcon(technique.category),
             description: technique.description,
-            origin: technique.origin,
-            complexity: technique.complexity
+            category: technique.category,
+            difficulty: technique.difficulty,
+            time_required: technique.time_required,
+            tools_needed: technique.tools_needed
           }));
           
           setTechniques(transformedTechniques);
@@ -83,7 +64,8 @@ const TechniqueFirst = () => {
 
   const filteredTechniques = (showAllTechniques ? allTechniques : initialTechniques).filter(technique =>
     technique.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    technique.description.toLowerCase().includes(searchTerm.toLowerCase())
+    technique.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    technique.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleContinue = () => {
@@ -151,7 +133,7 @@ const TechniqueFirst = () => {
         
         {showAllTechniques ? (
           <ScrollArea className="h-[600px] mb-8">
-            <div className="grid grid-cols-3 gap-4 sm:gap-6 pb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-6">
               {filteredTechniques.map((technique) => (
                 <div
                   key={technique.id}
@@ -167,16 +149,26 @@ const TechniqueFirst = () => {
                     <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                       {technique.name}
                     </h3>
-                    <p className="text-muted-foreground text-xs sm:text-sm font-medium">
+                    <p className="text-muted-foreground text-xs sm:text-sm font-medium mb-2">
                       {technique.description}
                     </p>
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      <div className="flex justify-between">
+                        <span>Difficulty:</span>
+                        <span className="font-medium">{technique.difficulty}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Time:</span>
+                        <span className="font-medium">{technique.time_required}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </ScrollArea>
         ) : (
-          <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
             {filteredTechniques.map((technique) => (
               <div
                 key={technique.id}
@@ -192,9 +184,19 @@ const TechniqueFirst = () => {
                   <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                     {technique.name}
                   </h3>
-                  <p className="text-muted-foreground text-xs sm:text-sm font-medium">
+                  <p className="text-muted-foreground text-xs sm:text-sm font-medium mb-2">
                     {technique.description}
                   </p>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <div className="flex justify-between">
+                      <span>Difficulty:</span>
+                      <span className="font-medium">{technique.difficulty}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Time:</span>
+                      <span className="font-medium">{technique.time_required}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
