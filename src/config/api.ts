@@ -7,6 +7,7 @@ export { materialsService } from '../services/materialsService';
 export { craftsService } from '../services/craftsService';
 export { techniquesService } from '../services/techniquesService';
 export { artisansService } from '../services/artisansService';
+export { aiService } from '../services/aiService';
 
 // Maintain backward compatibility with existing directCreateAPI interface
 export const directCreateAPI = {
@@ -16,5 +17,7 @@ export const directCreateAPI = {
   getCompatibleCrafts: (materialId: number) => import('../services/craftsService').then(c => c.craftsService.getCompatibleCrafts(materialId)),
   getCompatibleMaterials: (craftId: number) => import('../services/materialsService').then(m => m.materialsService.getCompatibleMaterials(craftId)),
   getCompatibleTechniques: (materialId?: number, craftId?: number) => import('../services/techniquesService').then(t => t.techniquesService.getCompatibleTechniques(materialId, craftId)),
-  getCompatibleArtisans: (materialId?: number, craftId?: number, techniqueId?: number) => import('../services/artisansService').then(a => a.artisansService.getCompatibleArtisans(materialId, craftId, techniqueId))
+  getCompatibleArtisans: (materialId?: number, craftId?: number, techniqueId?: number) => import('../services/artisansService').then(a => a.artisansService.getCompatibleArtisans(materialId, craftId, techniqueId)),
+  analyzeProject: (description: string, imageUrl?: string) => import('../services/aiService').then(ai => ai.aiService.analyzeProject(description, imageUrl)),
+  suggestMaterials: (projectType: string, style: string) => import('../services/aiService').then(ai => ai.aiService.suggestMaterials(projectType, style))
 };

@@ -12,7 +12,9 @@ export const API_CONFIG = {
     saveStep: '?path=wizard/save-step',
     analyzeVision: '?path=wizard/analyze-vision',
     findArtisans: '?path=wizard/find-artisans',
-    completeWizard: '?path=wizard/complete-wizard'
+    completeWizard: '?path=wizard/complete-wizard',
+    aiProjectAnalysis: '?path=ai-project-analysis',
+    aiMaterialSuggestions: '?path=ai-material-suggestions'
   }
 };
 

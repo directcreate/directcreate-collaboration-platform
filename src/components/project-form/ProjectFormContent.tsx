@@ -5,6 +5,8 @@ import ArtisanMatching from "./ArtisanMatching";
 import ProjectOverview from "./ProjectOverview";
 import TimelineBudget from "./TimelineBudget";
 import LocationPreferences from "./LocationPreferences";
+import AIAnalysis from "./AIAnalysis";
+import QuickProjectType from "./QuickProjectType";
 
 interface ProjectFormContentProps {
   formData: {
@@ -45,9 +47,38 @@ const ProjectFormContent = ({
   onTechniqueChange,
   onSubmit
 }: ProjectFormContentProps) => {
+
+  const handleAISuggestions = (suggestions: any) => {
+    console.log('🤖 Applying AI suggestions:', suggestions);
+    
+    // Auto-populate selections based on AI suggestions
+    if (suggestions.recommended_materials?.length > 0) {
+      const suggestedMaterial = materials.find(m => 
+        m.name.toLowerCase().includes(suggestions.recommended_materials[0].name.toLowerCase())
+      );
+      if (suggestedMaterial) {
+        onMaterialChange(suggestedMaterial.id.toString());
+      }
+    }
+    
+    if (suggestions.recommended_crafts?.length > 0) {
+      const suggestedCraft = crafts.find(c => 
+        c.name.toLowerCase().includes(suggestions.recommended_crafts[0].name.toLowerCase())
+      );
+      if (suggestedCraft) {
+        onCraftChange(suggestedCraft.id.toString());
+      }
+    }
+  };
+
   return (
     <main className="max-w-4xl mx-auto px-6 py-12">
       <form onSubmit={onSubmit} className="space-y-8">
+        {/* AI-Enhanced Features */}
+        <AIAnalysis onSuggestionsApplied={handleAISuggestions} />
+        
+        <QuickProjectType onSuggestionsApplied={handleAISuggestions} />
+
         <CraftSelection
           materials={materials}
           crafts={crafts}
