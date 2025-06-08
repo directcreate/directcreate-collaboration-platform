@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { directCreateAPI, API_CONFIG } from '../config/api';
+import { API_CONFIG } from '../config/api';
+import { mockDirectCreateAPI } from '../services/mockData';
 
 const APITest = () => {
   const [materials, setMaterials] = useState([]);
@@ -11,30 +12,28 @@ const APITest = () => {
   useEffect(() => {
     const testAPI = async () => {
       try {
-        console.log('🔄 Testing DirectCreate API...');
-        console.log('📍 Base URL:', API_CONFIG.BASE_URL);
-        console.log('📍 Full Materials URL:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.materials}`);
+        console.log('🔄 Testing Mock DirectCreate API...');
+        console.log('📍 Mock Mode - Simulating API calls');
+        console.log('📍 Original API URL would be:', API_CONFIG.BASE_URL);
         
-        const materialsResponse = await directCreateAPI.getMaterials();
-        console.log('📦 Materials Response:', materialsResponse);
+        const materialsResponse = await mockDirectCreateAPI.getMaterials();
+        console.log('📦 Mock Materials Response:', materialsResponse);
         if (materialsResponse.success) {
           setMaterials(materialsResponse.data);
-          console.log('✅ Materials loaded:', materialsResponse.data.length);
+          console.log('✅ Mock Materials loaded:', materialsResponse.data.length);
         }
 
-        const craftsResponse = await directCreateAPI.getCrafts();
-        console.log('🎨 Crafts Response:', craftsResponse);
+        const craftsResponse = await mockDirectCreateAPI.getCrafts();
+        console.log('🎨 Mock Crafts Response:', craftsResponse);
         if (craftsResponse.success) {
           setCrafts(craftsResponse.data);
-          console.log('✅ Crafts loaded:', craftsResponse.data.length);
+          console.log('✅ Mock Crafts loaded:', craftsResponse.data.length);
         }
 
       } catch (err) {
-        console.log('🚨 Full Error Object:', err);
-        console.log('🚨 Error Message:', err.message);
-        console.log('🚨 Error Stack:', err.stack);
-        setError('API Connection Failed: ' + err.message);
-        console.error('❌ API Error:', err);
+        console.log('🚨 Mock API Error (this shouldn\'t happen):', err);
+        setError('Mock API Error: ' + err.message);
+        console.error('❌ Mock API Error:', err);
       } finally {
         setLoading(false);
       }
@@ -47,8 +46,8 @@ const APITest = () => {
     return (
       <div className="p-6 bg-blue-50 rounded-lg">
         <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
-        <p className="mt-2">Testing DirectCreate API connection...</p>
-        <p className="text-sm text-gray-600">URL: {API_CONFIG.BASE_URL}</p>
+        <p className="mt-2">Loading mock data...</p>
+        <p className="text-sm text-gray-600">Simulating API: {API_CONFIG.BASE_URL}</p>
       </div>
     );
   }
@@ -56,11 +55,10 @@ const APITest = () => {
   if (error) {
     return (
       <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
-        <h3 className="font-bold text-red-800">❌ API Connection Error</h3>
+        <h3 className="font-bold text-red-800">❌ Mock API Error</h3>
         <p className="text-red-600">{error}</p>
         <div className="mt-2 text-sm text-gray-600">
-          <p>Attempting to connect to: {API_CONFIG.BASE_URL}</p>
-          <p>Check console for detailed error information</p>
+          <p>This shouldn't happen with mock data</p>
         </div>
       </div>
     );
@@ -68,7 +66,12 @@ const APITest = () => {
 
   return (
     <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
-      <h2 className="text-xl font-bold text-green-800 mb-4">✅ DirectCreate API Connected!</h2>
+      <h2 className="text-xl font-bold text-green-800 mb-4">✅ Mock DirectCreate API Working!</h2>
+      <div className="mb-2 p-2 bg-yellow-100 border border-yellow-300 rounded">
+        <p className="text-sm text-yellow-800">
+          <strong>Note:</strong> Currently using mock data. Real API at {API_CONFIG.BASE_URL} had CORS issues.
+        </p>
+      </div>
       
       <div className="grid md:grid-cols-2 gap-4">
         <div>
@@ -77,6 +80,7 @@ const APITest = () => {
             {materials.slice(0, 5).map(material => (
               <li key={material.id} className="text-sm">
                 <strong>{material.name}</strong> - {material.category}
+                <div className="text-xs text-gray-600">{material.description}</div>
               </li>
             ))}
           </ul>
@@ -88,6 +92,7 @@ const APITest = () => {
             {crafts.slice(0, 3).map(craft => (
               <li key={craft.id} className="text-sm">
                 <strong>{craft.name}</strong>
+                <div className="text-xs text-gray-600">{craft.description}</div>
               </li>
             ))}
           </ul>
