@@ -1,8 +1,11 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Star, MapPin, Briefcase, Filter, Search, Clock, Award } from "lucide-react";
+import { ArrowLeft, Star, MapPin, Briefcase, Filter, Clock, Award, Eye, MessageSquare, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { mockDirectCreateAPI } from "@/services/mockData";
 
 const MakerMatching = () => {
@@ -118,8 +121,6 @@ const MakerMatching = () => {
     );
   }
 
-  const topMaker = filteredMakers[0];
-
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -232,167 +233,178 @@ const MakerMatching = () => {
           </Select>
         </div>
         
-        {/* Top Match */}
-        {topMaker && (
-          <div className="border-2 border-green-500 bg-green-50 dark:bg-green-950 rounded-3xl p-8 mb-8">
-            <div className="flex items-start gap-6">
-              <div className="w-24 h-24 rounded-2xl overflow-hidden">
+        {/* Artisan Profile Cards */}
+        <div className="space-y-8 mb-12">
+          {filteredMakers.map((maker) => (
+            <div 
+              key={maker.id} 
+              className={`bg-card rounded-3xl overflow-hidden shadow-sm border transition-all duration-200 hover:shadow-lg ${
+                selectedMakers.includes(maker.id) ? 'ring-2 ring-primary' : ''
+              }`}
+            >
+              {/* Banner Image with Profile Overlay */}
+              <div className="relative h-48 overflow-hidden">
                 <img 
-                  src={topMaker.image} 
-                  alt={topMaker.name}
+                  src={maker.bannerImage} 
+                  alt={`${maker.name} workshop`}
                   className="w-full h-full object-cover"
                 />
-              </div>
-              
-              <div className="flex-1">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <h2 className="text-2xl font-semibold text-foreground">{topMaker.name}</h2>
-                      <span className={`w-3 h-3 rounded-full ${topMaker.availability === 'Available' ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
-                      <span className={`text-sm ${topMaker.availability === 'Available' ? 'text-green-600' : 'text-yellow-600'}`}>
-                        {topMaker.availability}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-muted-foreground mb-3">
-                      <span className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        {topMaker.rating}/5 ({topMaker.reviews} reviews)
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {topMaker.location}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Briefcase className="w-4 h-4" />
-                        {topMaker.specialty}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        Responds in {topMaker.responseTime}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Award className="w-4 h-4" />
-                        {topMaker.experience} experience
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-4xl font-bold text-green-600">{topMaker.matchPercentage}%</span>
-                    <p className="text-sm text-muted-foreground">match</p>
-                  </div>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 
-                <div className="grid grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-2">Perfect Match Because</h4>
-                    <div className="space-y-1 text-sm">
-                      {selectedMaterial && topMaker.materials.some(m => m.toLowerCase().includes(selectedMaterial.name.toLowerCase())) && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-500">✓</span>
-                          <span>Works with {selectedMaterial.name}</span>
-                        </div>
-                      )}
-                      {selectedCraft && topMaker.crafts.some(c => c.toLowerCase().includes(selectedCraft.name.toLowerCase())) && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-500">✓</span>
-                          <span>Expert in {selectedCraft.name}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2">
-                        <span className="text-green-500">✓</span>
-                        <span>{topMaker.completionRate}% project success rate</span>
-                      </div>
-                    </div>
-                  </div>
+                {/* Profile Photo Overlay */}
+                <div className="absolute bottom-4 left-6 flex items-end gap-4">
+                  <Avatar className="w-20 h-20 border-4 border-white">
+                    <AvatarImage src={maker.profilePhoto} alt={maker.name} />
+                    <AvatarFallback>{maker.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                  </Avatar>
                   
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-2">Specialties</h4>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {topMaker.skills.slice(0, 4).map(skill => (
-                        <span key={skill} className="bg-background px-3 py-1 rounded-full text-sm border">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      💰 {topMaker.priceRange} • 🗣️ {topMaker.languages.join(', ')}
+                  <div className="text-white mb-2">
+                    <h3 className="text-xl font-bold">{maker.name}</h3>
+                    <p className="text-sm opacity-90">{maker.organization}</p>
+                    <p className="text-xs opacity-75 flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {maker.location}
                     </p>
                   </div>
                 </div>
-                
-                <div className="flex gap-3">
-                  <Button variant="outline">
-                    👀 View Portfolio
+
+                {/* Match Percentage Badge */}
+                <div className="absolute top-4 right-4">
+                  <div className="bg-primary text-primary-foreground px-3 py-2 rounded-full text-sm font-bold">
+                    {maker.matchPercentage}% match
+                  </div>
+                </div>
+              </div>
+
+              {/* Profile Content */}
+              <div className="p-6">
+                {/* Header Section */}
+                <div className="flex items-start justify-between mb-6">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                      <span className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        {maker.rating}/5 ({maker.reviews} reviews)
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Award className="w-4 h-4" />
+                        {maker.experience} experience
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {maker.responseTime}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <span className={`w-3 h-3 rounded-full ${maker.availability === 'Available' ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+                      <span className={`text-sm font-medium ${maker.availability === 'Available' ? 'text-green-600' : 'text-yellow-600'}`}>
+                        {maker.availability}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Skills Overview */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                      <Briefcase className="w-4 h-4" />
+                      Primary Specialty
+                    </h4>
+                    <p className="text-sm text-muted-foreground mb-3">{maker.specialty}</p>
+                    <div className="flex flex-wrap gap-1">
+                      {maker.specialtyTechniques.slice(0, 3).map(technique => (
+                        <Badge key={technique} variant="outline" className="text-xs">
+                          {technique}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-3">Key Materials</h4>
+                    <div className="space-y-1">
+                      {maker.materials.slice(0, 4).map(material => (
+                        <div key={material} className="text-sm text-muted-foreground">• {material}</div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-3">Business Info</h4>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <div>💰 {maker.priceRange}</div>
+                      <div>📊 {maker.annualTurnover}</div>
+                      <div>🏆 {maker.completionRate}% success rate</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Profile Highlights */}
+                <div className="space-y-4 mb-6">
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">About Me</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{maker.aboutMe}</p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2">Recent Awards</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {maker.awards.map(award => (
+                        <Badge key={award} variant="secondary" className="text-xs">
+                          🏆 {award}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Portfolio Thumbnails */}
+                <div className="mb-6">
+                  <h4 className="font-semibold text-foreground mb-3">Portfolio Showcase</h4>
+                  <div className="flex gap-3 overflow-x-auto pb-2">
+                    {maker.portfolioImages.map((image, index) => (
+                      <div key={index} className="flex-shrink-0">
+                        <img 
+                          src={image} 
+                          alt={`Portfolio ${index + 1}`}
+                          className="w-20 h-20 object-cover rounded-lg border"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 flex-wrap">
+                  <Button variant="outline" size="sm">
+                    <Eye className="w-4 h-4 mr-2" />
+                    View Full Profile
                   </Button>
-                  <Button variant="outline">
-                    💬 Message
+                  <Button variant="outline" size="sm">
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Send Message
                   </Button>
                   <Button 
-                    onClick={() => toggleMakerSelection(topMaker.id)}
-                    className={selectedMakers.includes(topMaker.id) ? "bg-green-500 hover:bg-green-600" : ""}
+                    onClick={() => toggleMakerSelection(maker.id)}
+                    className={`flex-1 ${selectedMakers.includes(maker.id) ? 'bg-primary hover:bg-primary/90' : ''}`}
+                    variant={selectedMakers.includes(maker.id) ? "default" : "outline"}
                   >
-                    {selectedMakers.includes(topMaker.id) ? "✓ Selected" : "Select for Collaboration"}
+                    {selectedMakers.includes(maker.id) ? (
+                      <>
+                        <Check className="w-4 h-4 mr-2" />
+                        Selected for Collaboration
+                      </>
+                    ) : (
+                      "Select for Collaboration"
+                    )}
                   </Button>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-        
-        {/* Other Matches */}
-        {filteredMakers.length > 1 && (
-          <>
-            <h3 className="text-2xl font-light text-foreground mb-8">Other excellent matches</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-              {filteredMakers.slice(1).map((maker) => (
-                <div 
-                  key={maker.id} 
-                  className={`bg-card rounded-3xl p-6 transition-all duration-200 cursor-pointer hover:shadow-md ${
-                    selectedMakers.includes(maker.id) ? 'ring-2 ring-primary' : ''
-                  }`}
-                  onClick={() => toggleMakerSelection(maker.id)}
-                >
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden">
-                      <img 
-                        src={maker.image} 
-                        alt={maker.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-foreground mb-1">{maker.name}</h3>
-                      <p className="text-muted-foreground text-sm mb-1">📍 {maker.location}</p>
-                      <p className="text-muted-foreground text-sm mb-2">⭐ {maker.rating}/5 • 🏆 {maker.experience}</p>
-                      <div className="flex flex-wrap gap-1">
-                        {maker.skills.slice(0, 2).map(skill => (
-                          <span key={skill} className="bg-muted px-2 py-1 rounded text-xs">
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-2xl font-bold text-primary">{maker.matchPercentage}%</span>
-                      <span className="text-sm text-muted-foreground block">match</span>
-                      <span className={`w-2 h-2 rounded-full inline-block mt-1 ${maker.availability === 'Available' ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    className="w-full"
-                    variant={selectedMakers.includes(maker.id) ? "default" : "outline"}
-                  >
-                    {selectedMakers.includes(maker.id) ? "✓ Selected" : "Select Artisan"}
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+          ))}
+        </div>
         
         <div className="text-center">
           <p className="text-muted-foreground mb-6">

@@ -1,3 +1,4 @@
+
 import { mockMaterials } from './mockMaterials.js';
 import { mockCrafts } from './mockCrafts.js';
 import { mockTechniques } from './mockTechniques.js';
@@ -5,11 +6,12 @@ import { mockTechniques } from './mockTechniques.js';
 // Export the imported arrays
 export { mockMaterials, mockCrafts, mockTechniques };
 
-// Shared artisan profiles for consistency across the platform
+// Enhanced artisan profiles with comprehensive DirectCreate-style data
 export const mockArtisans = [
   {
     id: "rajesh-kumar",
     name: "Rajesh Kumar",
+    organization: "Kumar Heritage Woodcraft",
     location: "Jodhpur, Rajasthan",
     specialty: "Traditional Woodworking Master",
     rating: 4.9,
@@ -21,16 +23,29 @@ export const mockArtisans = [
     materials: ["Reclaimed Oak", "Bamboo", "Teak", "Pine"],
     crafts: ["Wood Carving", "Furniture Making", "Woodworking"],
     techniques: ["Hand Carving", "Japanese Joinery", "Traditional Methods"],
+    specialtyTechniques: ["Rajasthani Carving", "Dovetail Joints", "Wood Inlay", "Natural Finishing"],
     completionRate: 96,
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    bannerImage: "https://images.unsplash.com/photo-1606744824163-985d376605aa?w=800&h=300&fit=crop",
+    profilePhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    aboutMe: "Third-generation woodworker specializing in traditional Rajasthani furniture. I combine ancestral techniques with modern functionality to create heirloom pieces that tell stories.",
     portfolio: ["Custom dining table", "Carved wooden panels", "Traditional chest"],
+    portfolioImages: [
+      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=150&h=150&fit=crop"
+    ],
     priceRange: "₹15,000 - ₹50,000",
+    annualTurnover: "₹8-12 Lakhs",
     responseTime: "2-4 hours",
+    awards: ["Rajasthan State Craft Award 2022", "Best Traditional Furniture - 2021"],
     languages: ["Hindi", "English", "Rajasthani"]
   },
   {
     id: "priya-sharma",
     name: "Priya Sharma",
+    organization: "Sharma Ceramics Studio",
     location: "Delhi",
     specialty: "Contemporary Ceramic Artist",
     rating: 4.8,
@@ -42,16 +57,29 @@ export const mockArtisans = [
     materials: ["Porcelain Clay", "Ceramic", "Stoneware"],
     crafts: ["Pottery", "Ceramics", "Sculpture"],
     techniques: ["Wheel Throwing", "Raku Firing", "Hand Painting"],
+    specialtyTechniques: ["Raku Firing", "Underglaze Painting", "Crystalline Glazes", "Sgraffito"],
     completionRate: 94,
     image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
+    bannerImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=300&fit=crop",
+    profilePhoto: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+    aboutMe: "Contemporary ceramic artist blending traditional Indian pottery with modern design aesthetics. Each piece reflects the harmony between form, function, and artistic expression.",
     portfolio: ["Ceramic dinnerware set", "Decorative vases", "Custom tiles"],
+    portfolioImages: [
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=150&h=150&fit=crop"
+    ],
     priceRange: "₹8,000 - ₹25,000",
+    annualTurnover: "₹6-9 Lakhs",
     responseTime: "1-3 hours",
+    awards: ["Delhi Craft Council Recognition 2023", "Emerging Artist Award - 2020"],
     languages: ["Hindi", "English", "Punjabi"]
   },
   {
     id: "kumar-singh",
     name: "Kumar Singh",
+    organization: "Heritage Textiles Gujarat",
     location: "Ahmedabad, Gujarat",
     specialty: "Heritage Textile Craftsman",
     rating: 4.7,
@@ -63,16 +91,29 @@ export const mockArtisans = [
     materials: ["Organic Cotton", "Hemp Fiber", "Silk", "Linen"],
     crafts: ["Hand Weaving", "Textile", "Block Printing"],
     techniques: ["Hand Weaving", "Block Printing", "Natural Dyeing"],
+    specialtyTechniques: ["Ajrakh Printing", "Bandhani Tie-Dye", "Khadi Weaving", "Indigo Dyeing"],
     completionRate: 92,
     image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
+    bannerImage: "https://images.unsplash.com/photo-1558618666-9c0c8c4b1994?w=800&h=300&fit=crop",
+    profilePhoto: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    aboutMe: "Master weaver preserving Gujarat's rich textile heritage through traditional block printing and natural dyeing techniques. Creating sustainable fashion for the modern world.",
     portfolio: ["Block printed fabrics", "Traditional sarees", "Custom tapestries"],
+    portfolioImages: [
+      "https://images.unsplash.com/photo-1558618666-9c0c8c4b1994?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1610546099313-6b400b25db22?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1564584217132-2271339881ed?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1595950653106-6c9739b663fb?w=150&h=150&fit=crop"
+    ],
     priceRange: "₹5,000 - ₹30,000",
+    annualTurnover: "₹10-15 Lakhs",
     responseTime: "4-8 hours",
+    awards: ["Gujarat State Textile Award 2023", "Master Craftsman Certificate - 2019"],
     languages: ["Hindi", "Gujarati", "English"]
   },
   {
     id: "anita-rao",
     name: "Anita Rao",
+    organization: "Rao Metal Arts",
     location: "Bangalore, Karnataka",
     specialty: "Modern Metal Sculptor",
     rating: 4.9,
@@ -84,16 +125,29 @@ export const mockArtisans = [
     materials: ["Sterling Silver", "Recycled Steel", "Copper", "Bronze"],
     crafts: ["Metalworking", "Sculpture", "Jewelry Making"],
     techniques: ["Lost Wax Casting", "Hand Carving", "Metal Forming"],
+    specialtyTechniques: ["Lost Wax Casting", "Repoussé", "Chasing", "Patination"],
     completionRate: 98,
     image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
+    bannerImage: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&h=300&fit=crop",
+    profilePhoto: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    aboutMe: "Contemporary metal artist creating sculptural pieces that bridge traditional Indian metalwork with modern design. Specializing in sustainable practices using recycled materials.",
     portfolio: ["Garden sculptures", "Decorative panels", "Custom lighting"],
+    portfolioImages: [
+      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1601049676869-702ea24cfd58?w=150&h=150&fit=crop"
+    ],
     priceRange: "₹20,000 - ₹75,000",
+    annualTurnover: "₹12-18 Lakhs",
     responseTime: "1-2 hours",
+    awards: ["Karnataka State Art Award 2022", "Best Contemporary Sculpture - 2021"],
     languages: ["English", "Kannada", "Tamil"]
   },
   {
     id: "mahesh-gupta",
     name: "Mahesh Gupta",
+    organization: "Gupta Jewellers & Arts",
     location: "Jaipur, Rajasthan",
     specialty: "Gemstone & Jewelry Artisan",
     rating: 4.6,
@@ -105,16 +159,29 @@ export const mockArtisans = [
     materials: ["Sterling Silver", "Precious Stones", "Gold", "Recycled Metals"],
     crafts: ["Jewelry Making", "Gemcutting", "Metalworking"],
     techniques: ["Hand Carving", "Lost Wax Casting", "Stone Setting"],
+    specialtyTechniques: ["Kundan Setting", "Meenakari Enamel", "Jaipur Cut", "Filigree Work"],
     completionRate: 89,
     image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
+    bannerImage: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=300&fit=crop",
+    profilePhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+    aboutMe: "Master jeweler from Jaipur's renowned jewelry district, specializing in traditional Rajasthani techniques. Creating bespoke pieces that celebrate India's gemstone heritage.",
     portfolio: ["Custom wedding jewelry", "Traditional necklaces", "Stone rings"],
+    portfolioImages: [
+      "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1573408301185-9146fe634ad0?w=150&h=150&fit=crop"
+    ],
     priceRange: "₹10,000 - ₹1,00,000",
+    annualTurnover: "₹15-25 Lakhs",
     responseTime: "3-6 hours",
+    awards: ["Gem & Jewellery Export Council Award 2023", "Master Craftsman - 2018"],
     languages: ["Hindi", "Rajasthani", "English"]
   },
   {
     id: "lalita-devi",
     name: "Lalita Devi",
+    organization: "Lucknow Chikan House",
     location: "Lucknow, Uttar Pradesh",
     specialty: "Chikankari Embroidery Expert",
     rating: 4.8,
@@ -126,11 +193,23 @@ export const mockArtisans = [
     materials: ["Organic Cotton", "Silk", "Muslin", "Linen"],
     crafts: ["Embroidery", "Hand Weaving", "Textile"],
     techniques: ["Hand Embroidery", "Sashiko Stitching", "Pattern Design"],
+    specialtyTechniques: ["Chikankari", "Shadow Work", "Phanda", "Murri Stitching"],
     completionRate: 95,
     image: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=400&h=400&fit=crop&crop=face",
+    bannerImage: "https://images.unsplash.com/photo-1586880244406-556ebe35f282?w=800&h=300&fit=crop",
+    profilePhoto: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face",
+    aboutMe: "Master embroiderer preserving Lucknow's 400-year-old Chikankari tradition. Each piece tells a story through intricate stitches passed down through generations.",
     portfolio: ["Chikankari kurtas", "Decorative dupattas", "Table linens"],
+    portfolioImages: [
+      "https://images.unsplash.com/photo-1586880244406-556ebe35f282?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1564584217132-2271339881ed?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1610546099313-6b400b25db22?w=150&h=150&fit=crop",
+      "https://images.unsplash.com/photo-1595950653106-6c9739b663fb?w=150&h=150&fit=crop"
+    ],
     priceRange: "₹3,000 - ₹15,000",
+    annualTurnover: "₹5-8 Lakhs",
     responseTime: "2-5 hours",
+    awards: ["UP State Embroidery Award 2023", "Chikankari Master Artist - 2020"],
     languages: ["Hindi", "Urdu", "English"]
   }
 ];
