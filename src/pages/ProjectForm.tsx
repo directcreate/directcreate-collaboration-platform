@@ -12,7 +12,9 @@ const ProjectForm = () => {
     description: "",
     timeline: "",
     budget: "",
-    location: ""
+    location: "",
+    city: "",
+    pinCode: ""
   });
 
   const contextData = location.state || {};
@@ -145,22 +147,48 @@ const ProjectForm = () => {
           <div className="bg-card rounded-3xl p-8">
             <h2 className="text-2xl font-semibold text-foreground mb-6">Location Preferences</h2>
             
-            <div>
-              <label className="block text-foreground font-medium mb-2">Preferred Location</label>
-              <select 
-                value={formData.location}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                className="w-full border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
-              >
-                <option value="">Any location</option>
-                <option value="rajasthan">Rajasthan</option>
-                <option value="gujarat">Gujarat</option>
-                <option value="delhi">Delhi NCR</option>
-                <option value="mumbai">Mumbai</option>
-                <option value="bangalore">Bangalore</option>
-                <option value="chennai">Chennai</option>
-                <option value="kolkata">Kolkata</option>
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-foreground font-medium mb-2">Preferred Location</label>
+                <select 
+                  value={formData.location}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  className="w-full border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+                >
+                  <option value="">Any location</option>
+                  <option value="rajasthan">Rajasthan</option>
+                  <option value="gujarat">Gujarat</option>
+                  <option value="delhi">Delhi NCR</option>
+                  <option value="mumbai">Mumbai</option>
+                  <option value="bangalore">Bangalore</option>
+                  <option value="chennai">Chennai</option>
+                  <option value="kolkata">Kolkata</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-foreground font-medium mb-2">City</label>
+                <input 
+                  type="text" 
+                  value={formData.city}
+                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  className="w-full border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+                  placeholder="Enter city name"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-foreground font-medium mb-2">PIN Code</label>
+                <input 
+                  type="text" 
+                  value={formData.pinCode}
+                  onChange={(e) => handleInputChange('pinCode', e.target.value)}
+                  className="w-full border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+                  placeholder="Enter PIN code"
+                  pattern="[0-9]{6}"
+                  maxLength={6}
+                />
+              </div>
             </div>
           </div>
 
