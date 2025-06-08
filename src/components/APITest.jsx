@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
-import { directCreateAPI } from '../config/api';
+import { directCreateAPI, API_CONFIG } from '../config/api';
 
 const APITest = () => {
   const [materials, setMaterials] = useState([]);
@@ -11,20 +12,27 @@ const APITest = () => {
     const testAPI = async () => {
       try {
         console.log('🔄 Testing DirectCreate API...');
+        console.log('📍 Base URL:', API_CONFIG.BASE_URL);
+        console.log('📍 Full Materials URL:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.materials}`);
         
         const materialsResponse = await directCreateAPI.getMaterials();
+        console.log('📦 Materials Response:', materialsResponse);
         if (materialsResponse.success) {
           setMaterials(materialsResponse.data);
           console.log('✅ Materials loaded:', materialsResponse.data.length);
         }
 
         const craftsResponse = await directCreateAPI.getCrafts();
+        console.log('🎨 Crafts Response:', craftsResponse);
         if (craftsResponse.success) {
           setCrafts(craftsResponse.data);
           console.log('✅ Crafts loaded:', craftsResponse.data.length);
         }
 
       } catch (err) {
+        console.log('🚨 Full Error Object:', err);
+        console.log('🚨 Error Message:', err.message);
+        console.log('🚨 Error Stack:', err.stack);
         setError('API Connection Failed: ' + err.message);
         console.error('❌ API Error:', err);
       } finally {
@@ -40,6 +48,7 @@ const APITest = () => {
       <div className="p-6 bg-blue-50 rounded-lg">
         <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
         <p className="mt-2">Testing DirectCreate API connection...</p>
+        <p className="text-sm text-gray-600">URL: {API_CONFIG.BASE_URL}</p>
       </div>
     );
   }
@@ -49,6 +58,10 @@ const APITest = () => {
       <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
         <h3 className="font-bold text-red-800">❌ API Connection Error</h3>
         <p className="text-red-600">{error}</p>
+        <div className="mt-2 text-sm text-gray-600">
+          <p>Attempting to connect to: {API_CONFIG.BASE_URL}</p>
+          <p>Check console for detailed error information</p>
+        </div>
       </div>
     );
   }
