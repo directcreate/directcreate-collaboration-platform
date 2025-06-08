@@ -19,7 +19,15 @@ const Discover = () => {
     const loadData = async () => {
       try {
         const artisansData = await mockDirectCreateAPI.getArtisans();
-        setMakers(artisansData.data);
+        // Duplicate the artisans to show 12 total (2 sets of 6)
+        const duplicatedArtisans = [
+          ...artisansData.data,
+          ...artisansData.data.map(artisan => ({
+            ...artisan,
+            id: `${artisan.id}-2`
+          }))
+        ];
+        setMakers(duplicatedArtisans);
       } catch (error) {
         console.error("Failed to load artisans:", error);
       } finally {
@@ -52,8 +60,8 @@ const Discover = () => {
     }
   };
 
-  const handleViewAll = () => {
-    console.log("Navigate to full artisan directory");
+  const handleViewProfile = (makerId: string) => {
+    console.log(`View profile for artisan: ${makerId}`);
   };
 
   if (loading) {
@@ -65,191 +73,197 @@ const Discover = () => {
   }
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="px-4 sm:px-6 py-4 flex items-center justify-between border-b border-border/20 flex-shrink-0">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate("/")}
-          className="hover:bg-accent rounded-xl"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2 stroke-[1.5]" />
-          Back
-        </Button>
-        
-        <h1 className="text-lg font-medium">Discover Artisans</h1>
-        
-        <div className="w-16" />
+      <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/20">
+        <div className="px-4 sm:px-6 py-4 flex items-center justify-between max-w-7xl mx-auto">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/")}
+            className="hover:bg-accent rounded-xl"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2 stroke-[1.5]" />
+            Back
+          </Button>
+          
+          <h1 className="text-lg font-medium">Discover Artisans</h1>
+          
+          <div className="w-16" />
+        </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 px-4 sm:px-6 py-6 sm:py-8 max-w-7xl mx-auto w-full flex flex-col min-h-0 overflow-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-foreground mb-4 leading-tight">
+      <main className="px-4 sm:px-6 py-6 max-w-7xl mx-auto">
+        {/* Page Title */}
+        <div className="text-center mb-8">
+          <h2 className="text-3xl sm:text-4xl font-light text-foreground mb-3 leading-tight">
             Discover Master Artisans
-            <br />
-            on DirectCreate
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto font-light">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-light">
             Connect with skilled craftspeople across India who bring traditional techniques to life
           </p>
         </div>
 
-        {/* Featured Artisans Grid */}
-        <section className="mb-12">
-          <h3 className="text-2xl font-semibold mb-8 text-foreground">Featured Artisans</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {makers.slice(0, 8).map((maker) => (
-              <Card
-                key={maker.id}
-                onClick={() => toggleMaker(maker.id)}
-                className={`relative cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] overflow-hidden ${
-                  selectedMakers.includes(maker.id)
-                    ? "ring-2 ring-primary shadow-lg"
-                    : "hover:shadow-md"
-                }`}
-              >
-                {selectedMakers.includes(maker.id) && (
-                  <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center z-10">
-                    <Check className="w-4 h-4 text-primary-foreground stroke-[2]" />
-                  </div>
-                )}
+        {/* Artisans Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {makers.map((maker) => (
+            <Card
+              key={maker.id}
+              className={`relative cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] overflow-hidden ${
+                selectedMakers.includes(maker.id)
+                  ? "ring-2 ring-primary shadow-lg"
+                  : "hover:shadow-md"
+              }`}
+            >
+              {/* Selection Indicator */}
+              {selectedMakers.includes(maker.id) && (
+                <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center z-10">
+                  <Check className="w-4 h-4 text-primary-foreground stroke-[2]" />
+                </div>
+              )}
 
-                {/* Banner Image */}
-                <div className="h-32 overflow-hidden relative">
-                  <img
-                    src={maker.bannerImage}
-                    alt={`${maker.name} workshop`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  
-                  {/* Availability Status */}
-                  <div className="absolute top-3 left-3">
-                    <Badge 
-                      variant={maker.availability === 'Available' ? 'default' : 'secondary'}
-                      className={`text-xs ${
-                        maker.availability === 'Available' 
-                          ? 'bg-green-500 hover:bg-green-600' 
-                          : maker.availability === 'Busy'
-                          ? 'bg-red-500 hover:bg-red-600'
-                          : 'bg-yellow-500 hover:bg-yellow-600'
-                      }`}
-                    >
-                      {maker.availability}
-                    </Badge>
-                  </div>
-
-                  {/* Profile Photo Overlay */}
-                  <div className="absolute -bottom-6 left-4">
-                    <img
-                      src={maker.profilePhoto}
-                      alt={maker.name}
-                      className="w-12 h-12 rounded-full border-2 border-white object-cover"
-                    />
-                  </div>
+              {/* Banner Image */}
+              <div className="relative h-32 overflow-hidden">
+                <img
+                  src={maker.bannerImage}
+                  alt={`${maker.name} workshop`}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                
+                {/* Availability Badge */}
+                <div className="absolute top-3 left-3">
+                  <Badge 
+                    variant={maker.availability === 'Available' ? 'default' : 'secondary'}
+                    className={`text-xs ${
+                      maker.availability === 'Available' 
+                        ? 'bg-green-500 hover:bg-green-600 text-white' 
+                        : maker.availability === 'Busy'
+                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                        : 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                    }`}
+                  >
+                    {maker.availability}
+                  </Badge>
                 </div>
 
-                <CardContent className="p-4 pt-8">
-                  <div className="text-center mb-4">
-                    <h4 className="font-bold text-foreground mb-1 text-base">
-                      {maker.name}
-                    </h4>
-                    <p className="text-xs text-muted-foreground font-medium mb-1">
-                      {maker.organization}
-                    </p>
-                    <p className="text-xs text-primary font-medium mb-3">
-                      {maker.specialty}
-                    </p>
-                    
-                    <div className="flex items-center justify-center gap-4 mb-3 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {maker.location}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Award className="w-3 h-3" />
-                        {maker.experience}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center justify-center mb-3">
+                {/* Profile Photo Overlay */}
+                <div className="absolute bottom-3 left-3">
+                  <img
+                    src={maker.profilePhoto}
+                    alt={maker.name}
+                    className="w-12 h-12 rounded-full border-2 border-white object-cover"
+                  />
+                </div>
+              </div>
+
+              <CardContent className="p-4">
+                {/* Artisan Info */}
+                <div className="mb-3">
+                  <h4 className="font-semibold text-foreground mb-1">
+                    {maker.name}
+                  </h4>
+                  <p className="text-sm text-muted-foreground mb-1">
+                    {maker.organization}
+                  </p>
+                  <p className="text-xs text-primary font-medium mb-2">
+                    {maker.specialty}
+                  </p>
+                  
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {maker.location}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Award className="w-3 h-3" />
+                      {maker.experience}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
                       <Star className="w-4 h-4 text-yellow-500 fill-current mr-1" />
-                      <span className="text-sm font-bold text-foreground mr-1">
+                      <span className="text-sm font-medium text-foreground mr-1">
                         {maker.rating}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        ({maker.reviews} reviews)
+                        ({maker.reviews})
                       </span>
                     </div>
-
-                    <div className="flex items-center justify-center mb-3">
-                      <Clock className="w-3 h-3 text-muted-foreground mr-1" />
-                      <span className="text-xs text-muted-foreground">
-                        Responds in {maker.responseTime}
-                      </span>
-                    </div>
-
-                    {/* About Me Section */}
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-3 text-left">
-                      {maker.aboutMe.substring(0, 120)}...
-                    </p>
-
-                    {/* Skills */}
-                    <div className="flex flex-wrap gap-1 justify-center mb-3">
-                      {maker.skills.slice(0, 2).map((skill: string, idx: number) => (
-                        <Badge key={idx} variant="outline" className="text-xs">
-                          {skill}
-                        </Badge>
-                      ))}
-                      {maker.skills.length > 2 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{maker.skills.length - 2}
-                        </Badge>
-                      )}
-                    </div>
-
-                    {/* Portfolio Thumbnails */}
-                    <div>
-                      <p className="text-xs font-medium text-foreground mb-2">Portfolio</p>
-                      <div className="flex gap-1 justify-center">
-                        {maker.portfolioImages.slice(0, 3).map((image: string, idx: number) => (
-                          <img
-                            key={idx}
-                            src={image}
-                            alt={`Portfolio ${idx + 1}`}
-                            className="w-12 h-12 object-cover rounded border"
-                          />
-                        ))}
-                      </div>
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {maker.responseTime}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
 
-          {/* View All Artisans Button */}
-          <div className="text-center mb-8">
-            <Button
-              onClick={handleViewAll}
-              variant="outline"
-              size="lg"
-              className="h-12 px-8 rounded-xl border-2 hover:bg-accent"
-            >
-              View All Artisans
-            </Button>
-          </div>
-        </section>
+                {/* Brief Description */}
+                <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                  {maker.aboutMe.substring(0, 100)}...
+                </p>
+
+                {/* Skills */}
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {maker.skills.slice(0, 3).map((skill: string, idx: number) => (
+                    <Badge key={idx} variant="outline" className="text-xs">
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+
+                {/* Portfolio Thumbnails */}
+                <div className="mb-4">
+                  <p className="text-xs font-medium text-foreground mb-2">Recent Work</p>
+                  <div className="flex gap-1">
+                    {maker.portfolioImages.slice(0, 3).map((image: string, idx: number) => (
+                      <img
+                        key={idx}
+                        src={image}
+                        alt={`Portfolio ${idx + 1}`}
+                        className="w-12 h-12 object-cover rounded border"
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="flex-1 text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewProfile(maker.id);
+                    }}
+                  >
+                    View Profile
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleMaker(maker.id);
+                    }}
+                  >
+                    {selectedMakers.includes(maker.id) ? 'Selected' : 'Select'}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
         {/* Connect Button */}
-        <div className="text-center flex-shrink-0">
+        <div className="text-center">
           <Button
             onClick={handleConnect}
             disabled={selectedMakers.length === 0}
             size="lg"
-            className="h-14 px-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Users className="w-5 h-5 mr-2" />
             Connect with {selectedMakers.length > 0 ? selectedMakers.length : ""} Artisan{selectedMakers.length !== 1 ? "s" : ""}
