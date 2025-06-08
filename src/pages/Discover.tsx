@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, Star, MapPin, Users } from "lucide-react";
+import { ArrowLeft, Check, Star, MapPin, Users, Clock, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +53,6 @@ const Discover = () => {
   };
 
   const handleViewAll = () => {
-    // In a real app, this would show a full artisan directory
     console.log("Navigate to full artisan directory");
   };
 
@@ -100,8 +99,8 @@ const Discover = () => {
         {/* Featured Artisans Grid */}
         <section className="mb-12">
           <h3 className="text-2xl font-semibold mb-8 text-foreground">Featured Artisans</h3>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {makers.map((maker) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {makers.slice(0, 8).map((maker) => (
               <Card
                 key={maker.id}
                 onClick={() => toggleMaker(maker.id)}
@@ -117,28 +116,62 @@ const Discover = () => {
                   </div>
                 )}
 
-                <div className="aspect-square overflow-hidden">
+                {/* Banner Image */}
+                <div className="h-32 overflow-hidden relative">
                   <img
-                    src={maker.image}
-                    alt={maker.name}
+                    src={maker.bannerImage}
+                    alt={`${maker.name} workshop`}
                     className="w-full h-full object-cover"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  
+                  {/* Availability Status */}
+                  <div className="absolute top-3 left-3">
+                    <Badge 
+                      variant={maker.availability === 'Available' ? 'default' : 'secondary'}
+                      className={`text-xs ${
+                        maker.availability === 'Available' 
+                          ? 'bg-green-500 hover:bg-green-600' 
+                          : maker.availability === 'Busy'
+                          ? 'bg-red-500 hover:bg-red-600'
+                          : 'bg-yellow-500 hover:bg-yellow-600'
+                      }`}
+                    >
+                      {maker.availability}
+                    </Badge>
+                  </div>
+
+                  {/* Profile Photo Overlay */}
+                  <div className="absolute -bottom-6 left-4">
+                    <img
+                      src={maker.profilePhoto}
+                      alt={maker.name}
+                      className="w-12 h-12 rounded-full border-2 border-white object-cover"
+                    />
+                  </div>
                 </div>
 
-                <CardContent className="p-5">
-                  <div className="text-center">
-                    <h4 className="font-bold text-foreground mb-2 text-lg">
+                <CardContent className="p-4 pt-8">
+                  <div className="text-center mb-4">
+                    <h4 className="font-bold text-foreground mb-1 text-base">
                       {maker.name}
                     </h4>
-                    <p className="text-sm text-muted-foreground mb-3 font-medium leading-relaxed">
+                    <p className="text-xs text-muted-foreground font-medium mb-1">
+                      {maker.organization}
+                    </p>
+                    <p className="text-xs text-primary font-medium mb-3">
                       {maker.specialty}
                     </p>
                     
-                    <div className="flex items-center justify-center mb-3">
-                      <MapPin className="w-3 h-3 text-muted-foreground mr-1" />
-                      <p className="text-xs text-muted-foreground">
+                    <div className="flex items-center justify-center gap-4 mb-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3" />
                         {maker.location}
-                      </p>
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Award className="w-3 h-3" />
+                        {maker.experience}
+                      </span>
                     </div>
                     
                     <div className="flex items-center justify-center mb-3">
@@ -151,7 +184,20 @@ const Discover = () => {
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-1 justify-center">
+                    <div className="flex items-center justify-center mb-3">
+                      <Clock className="w-3 h-3 text-muted-foreground mr-1" />
+                      <span className="text-xs text-muted-foreground">
+                        Responds in {maker.responseTime}
+                      </span>
+                    </div>
+
+                    {/* About Me Section */}
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-3 text-left">
+                      {maker.aboutMe.substring(0, 120)}...
+                    </p>
+
+                    {/* Skills */}
+                    <div className="flex flex-wrap gap-1 justify-center mb-3">
                       {maker.skills.slice(0, 2).map((skill: string, idx: number) => (
                         <Badge key={idx} variant="outline" className="text-xs">
                           {skill}
@@ -162,6 +208,21 @@ const Discover = () => {
                           +{maker.skills.length - 2}
                         </Badge>
                       )}
+                    </div>
+
+                    {/* Portfolio Thumbnails */}
+                    <div>
+                      <p className="text-xs font-medium text-foreground mb-2">Portfolio</p>
+                      <div className="flex gap-1 justify-center">
+                        {maker.portfolioImages.slice(0, 3).map((image: string, idx: number) => (
+                          <img
+                            key={idx}
+                            src={image}
+                            alt={`Portfolio ${idx + 1}`}
+                            className="w-12 h-12 object-cover rounded border"
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
