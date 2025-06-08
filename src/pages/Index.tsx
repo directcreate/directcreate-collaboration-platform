@@ -35,137 +35,148 @@ const Index = () => {
 
   const handleStartCreating = () => {
     if (intent.trim()) {
-      // Navigate to use case analysis with the intent
       navigate('/collaborate/use-case', { state: { initialIntent: intent } });
     } else {
-      // Scroll to collaboration options
       const collaborationSection = document.getElementById('collaboration-options');
       collaborationSection?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
+  const collaborationOptions = [
+    {
+      id: 'visual',
+      emoji: '📷',
+      title: 'Visual',
+      subtitle: 'Upload inspiration',
+      featured: true
+    },
+    {
+      id: 'use-case',
+      emoji: '💭',
+      title: 'Purpose',
+      subtitle: 'Describe your needs'
+    },
+    {
+      id: 'craft',
+      emoji: '🔨',
+      title: 'Craft',
+      subtitle: 'Traditional methods'
+    },
+    {
+      id: 'material',
+      emoji: '🪨',
+      title: 'Material',
+      subtitle: 'Start with substance'
+    },
+    {
+      id: 'technique',
+      emoji: '⚙️',
+      title: 'Technique',
+      subtitle: 'Choose your approach'
+    },
+    {
+      id: 'product',
+      emoji: '📦',
+      title: 'Gallery',
+      subtitle: 'Browse creations'
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="pt-8 pb-4 text-center">
-        <h1 className="text-xl font-semibold text-foreground tracking-tight">
+      <header className="pt-6 pb-2 text-center">
+        <h1 className="text-lg font-medium text-foreground tracking-tight">
           Craft
         </h1>
       </header>
 
-      {/* Hero Section with Text Input */}
-      <section className="py-12 px-6 text-center max-w-4xl mx-auto">
-        <h1 className="text-4xl md:text-6xl font-light text-foreground mb-6 tracking-tight leading-tight">
-          Transform Your Ideas
-          <br />
-          Into Reality
-        </h1>
-        <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto font-light">
-          Connect with master craftspeople through AI-powered collaboration
-        </p>
-
-        {/* Creative Intent Text Box */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <label htmlFor="intent" className="block text-sm font-medium text-foreground mb-3 text-left">
-            Describe your creative vision (optional)
-          </label>
-          <Textarea
-            id="intent"
-            value={intent}
-            onChange={(e) => setIntent(e.target.value)}
-            placeholder="I'm dreaming of a special piece for my mother who loves gardening and traditional crafts. Something meaningful that celebrates her spirit..."
-            className="min-h-[120px] text-base leading-relaxed border-border/50 focus:border-primary resize-none"
-          />
-          <p className="text-sm text-muted-foreground mt-2 text-left">
-            Share your vision or skip to explore collaboration options below
+      {/* Main Content */}
+      <main className="px-4 sm:px-6 max-w-4xl mx-auto">
+        {/* Hero Section */}
+        <section className="text-center py-8 sm:py-12">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-light text-foreground mb-4 sm:mb-6 tracking-tight leading-tight">
+            Ideas become
+            <br />
+            reality
+          </h1>
+          <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-12 max-w-lg mx-auto font-light leading-relaxed">
+            Connect with master craftspeople through intelligent collaboration
           </p>
-        </div>
 
-        <Button
-          onClick={handleStartCreating}
-          size="lg"
-          className="h-12 px-8 md:h-14 md:px-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-base md:text-lg transition-all duration-200"
-        >
-          {intent.trim() ? 'Analyze My Vision' : 'Start Creating'}
-        </Button>
-      </section>
-
-      {/* Collaboration Starting Points */}
-      <section id="collaboration-options" className="py-12 max-w-6xl mx-auto px-6 w-full">
-        <h2 className="text-3xl md:text-4xl font-light text-center text-foreground mb-12">
-          Choose Your Starting Point
-        </h2>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {/* Visual Intelligence - Featured */}
-          <div 
-            onClick={() => handleCollaborationOption('visual')}
-            className="col-span-1 sm:col-span-2 lg:col-span-1 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl md:rounded-3xl p-6 md:p-8 text-white cursor-pointer hover:scale-105 transition-transform duration-200"
-          >
-            <div className="text-3xl md:text-4xl mb-3 md:mb-4">📸</div>
-            <h3 className="text-xl md:text-2xl font-semibold mb-2 md:mb-3">Visual Intelligence</h3>
-            <p className="text-base md:text-lg opacity-90 mb-4 md:mb-6">Upload inspiration images</p>
-            <span className="bg-white text-purple-600 px-3 py-1 rounded-full text-sm font-medium">
-              Most Popular
-            </span>
+          {/* Intent Input */}
+          <div className="max-w-xl mx-auto mb-8 sm:mb-12">
+            <Textarea
+              value={intent}
+              onChange={(e) => setIntent(e.target.value)}
+              placeholder="Describe what you'd like to create..."
+              className="min-h-[100px] sm:min-h-[120px] text-sm sm:text-base leading-relaxed border-border/30 focus:border-primary/50 resize-none bg-background/50 backdrop-blur-sm"
+            />
+            <p className="text-xs sm:text-sm text-muted-foreground mt-3 text-left">
+              Share your vision or choose a starting point below
+            </p>
           </div>
 
-          {/* Use Case Analysis */}
-          <div 
-            onClick={() => handleCollaborationOption('use-case')}
-            className="bg-card rounded-2xl md:rounded-3xl p-6 md:p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200 border border-border/50"
+          <Button
+            onClick={handleStartCreating}
+            size="lg"
+            className="h-11 sm:h-12 px-6 sm:px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm sm:text-base transition-all duration-200 shadow-sm"
           >
-            <div className="text-3xl md:text-4xl mb-3 md:mb-4">💡</div>
-            <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2 md:mb-3">Use Case Analysis</h3>
-            <p className="text-sm md:text-base text-muted-foreground">Describe your needs</p>
-          </div>
+            {intent.trim() ? 'Begin collaboration' : 'Start creating'}
+          </Button>
+        </section>
 
-          {/* Craft First */}
-          <div 
-            onClick={() => handleCollaborationOption('craft')}
-            className="bg-card rounded-2xl md:rounded-3xl p-6 md:p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200 border border-border/50"
-          >
-            <div className="text-3xl md:text-4xl mb-3 md:mb-4">🔨</div>
-            <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2 md:mb-3">Craft First</h3>
-            <p className="text-sm md:text-base text-muted-foreground">Traditional approach</p>
+        {/* Collaboration Options */}
+        <section id="collaboration-options" className="pb-12 sm:pb-16">
+          <h2 className="text-xl sm:text-2xl font-light text-center text-foreground mb-6 sm:mb-8">
+            Starting points
+          </h2>
+          
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {collaborationOptions.map((option) => (
+              <div
+                key={option.id}
+                onClick={() => handleCollaborationOption(option.id)}
+                className={`
+                  ${option.featured 
+                    ? 'col-span-2 lg:col-span-1 bg-gradient-to-br from-primary/90 to-primary text-primary-foreground' 
+                    : 'bg-card hover:bg-accent/30 border border-border/20'
+                  }
+                  rounded-xl sm:rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm
+                `}
+              >
+                <div className="text-2xl sm:text-3xl mb-2 sm:mb-3">
+                  {option.emoji}
+                </div>
+                <h3 className={`
+                  text-base sm:text-lg font-medium mb-1 sm:mb-2
+                  ${option.featured ? 'text-primary-foreground' : 'text-foreground'}
+                `}>
+                  {option.title}
+                </h3>
+                <p className={`
+                  text-xs sm:text-sm
+                  ${option.featured ? 'text-primary-foreground/80' : 'text-muted-foreground'}
+                `}>
+                  {option.subtitle}
+                </p>
+                {option.featured && (
+                  <div className="mt-3 sm:mt-4">
+                    <span className="bg-primary-foreground text-primary px-2 py-1 rounded-full text-xs font-medium">
+                      Popular
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-
-          {/* Material First */}
-          <div 
-            onClick={() => handleCollaborationOption('material')}
-            className="bg-card rounded-2xl md:rounded-3xl p-6 md:p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200 border border-border/50"
-          >
-            <div className="text-3xl md:text-4xl mb-3 md:mb-4">🧱</div>
-            <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2 md:mb-3">Material First</h3>
-            <p className="text-sm md:text-base text-muted-foreground">Start with materials</p>
-          </div>
-
-          {/* Technique First */}
-          <div 
-            onClick={() => handleCollaborationOption('technique')}
-            className="bg-card rounded-2xl md:rounded-3xl p-6 md:p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200 border border-border/50"
-          >
-            <div className="text-3xl md:text-4xl mb-3 md:mb-4">⚙️</div>
-            <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2 md:mb-3">Technique First</h3>
-            <p className="text-sm md:text-base text-muted-foreground">Choose your method</p>
-          </div>
-
-          {/* Product Browser */}
-          <div 
-            onClick={() => handleCollaborationOption('product')}
-            className="bg-card rounded-2xl md:rounded-3xl p-6 md:p-8 hover:bg-accent/50 transition-colors cursor-pointer hover:scale-105 duration-200 border border-border/50"
-          >
-            <div className="text-3xl md:text-4xl mb-3 md:mb-4">📦</div>
-            <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2 md:mb-3">Product Browser</h3>
-            <p className="text-sm md:text-base text-muted-foreground">Explore existing work</p>
-          </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {/* Footer */}
-      <footer className="pb-8 text-center mt-8">
-        <p className="text-sm text-muted-foreground">
-          Connecting visionaries with craftspeople
+      <footer className="pb-6 text-center">
+        <p className="text-xs text-muted-foreground/70">
+          Connecting vision with craft
         </p>
       </footer>
     </div>
