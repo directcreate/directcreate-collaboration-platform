@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Camera, MessageCircle, Hammer, Package, Settings, Grid3X3 } from "lucide-react";
 
 const Index = () => {
   const [intent, setIntent] = useState("");
@@ -36,146 +37,132 @@ const Index = () => {
   const handleStartCreating = () => {
     if (intent.trim()) {
       navigate('/collaborate/use-case', { state: { initialIntent: intent } });
-    } else {
-      const collaborationSection = document.getElementById('collaboration-options');
-      collaborationSection?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   const collaborationOptions = [
     {
       id: 'visual',
-      emoji: '📷',
+      icon: Camera,
       title: 'Visual',
-      subtitle: 'Upload inspiration',
-      featured: true
+      subtitle: 'Upload inspiration'
     },
     {
       id: 'use-case',
-      emoji: '💭',
+      icon: MessageCircle,
       title: 'Purpose',
-      subtitle: 'Describe your needs'
+      subtitle: 'Describe needs'
     },
     {
       id: 'craft',
-      emoji: '🔨',
+      icon: Hammer,
       title: 'Craft',
       subtitle: 'Traditional methods'
     },
     {
       id: 'material',
-      emoji: '🪨',
+      icon: Package,
       title: 'Material',
       subtitle: 'Start with substance'
     },
     {
       id: 'technique',
-      emoji: '⚙️',
+      icon: Settings,
       title: 'Technique',
-      subtitle: 'Choose your approach'
+      subtitle: 'Choose approach'
     },
     {
       id: 'product',
-      emoji: '📦',
+      icon: Grid3X3,
       title: 'Gallery',
       subtitle: 'Browse creations'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="pt-6 pb-2 text-center">
-        <h1 className="text-lg font-medium text-foreground tracking-tight">
+      <header className="pt-4 sm:pt-6 pb-2 text-center flex-shrink-0">
+        <h1 className="text-xl sm:text-2xl font-medium text-foreground tracking-tight">
           Craft
         </h1>
       </header>
 
-      {/* Main Content */}
-      <main className="px-4 sm:px-6 max-w-4xl mx-auto">
+      {/* Main Content - Full Height Container */}
+      <main className="flex-1 px-4 sm:px-6 max-w-6xl mx-auto w-full flex flex-col">
         {/* Hero Section */}
-        <section className="text-center py-8 sm:py-12">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-light text-foreground mb-4 sm:mb-6 tracking-tight leading-tight">
-            Ideas become
-            <br />
-            reality
-          </h1>
-          <p className="text-base sm:text-lg text-muted-foreground mb-8 sm:mb-12 max-w-lg mx-auto font-light leading-relaxed">
-            Connect with master craftspeople through intelligent collaboration
-          </p>
+        <section className="text-center flex-1 flex flex-col justify-center min-h-0">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light text-foreground mb-3 sm:mb-4 tracking-tight leading-tight">
+              Ideas become
+              <br />
+              reality
+            </h1>
+            <p className="text-lg sm:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto font-light leading-relaxed">
+              Connect with master craftspeople through intelligent collaboration
+            </p>
+          </div>
 
           {/* Intent Input */}
-          <div className="max-w-xl mx-auto mb-8 sm:mb-12">
+          <div className="max-w-2xl mx-auto mb-6 sm:mb-8 w-full">
             <Textarea
               value={intent}
               onChange={(e) => setIntent(e.target.value)}
               placeholder="Describe what you'd like to create..."
-              className="min-h-[100px] sm:min-h-[120px] text-sm sm:text-base leading-relaxed border-border/30 focus:border-primary/50 resize-none bg-background/50 backdrop-blur-sm"
+              className="min-h-[80px] sm:min-h-[100px] text-base sm:text-lg leading-relaxed border-border/30 focus:border-primary/50 resize-none bg-background/50 backdrop-blur-sm text-center"
             />
-            <p className="text-xs sm:text-sm text-muted-foreground mt-3 text-left">
+            <p className="text-sm sm:text-base text-muted-foreground mt-3 text-center">
               Share your vision or choose a starting point below
             </p>
           </div>
 
-          <Button
-            onClick={handleStartCreating}
-            size="lg"
-            className="h-11 sm:h-12 px-6 sm:px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm sm:text-base transition-all duration-200 shadow-sm"
-          >
-            {intent.trim() ? 'Begin collaboration' : 'Start creating'}
-          </Button>
-        </section>
+          <div className="mb-6 sm:mb-8">
+            <Button
+              onClick={handleStartCreating}
+              size="lg"
+              className="h-12 sm:h-14 px-8 sm:px-10 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base sm:text-lg transition-all duration-200 shadow-sm"
+            >
+              {intent.trim() ? 'Begin collaboration' : 'Start creating'}
+            </Button>
+          </div>
 
-        {/* Collaboration Options */}
-        <section id="collaboration-options" className="pb-12 sm:pb-16">
-          <h2 className="text-xl sm:text-2xl font-light text-center text-foreground mb-6 sm:mb-8">
-            Starting points
-          </h2>
-          
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {collaborationOptions.map((option) => (
-              <div
-                key={option.id}
-                onClick={() => handleCollaborationOption(option.id)}
-                className={`
-                  ${option.featured 
-                    ? 'col-span-2 lg:col-span-1 bg-gradient-to-br from-primary/90 to-primary text-primary-foreground' 
-                    : 'bg-card hover:bg-accent/30 border border-border/20'
-                  }
-                  rounded-xl sm:rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm
-                `}
-              >
-                <div className="text-2xl sm:text-3xl mb-2 sm:mb-3">
-                  {option.emoji}
-                </div>
-                <h3 className={`
-                  text-base sm:text-lg font-medium mb-1 sm:mb-2
-                  ${option.featured ? 'text-primary-foreground' : 'text-foreground'}
-                `}>
-                  {option.title}
-                </h3>
-                <p className={`
-                  text-xs sm:text-sm
-                  ${option.featured ? 'text-primary-foreground/80' : 'text-muted-foreground'}
-                `}>
-                  {option.subtitle}
-                </p>
-                {option.featured && (
-                  <div className="mt-3 sm:mt-4">
-                    <span className="bg-primary-foreground text-primary px-2 py-1 rounded-full text-xs font-medium">
-                      Popular
-                    </span>
+          {/* Starting Points */}
+          <div className="w-full">
+            <h2 className="text-2xl sm:text-3xl font-light text-center text-foreground mb-4 sm:mb-6">
+              Starting points
+            </h2>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto">
+              {collaborationOptions.map((option) => {
+                const IconComponent = option.icon;
+                return (
+                  <div
+                    key={option.id}
+                    onClick={() => handleCollaborationOption(option.id)}
+                    className="bg-card hover:bg-accent/30 border border-border/20 rounded-xl sm:rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm group"
+                  >
+                    <div className="flex flex-col items-center text-center space-y-2 sm:space-y-3">
+                      <IconComponent className="w-8 h-8 sm:w-10 sm:h-10 text-foreground/80 group-hover:text-foreground transition-colors stroke-[1.5]" />
+                      <div>
+                        <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">
+                          {option.title}
+                        </h3>
+                        <p className="text-sm sm:text-base text-muted-foreground font-medium">
+                          {option.subtitle}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+                );
+              })}
+            </div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="pb-6 text-center">
-        <p className="text-xs text-muted-foreground/70">
+      <footer className="pb-4 sm:pb-6 text-center flex-shrink-0">
+        <p className="text-xs sm:text-sm text-muted-foreground/70">
           Connecting vision with craft
         </p>
       </footer>
