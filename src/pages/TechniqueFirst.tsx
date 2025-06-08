@@ -1,45 +1,85 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Wrench, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { mockDirectCreateAPI } from "../services/mockData";
 
 const TechniqueFirst = () => {
   const navigate = useNavigate();
   const [selectedTechnique, setSelectedTechnique] = useState("");
   const [showAllTechniques, setShowAllTechniques] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [techniques, setTechniques] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const initialTechniques = [
-    { id: "hand-carving", name: "Hand Carving", icon: "🪚", description: "Traditional sculptural techniques" },
-    { id: "wheel-throwing", name: "Wheel Throwing", icon: "🏺", description: "Classic pottery formation" },
-    { id: "weaving", name: "Weaving", icon: "🧵", description: "Interlacing fibers and threads" },
-    { id: "forging", name: "Forging", icon: "🔨", description: "Shaping metal through heat" },
-    { id: "glass-blowing", name: "Glass Blowing", icon: "💨", description: "Forming molten glass" },
-    { id: "hand-stitching", name: "Hand Stitching", icon: "🪡", description: "Traditional needlework" },
-    { id: "hand-building", name: "Hand Building", icon: "👐", description: "Ceramic coil and slab techniques" },
-    { id: "turning", name: "Wood Turning", icon: "🌪️", description: "Lathe work and shaping" },
-    { id: "engraving", name: "Engraving", icon: "🔍", description: "Fine detail work on various materials" },
-    { id: "embossing", name: "Embossing", icon: "📄", description: "Raised relief patterns" },
-    { id: "braiding", name: "Braiding", icon: "🔗", description: "Interlacing strands and cords" },
-    { id: "spinning", name: "Spinning", icon: "🌀", description: "Creating thread from fiber" }
-  ];
+  // Category icon mapping
+  const getTechniqueIcon = (name) => {
+    const iconMap = {
+      "Japanese Joinery": "🪚",
+      "Sashiko Stitching": "🪡",
+      "Raku Firing": "🔥",
+      "Hand Carving": "🪚",
+      "Wheel Throwing": "🏺",
+      "Weaving": "🧵",
+      "Forging": "🔨",
+      "Glass Blowing": "💨",
+      "Hand Stitching": "🪡",
+      "Hand Building": "👐",
+      "Wood Turning": "🌪️",
+      "Engraving": "🔍",
+      "Embossing": "📄",
+      "Braiding": "🔗",
+      "Spinning": "🌀",
+      "Lost Wax Casting": "🕯️",
+      "Cloisonné": "🎨",
+      "Damascening": "⚔️",
+      "Marquetry": "🧩",
+      "Gilding": "✨",
+      "Repoussé": "🔨",
+      "Niello": "⚫",
+      "Granulation": "🔴",
+      "Filigree": "🕸️",
+      "Champlevé": "🎭"
+    };
+    return iconMap[name] || "🔧";
+  };
 
-  const allTechniques = [
-    ...initialTechniques,
-    { id: "lost-wax-casting", name: "Lost Wax Casting", icon: "🕯️", description: "Investment casting technique" },
-    { id: "cloisonne", name: "Cloisonné", icon: "🎨", description: "Enamel technique with metal divisions" },
-    { id: "damascening", name: "Damascening", icon: "⚔️", description: "Metal inlay technique" },
-    { id: "marquetry", name: "Marquetry", icon: "🧩", description: "Wood inlay artistry" },
-    { id: "gilding", name: "Gilding", icon: "✨", description: "Gold leaf application" },
-    { id: "repoussé", name: "Repoussé", icon: "🔨", description: "Metal relief hammering" },
-    { id: "niello", name: "Niello", icon: "⚫", description: "Black metal alloy inlay" },
-    { id: "granulation", name: "Granulation", icon: "🔴", description: "Tiny sphere decoration technique" },
-    { id: "filigree", name: "Filigree", icon: "🕸️", description: "Delicate wire work" },
-    { id: "champlevé", name: "Champlevé", icon: "🎭", description: "Recessed enamel technique" }
-  ];
+  useEffect(() => {
+    const loadTechniques = async () => {
+      try {
+        console.log('🔄 Loading techniques from mock API...');
+        const response = await mockDirectCreateAPI.getTechniques();
+        
+        if (response.success) {
+          // Transform API response to match UI format
+          const transformedTechniques = response.data.map(technique => ({
+            id: technique.id.toString(),
+            name: technique.name,
+            icon: getTechniqueIcon(technique.name),
+            description: technique.description,
+            origin: technique.origin,
+            complexity: technique.complexity
+          }));
+          
+          setTechniques(transformedTechniques);
+          console.log('✅ Techniques loaded:', transformedTechniques.length);
+        }
+      } catch (error) {
+        console.error('❌ Error loading techniques:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTechniques();
+  }, []);
+
+  // Show first 12 techniques initially, all techniques when expanded
+  const initialTechniques = techniques.slice(0, 12);
+  const allTechniques = techniques;
 
   const filteredTechniques = (showAllTechniques ? allTechniques : initialTechniques).filter(technique =>
     technique.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,6 +94,17 @@ const TechniqueFirst = () => {
       });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Loading techniques...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
