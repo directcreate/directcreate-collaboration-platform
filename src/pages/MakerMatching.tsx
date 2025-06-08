@@ -1,12 +1,11 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Star, MapPin, Briefcase, Filter, Clock, Award, Eye, MessageSquare, Check } from "lucide-react";
+import { ArrowLeft, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { mockDirectCreateAPI } from "@/services/mockData";
+import ArtisanCard from "@/components/artisan/ArtisanCard";
 
 const MakerMatching = () => {
   const navigate = useNavigate();
@@ -236,173 +235,12 @@ const MakerMatching = () => {
         {/* Artisan Profile Cards */}
         <div className="space-y-8 mb-12">
           {filteredMakers.map((maker) => (
-            <div 
-              key={maker.id} 
-              className={`bg-card rounded-3xl overflow-hidden shadow-sm border transition-all duration-200 hover:shadow-lg ${
-                selectedMakers.includes(maker.id) ? 'ring-2 ring-primary' : ''
-              }`}
-            >
-              {/* Banner Image with Profile Overlay */}
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={maker.bannerImage} 
-                  alt={`${maker.name} workshop`}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                
-                {/* Profile Photo Overlay */}
-                <div className="absolute bottom-4 left-6 flex items-end gap-4">
-                  <Avatar className="w-20 h-20 border-4 border-white">
-                    <AvatarImage src={maker.profilePhoto} alt={maker.name} />
-                    <AvatarFallback>{maker.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="text-white mb-2">
-                    <h3 className="text-xl font-bold">{maker.name}</h3>
-                    <p className="text-sm opacity-90">{maker.organization}</p>
-                    <p className="text-xs opacity-75 flex items-center gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {maker.location}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Match Percentage Badge */}
-                <div className="absolute top-4 right-4">
-                  <div className="bg-primary text-primary-foreground px-3 py-2 rounded-full text-sm font-bold">
-                    {maker.matchPercentage}% match
-                  </div>
-                </div>
-              </div>
-
-              {/* Profile Content */}
-              <div className="p-6">
-                {/* Header Section */}
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
-                      <span className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        {maker.rating}/5 ({maker.reviews} reviews)
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Award className="w-4 h-4" />
-                        {maker.experience} experience
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {maker.responseTime}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <span className={`w-3 h-3 rounded-full ${maker.availability === 'Available' ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
-                      <span className={`text-sm font-medium ${maker.availability === 'Available' ? 'text-green-600' : 'text-yellow-600'}`}>
-                        {maker.availability}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Skills Overview */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                      <Briefcase className="w-4 h-4" />
-                      Primary Specialty
-                    </h4>
-                    <p className="text-sm text-muted-foreground mb-3">{maker.specialty}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {maker.specialtyTechniques.slice(0, 3).map(technique => (
-                        <Badge key={technique} variant="outline" className="text-xs">
-                          {technique}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-3">Key Materials</h4>
-                    <div className="space-y-1">
-                      {maker.materials.slice(0, 4).map(material => (
-                        <div key={material} className="text-sm text-muted-foreground">• {material}</div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-3">Business Info</h4>
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      <div>💰 {maker.priceRange}</div>
-                      <div>📊 {maker.annualTurnover}</div>
-                      <div>🏆 {maker.completionRate}% success rate</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Profile Highlights */}
-                <div className="space-y-4 mb-6">
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-2">About Me</h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{maker.aboutMe}</p>
-                  </div>
-                  
-                  <div>
-                    <h4 className="font-semibold text-foreground mb-2">Recent Awards</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {maker.awards.map(award => (
-                        <Badge key={award} variant="secondary" className="text-xs">
-                          🏆 {award}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Portfolio Thumbnails */}
-                <div className="mb-6">
-                  <h4 className="font-semibold text-foreground mb-3">Portfolio Showcase</h4>
-                  <div className="flex gap-3 overflow-x-auto pb-2">
-                    {maker.portfolioImages.map((image, index) => (
-                      <div key={index} className="flex-shrink-0">
-                        <img 
-                          src={image} 
-                          alt={`Portfolio ${index + 1}`}
-                          className="w-20 h-20 object-cover rounded-lg border"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3 flex-wrap">
-                  <Button variant="outline" size="sm">
-                    <Eye className="w-4 h-4 mr-2" />
-                    View Full Profile
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Send Message
-                  </Button>
-                  <Button 
-                    onClick={() => toggleMakerSelection(maker.id)}
-                    className={`flex-1 ${selectedMakers.includes(maker.id) ? 'bg-primary hover:bg-primary/90' : ''}`}
-                    variant={selectedMakers.includes(maker.id) ? "default" : "outline"}
-                  >
-                    {selectedMakers.includes(maker.id) ? (
-                      <>
-                        <Check className="w-4 h-4 mr-2" />
-                        Selected for Collaboration
-                      </>
-                    ) : (
-                      "Select for Collaboration"
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <ArtisanCard
+              key={maker.id}
+              maker={maker}
+              isSelected={selectedMakers.includes(maker.id)}
+              onToggleSelection={toggleMakerSelection}
+            />
           ))}
         </div>
         
