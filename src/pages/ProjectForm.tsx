@@ -1,13 +1,14 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import ProjectOverview from "@/components/project-form/ProjectOverview";
 import TimelineBudget from "@/components/project-form/TimelineBudget";
 import LocationPreferences from "@/components/project-form/LocationPreferences";
-import { mockDirectCreateAPI } from "../services/mockData";
+import { directCreateAPI } from "../config/api";
 
 const ProjectForm = () => {
   const navigate = useNavigate();
@@ -29,49 +30,71 @@ const ProjectForm = () => {
   const [selectedCraft, setSelectedCraft] = useState("");
   const [selectedTechnique, setSelectedTechnique] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const contextData = location.state || {};
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        console.log('🔄 Loading all data for project form...');
-        
-        const [materialsResponse, craftsResponse, techniquesResponse] = await Promise.all([
-          mockDirectCreateAPI.getMaterials(),
-          mockDirectCreateAPI.getCrafts(),
-          mockDirectCreateAPI.getTechniques()
-        ]);
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      console.log('🔄 Loading all DirectCreate data for project form...');
+      
+      const [materialsResponse, craftsResponse, techniquesResponse] = await Promise.all([
+        directCreateAPI.getMaterials(),
+        directCreateAPI.getCrafts(),
+        directCreateAPI.getTechniques()
+      ]);
 
-        if (materialsResponse.success) {
-          setMaterials(materialsResponse.data);
-        }
-        if (craftsResponse.success) {
-          setCrafts(craftsResponse.data);
-        }
-        if (techniquesResponse.success) {
-          setTechniques(techniquesResponse.data);
-        }
-
-        // Pre-populate selections from previous pages
-        if (contextData.selectedMaterial) {
-          setSelectedMaterial(contextData.selectedMaterial.id.toString());
-        }
-        if (contextData.selectedCraft) {
-          setSelectedCraft(contextData.selectedCraft.id.toString());
-        }
-        if (contextData.selectedTechnique) {
-          setSelectedTechnique(contextData.selectedTechnique.id.toString());
-        }
-
-        console.log('✅ All data loaded successfully');
-      } catch (error) {
-        console.error('❌ Error loading data:', error);
-      } finally {
-        setLoading(false);
+      if (materialsResponse.success) {
+        setMaterials(materialsResponse.data);
+      } else {
+        console.error('Materials API error:', materialsResponse.message);
       }
-    };
+      
+      if (craftsResponse.success) {
+        setCrafts(craftsResponse.data);
+      } else {
+        console.error('Crafts API error:', craftsResponse.message);
+      }
+      
+      if (techniquesResponse.success) {
+        setTechniques(techniquesResponse.data);
+      } else {
+        console.error('Techniques API error:', techniquesResponse.message);
+      }
 
+      // Check if any API calls failed
+      if (!materialsResponse.success || !craftsResponse.success || !techniquesResponse.success) {
+        const failedAPIs = [];
+        if (!materialsResponse.success) failedAPIs.push('materials');
+        if (!craftsResponse.success) failedAPIs.push('crafts');
+        if (!techniquesResponse.success) failedAPIs.push('techniques');
+        
+        setError(`Failed to load: ${failedAPIs.join(', ')}`);
+      }
+
+      // Pre-populate selections from previous pages
+      if (contextData.selectedMaterial) {
+        setSelectedMaterial(contextData.selectedMaterial.id.toString());
+      }
+      if (contextData.selectedCraft) {
+        setSelectedCraft(contextData.selectedCraft.id.toString());
+      }
+      if (contextData.selectedTechnique) {
+        setSelectedTechnique(contextData.selectedTechnique.id.toString());
+      }
+
+      console.log('✅ DirectCreate data loaded successfully');
+    } catch (error) {
+      console.error('❌ Error loading DirectCreate data:', error);
+      setError(`Connection error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     loadData();
   }, [contextData]);
 
@@ -101,12 +124,17 @@ const ProjectForm = () => {
   const getSelectedCraft = () => crafts.find(c => c.id.toString() === selectedCraft);
   const getSelectedTechnique = () => techniques.find(t => t.id.toString() === selectedTechnique);
 
+  const handleRetry = () => {
+    loadData();
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg text-muted-foreground">Loading project form...</p>
+          <p className="text-lg text-muted-foreground">Loading DirectCreate data...</p>
+          <p className="text-sm text-muted-foreground mt-2">Fetching materials, crafts, and techniques...</p>
         </div>
       </div>
     );
@@ -140,9 +168,28 @@ const ProjectForm = () => {
             Project Details
           </h1>
           <p className="text-xl text-muted-foreground">
-            Tell us more about your vision
+            Tell us more about your vision using DirectCreate data
           </p>
         </div>
+
+        {/* Error Display */}
+        {error && (
+          <Alert className="mb-8 border-destructive/20 bg-destructive/5">
+            <AlertCircle className="h-4 w-4 text-destructive" />
+            <AlertDescription className="text-sm text-destructive">
+              {error}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRetry}
+                className="ml-2 h-6 px-2 text-xs"
+              >
+                <RefreshCw className="w-3 h-3 mr-1" />
+                Retry
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Material, Craft, Technique Selection */}
@@ -155,7 +202,7 @@ const ProjectForm = () => {
                 <label className="text-sm font-medium text-foreground">Material</label>
                 <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
                   <SelectTrigger className="h-12 rounded-xl">
-                    <SelectValue placeholder="Choose material" />
+                    <SelectValue placeholder="Choose DirectCreate material" />
                   </SelectTrigger>
                   <SelectContent>
                     {materials.map((material) => (
@@ -182,7 +229,7 @@ const ProjectForm = () => {
                 <label className="text-sm font-medium text-foreground">Craft</label>
                 <Select value={selectedCraft} onValueChange={setSelectedCraft}>
                   <SelectTrigger className="h-12 rounded-xl">
-                    <SelectValue placeholder="Choose craft" />
+                    <SelectValue placeholder="Choose DirectCreate craft" />
                   </SelectTrigger>
                   <SelectContent>
                     {crafts.map((craft) => (
@@ -209,7 +256,7 @@ const ProjectForm = () => {
                 <label className="text-sm font-medium text-foreground">Technique</label>
                 <Select value={selectedTechnique} onValueChange={setSelectedTechnique}>
                   <SelectTrigger className="h-12 rounded-xl">
-                    <SelectValue placeholder="Choose technique" />
+                    <SelectValue placeholder="Choose DirectCreate technique" />
                   </SelectTrigger>
                   <SelectContent>
                     {techniques.map((technique) => (
