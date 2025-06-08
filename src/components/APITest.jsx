@@ -16,14 +16,14 @@ const APITest = () => {
         console.log('📍 Mock Mode - Simulating API calls');
         console.log('📍 Original API URL would be:', API_CONFIG.BASE_URL);
         
-        const materialsResponse = await mockDirectCreateAPI.getMaterials();
+       const materialsResponse = await mockDirectCreateAPI.getMaterials();
         console.log('📦 Mock Materials Response:', materialsResponse);
         if (materialsResponse.success) {
           setMaterials(materialsResponse.data);
           console.log('✅ Mock Materials loaded:', materialsResponse.data.length);
         }
 
-        const craftsResponse = await mockDirectCreateAPI.getCrafts();
+       const craftsResponse = await mockDirectCreateAPI.getCrafts();
         console.log('🎨 Mock Crafts Response:', craftsResponse);
         if (craftsResponse.success) {
           setCrafts(craftsResponse.data);
