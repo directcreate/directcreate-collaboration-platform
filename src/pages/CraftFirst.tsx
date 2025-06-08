@@ -1,47 +1,72 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Hammer, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { mockDirectCreateAPI } from "../services/mockData";
 
 const CraftFirst = () => {
   const navigate = useNavigate();
   const [selectedCraft, setSelectedCraft] = useState("");
   const [showAllCrafts, setShowAllCrafts] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [crafts, setCrafts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const initialCrafts = [
-    { id: "pottery", name: "Pottery", icon: "🏺", description: "Wheel throwing, hand building, glazing" },
-    { id: "woodworking", name: "Woodworking", icon: "🪵", description: "Furniture, carving, turning" },
-    { id: "jewelry", name: "Jewelry Making", icon: "💍", description: "Metalsmithing, beading, wire work" },
-    { id: "textiles", name: "Textiles", icon: "🧶", description: "Weaving, knitting, embroidery" },
-    { id: "glassblowing", name: "Glassblowing", icon: "🫧", description: "Blown glass, fused glass, stained glass" },
-    { id: "leatherwork", name: "Leatherwork", icon: "🦴", description: "Bags, belts, bookbinding" },
-    { id: "metalwork", name: "Metalwork", icon: "🔨", description: "Blacksmithing, welding, casting" },
-    { id: "ceramics", name: "Ceramics", icon: "🏺", description: "Functional pottery, sculptural work" },
-    { id: "basketry", name: "Basketry", icon: "🧺", description: "Traditional weaving techniques" },
-    { id: "stonework", name: "Stonework", icon: "🗿", description: "Carving, masonry, sculpture" },
-    { id: "bookbinding", name: "Bookbinding", icon: "📚", description: "Traditional and modern binding" },
-    { id: "calligraphy", name: "Calligraphy", icon: "✒️", description: "Hand lettering and illumination" }
-  ];
+  // Category icon mapping
+  const getCraftIcon = (name) => {
+    const iconMap = {
+      "Hand Weaving": "🧶",
+      "Wood Carving": "🪵", 
+      "Pottery": "🏺",
+      "Metalworking": "🔨",
+      "Jewelry Making": "💍",
+      "Glassblowing": "🫧",
+      "Leatherwork": "🦴",
+      "Basketry": "🧺",
+      "Blacksmithing": "⚒️",
+      "Ceramics": "🏺",
+      "Textiles": "🧶",
+      "Stonework": "🗿"
+    };
+    return iconMap[name] || "🎨";
+  };
 
-  const allCrafts = [
-    ...initialCrafts,
-    { id: "candle-making", name: "Candle Making", icon: "🕯️", description: "Hand-dipped, molded, decorative" },
-    { id: "soap-making", name: "Soap Making", icon: "🧼", description: "Cold process, melt and pour" },
-    { id: "brewing", name: "Brewing", icon: "🍺", description: "Beer, mead, fermentation" },
-    { id: "distilling", name: "Distilling", icon: "🥃", description: "Spirits, essential oils" },
-    { id: "perfumery", name: "Perfumery", icon: "🌸", description: "Natural fragrances, blending" },
-    { id: "instrument-making", name: "Instrument Making", icon: "🎸", description: "Guitars, violins, drums" },
-    { id: "furniture", name: "Furniture Making", icon: "🪑", description: "Custom furniture, restoration" },
-    { id: "upholstery", name: "Upholstery", icon: "🛋️", description: "Furniture restoration, custom work" },
-    { id: "millinery", name: "Millinery", icon: "🎩", description: "Hat making, headpieces" },
-    { id: "cobbling", name: "Cobbling", icon: "👞", description: "Shoe making, repair" },
-    { id: "paper-making", name: "Paper Making", icon: "📜", description: "Handmade papers, specialty sheets" },
-    { id: "printmaking", name: "Printmaking", icon: "🖨️", description: "Block printing, etching, screen printing" }
-  ];
+  useEffect(() => {
+    const loadCrafts = async () => {
+      try {
+        console.log('🔄 Loading crafts from mock API...');
+        const response = await mockDirectCreateAPI.getCrafts();
+        
+        if (response.success) {
+          // Transform API response to match UI format
+          const transformedCrafts = response.data.map(craft => ({
+            id: craft.id.toString(),
+            name: craft.name,
+            icon: getCraftIcon(craft.name),
+            description: craft.description,
+            difficulty: craft.difficulty,
+            time_estimate: craft.time_estimate
+          }));
+          
+          setCrafts(transformedCrafts);
+          console.log('✅ Crafts loaded:', transformedCrafts.length);
+        }
+      } catch (error) {
+        console.error('❌ Error loading crafts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCrafts();
+  }, []);
+
+  // Show first 12 crafts initially, all crafts when expanded
+  const initialCrafts = crafts.slice(0, 12);
+  const allCrafts = crafts;
 
   const filteredCrafts = (showAllCrafts ? allCrafts : initialCrafts).filter(craft =>
     craft.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -56,6 +81,17 @@ const CraftFirst = () => {
       });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Loading crafts...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
