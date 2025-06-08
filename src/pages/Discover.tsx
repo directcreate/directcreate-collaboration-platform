@@ -123,14 +123,14 @@ const Discover = () => {
                 </div>
               )}
 
-              {/* Banner Image */}
-              <div className="relative h-32 overflow-hidden">
+              {/* Banner Image - Full Width */}
+              <div className="relative h-40 overflow-hidden">
                 <img
                   src={maker.bannerImage}
                   alt={`${maker.name} workshop`}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
                 
                 {/* Availability Badge */}
                 <div className="absolute top-3 left-3">
@@ -146,15 +146,6 @@ const Discover = () => {
                   >
                     {maker.availability}
                   </Badge>
-                </div>
-
-                {/* Profile Photo Overlay */}
-                <div className="absolute bottom-3 left-3">
-                  <img
-                    src={maker.profilePhoto}
-                    alt={maker.name}
-                    className="w-12 h-12 rounded-full border-2 border-white object-cover"
-                  />
                 </div>
               </div>
 

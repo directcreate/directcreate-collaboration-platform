@@ -1,4 +1,3 @@
-
 import { mockMaterials } from './mockMaterials.js';
 import { mockCrafts } from './mockCrafts.js';
 import { mockTechniques } from './mockTechniques.js';
@@ -25,9 +24,7 @@ export const mockArtisans = [
     techniques: ["Hand Carving", "Japanese Joinery", "Traditional Methods"],
     specialtyTechniques: ["Rajasthani Carving", "Dovetail Joints", "Wood Inlay", "Natural Finishing"],
     completionRate: 96,
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
     bannerImage: "https://images.unsplash.com/photo-1606744824163-985d376605aa?w=800&h=300&fit=crop",
-    profilePhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
     aboutMe: "Third-generation woodworker specializing in traditional Rajasthani furniture. I combine ancestral techniques with modern functionality to create heirloom pieces that tell stories.",
     portfolio: ["Custom dining table", "Carved wooden panels", "Traditional chest"],
     portfolioImages: [
@@ -59,9 +56,7 @@ export const mockArtisans = [
     techniques: ["Wheel Throwing", "Raku Firing", "Hand Painting"],
     specialtyTechniques: ["Raku Firing", "Underglaze Painting", "Crystalline Glazes", "Sgraffito"],
     completionRate: 94,
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
     bannerImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=300&fit=crop",
-    profilePhoto: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
     aboutMe: "Contemporary ceramic artist blending traditional Indian pottery with modern design aesthetics. Each piece reflects the harmony between form, function, and artistic expression.",
     portfolio: ["Ceramic dinnerware set", "Decorative vases", "Custom tiles"],
     portfolioImages: [
@@ -93,9 +88,7 @@ export const mockArtisans = [
     techniques: ["Hand Weaving", "Block Printing", "Natural Dyeing"],
     specialtyTechniques: ["Ajrakh Printing", "Bandhani Tie-Dye", "Khadi Weaving", "Indigo Dyeing"],
     completionRate: 92,
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
     bannerImage: "https://images.unsplash.com/photo-1558618666-9c0c8c4b1994?w=800&h=300&fit=crop",
-    profilePhoto: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
     aboutMe: "Master weaver preserving Gujarat's rich textile heritage through traditional block printing and natural dyeing techniques. Creating sustainable fashion for the modern world.",
     portfolio: ["Block printed fabrics", "Traditional sarees", "Custom tapestries"],
     portfolioImages: [
@@ -127,9 +120,7 @@ export const mockArtisans = [
     techniques: ["Lost Wax Casting", "Hand Carving", "Metal Forming"],
     specialtyTechniques: ["Lost Wax Casting", "Repoussé", "Chasing", "Patination"],
     completionRate: 98,
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
     bannerImage: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800&h=300&fit=crop",
-    profilePhoto: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
     aboutMe: "Contemporary metal artist creating sculptural pieces that bridge traditional Indian metalwork with modern design. Specializing in sustainable practices using recycled materials.",
     portfolio: ["Garden sculptures", "Decorative panels", "Custom lighting"],
     portfolioImages: [
@@ -161,9 +152,7 @@ export const mockArtisans = [
     techniques: ["Hand Carving", "Lost Wax Casting", "Stone Setting"],
     specialtyTechniques: ["Kundan Setting", "Meenakari Enamel", "Jaipur Cut", "Filigree Work"],
     completionRate: 89,
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
     bannerImage: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=300&fit=crop",
-    profilePhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
     aboutMe: "Master jeweler from Jaipur's renowned jewelry district, specializing in traditional Rajasthani techniques. Creating bespoke pieces that celebrate India's gemstone heritage.",
     portfolio: ["Custom wedding jewelry", "Traditional necklaces", "Stone rings"],
     portfolioImages: [
@@ -195,9 +184,7 @@ export const mockArtisans = [
     techniques: ["Hand Embroidery", "Sashiko Stitching", "Pattern Design"],
     specialtyTechniques: ["Chikankari", "Shadow Work", "Phanda", "Murri Stitching"],
     completionRate: 95,
-    image: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=400&h=400&fit=crop&crop=face",
     bannerImage: "https://images.unsplash.com/photo-1586880244406-556ebe35f282?w=800&h=300&fit=crop",
-    profilePhoto: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=150&h=150&fit=crop&crop=face",
     aboutMe: "Master embroiderer preserving Lucknow's 400-year-old Chikankari tradition. Each piece tells a story through intricate stitches passed down through generations.",
     portfolio: ["Chikankari kurtas", "Decorative dupattas", "Table linens"],
     portfolioImages: [
