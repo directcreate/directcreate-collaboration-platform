@@ -1,45 +1,67 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Package, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { mockDirectCreateAPI } from "../services/mockData";
 
 const MaterialFirst = () => {
   const navigate = useNavigate();
   const [selectedMaterial, setSelectedMaterial] = useState("");
   const [showAllMaterials, setShowAllMaterials] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [materials, setMaterials] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const initialMaterials = [
-    { id: "wood", name: "Wood", icon: "🌳", description: "Oak, Teak, Pine, and more" },
-    { id: "clay", name: "Clay", icon: "🏺", description: "Earthenware, Stoneware, Porcelain" },
-    { id: "textile", name: "Textile", icon: "🧶", description: "Cotton, Silk, Wool, and natural fibers" },
-    { id: "metal", name: "Metal", icon: "⚒️", description: "Iron, Brass, Silver, Copper" },
-    { id: "stone", name: "Stone", icon: "🗿", description: "Marble, Granite, Sandstone" },
-    { id: "glass", name: "Glass", icon: "💎", description: "Clear, Colored, Recycled" },
-    { id: "leather", name: "Leather", icon: "🦎", description: "Premium hides and artisan leather" },
-    { id: "bamboo", name: "Bamboo", icon: "🎋", description: "Sustainable and flexible bamboo" },
-    { id: "paper", name: "Paper", icon: "📜", description: "Handmade papers and specialty sheets" },
-    { id: "resin", name: "Resin", icon: "🧪", description: "Epoxy, polyurethane, and bio-resins" },
-    { id: "ceramic", name: "Ceramic", icon: "🏺", description: "Fine ceramics and specialty glazes" },
-    { id: "rubber", name: "Rubber", icon: "⚫", description: "Natural and synthetic rubber" }
-  ];
+  // Category icon mapping
+  const getCategoryIcon = (category) => {
+    const iconMap = {
+      "Wood": "🌳",
+      "Metal": "⚒️",
+      "Textile": "🧶", 
+      "Natural": "🎋",
+      "Clay": "🏺",
+      "Fabric": "🧶",
+      "Leather": "🦎"
+    };
+    return iconMap[category] || "📦";
+  };
 
-  const allMaterials = [
-    ...initialMaterials,
-    { id: "cork", name: "Cork", icon: "🍾", description: "Sustainable cork from oak trees" },
-    { id: "bone", name: "Bone", icon: "🦴", description: "Ethically sourced bone and horn" },
-    { id: "shell", name: "Shell", icon: "🐚", description: "Mother of pearl and exotic shells" },
-    { id: "wax", name: "Wax", icon: "🕯️", description: "Beeswax, paraffin, and specialty waxes" },
-    { id: "foam", name: "Foam", icon: "🧽", description: "Memory foam, polyurethane foam" },
-    { id: "carbon", name: "Carbon Fiber", icon: "⚫", description: "Lightweight carbon composite materials" },
-    { id: "aluminum", name: "Aluminum", icon: "⚪", description: "Lightweight and corrosion-resistant" },
-    { id: "plastic", name: "Plastic", icon: "🔷", description: "Recycled and specialty polymers" },
-    { id: "wire", name: "Wire", icon: "🔗", description: "Copper, steel, and specialty wires" },
-    { id: "fur", name: "Fur", icon: "🐻", description: "Ethically sourced and faux fur options" }
-  ];
+  useEffect(() => {
+    const loadMaterials = async () => {
+      try {
+        console.log('🔄 Loading materials from mock API...');
+        const response = await mockDirectCreateAPI.getMaterials();
+        
+        if (response.success) {
+          // Transform API response to match UI format
+          const transformedMaterials = response.data.map(material => ({
+            id: material.id.toString(),
+            name: material.name,
+            icon: getCategoryIcon(material.category),
+            description: material.description,
+            category: material.category,
+            sustainability_rating: material.sustainability_rating
+          }));
+          
+          setMaterials(transformedMaterials);
+          console.log('✅ Materials loaded:', transformedMaterials.length);
+        }
+      } catch (error) {
+        console.error('❌ Error loading materials:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMaterials();
+  }, []);
+
+  // Show first 12 materials initially, all materials when expanded
+  const initialMaterials = materials.slice(0, 12);
+  const allMaterials = materials;
 
   const filteredMaterials = (showAllMaterials ? allMaterials : initialMaterials).filter(material =>
     material.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,6 +76,17 @@ const MaterialFirst = () => {
       });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Loading materials...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
