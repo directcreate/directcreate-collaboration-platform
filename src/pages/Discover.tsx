@@ -7,15 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { mockDirectCreateAPI } from "@/services/mockData";
 
-interface Maker {
-  id: string;
-  name: string;
-  specialty: string;
-  image: string;
-  rating: number;
-  location: string;
-}
-
 interface ActiveProject {
   id: string;
   title: string;
@@ -34,62 +25,12 @@ interface ActiveProject {
   images: string[];
 }
 
-const makers: Maker[] = [
-  {
-    id: "1",
-    name: "Elena Rodriguez",
-    specialty: "Ceramic Artisan",
-    image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
-    rating: 4.9,
-    location: "Portland, OR"
-  },
-  {
-    id: "2",
-    name: "Marcus Chen",
-    specialty: "Woodworker",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-    rating: 4.8,
-    location: "San Francisco, CA"
-  },
-  {
-    id: "3",
-    name: "Sofia Nakamura",
-    specialty: "Textile Designer",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-    rating: 4.9,
-    location: "Brooklyn, NY"
-  },
-  {
-    id: "4",
-    name: "James Mitchell",
-    specialty: "Metalworker",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-    rating: 4.7,
-    location: "Austin, TX"
-  },
-  {
-    id: "5",
-    name: "Aria Patel",
-    specialty: "Glass Artist",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
-    rating: 4.8,
-    location: "Seattle, WA"
-  },
-  {
-    id: "6",
-    name: "Diego Santos",
-    specialty: "Leather Craftsman",
-    image: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?w=400&h=400&fit=crop&crop=face",
-    rating: 4.9,
-    location: "Los Angeles, CA"
-  }
-];
-
 const Discover = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedMakers, setSelectedMakers] = useState<string[]>([]);
   const [activeProjects, setActiveProjects] = useState<ActiveProject[]>([]);
+  const [makers, setMakers] = useState<any[]>([]);
   const [materials, setMaterials] = useState<any[]>([]);
   const [crafts, setCrafts] = useState<any[]>([]);
   const [techniques, setTechniques] = useState<any[]>([]);
@@ -99,15 +40,17 @@ const Discover = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [materialsData, craftsData, techniquesData] = await Promise.all([
+        const [materialsData, craftsData, techniquesData, artisansData] = await Promise.all([
           mockDirectCreateAPI.getMaterials(),
           mockDirectCreateAPI.getCrafts(),
-          mockDirectCreateAPI.getTechniques()
+          mockDirectCreateAPI.getTechniques(),
+          mockDirectCreateAPI.getArtisans()
         ]);
 
         setMaterials(materialsData.data);
         setCrafts(craftsData.data);
         setTechniques(techniquesData.data);
+        setMakers(artisansData.data);
 
         // Generate realistic active projects using real data
         const projects: ActiveProject[] = [
@@ -118,7 +61,7 @@ const Discover = () => {
             materials: ["Reclaimed Oak", "Organic Cotton"],
             crafts: ["Wood Carving", "Hand Weaving"],
             techniques: ["Japanese Joinery", "Hand Carving"],
-            artisan: makers[1],
+            artisan: artisansData.data[0], // Rajesh Kumar
             progress: 65,
             estimatedCompletion: "2 weeks",
             images: ["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop"]
@@ -130,7 +73,7 @@ const Discover = () => {
             materials: ["Porcelain Clay", "Sterling Silver"],
             crafts: ["Pottery", "Metalworking"],
             techniques: ["Wheel Throwing", "Raku Firing"],
-            artisan: makers[0],
+            artisan: artisansData.data[1], // Priya Sharma
             progress: 80,
             estimatedCompletion: "1 week",
             images: ["https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop"]
@@ -139,10 +82,10 @@ const Discover = () => {
             id: "3",
             title: "Handwoven Textile Art",
             description: "Large-scale wall hanging using sustainable fibers",
-            materials: ["Hemp Fiber", "Organic Cotton", "Merino Wool"],
-            crafts: ["Hand Weaving", "Textiles"],
+            materials: ["Hemp Fiber", "Organic Cotton", "Silk"],
+            crafts: ["Hand Weaving", "Textile"],
             techniques: ["Hand Weaving", "Sashiko Stitching"],
-            artisan: makers[2],
+            artisan: artisansData.data[2], // Kumar Singh
             progress: 45,
             estimatedCompletion: "3 weeks",
             images: ["https://images.unsplash.com/photo-1558618666-9c0c8c4b1994?w=400&h=300&fit=crop"]
@@ -154,7 +97,7 @@ const Discover = () => {
             materials: ["Sterling Silver", "Recycled Steel"],
             crafts: ["Jewelry Making", "Metalworking"],
             techniques: ["Hand Carving", "Lost Wax Casting"],
-            artisan: makers[3],
+            artisan: artisansData.data[3], // Anita Rao
             progress: 90,
             estimatedCompletion: "3 days",
             images: ["https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=300&fit=crop"]

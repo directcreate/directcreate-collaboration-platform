@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Star, MapPin, Briefcase, Filter, Search, Clock, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { mockDirectCreateAPI } from "@/services/mockData";
 
 const MakerMatching = () => {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ const MakerMatching = () => {
   const [locationFilter, setLocationFilter] = useState("all");
   const [skillFilter, setSkillFilter] = useState("all");
   const [availabilityFilter, setAvailabilityFilter] = useState("all");
+  const [allMakers, setAllMakers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Get project data from previous pages
   const projectData = location.state || {};
@@ -18,135 +21,20 @@ const MakerMatching = () => {
 
   console.log('🎯 Project data received:', projectData);
 
-  // Realistic artisan profiles
-  const allMakers = [
-    {
-      id: "rajesh-kumar",
-      name: "Rajesh Kumar",
-      location: "Jodhpur, Rajasthan",
-      specialty: "Traditional Woodworking Master",
-      rating: 4.9,
-      reviews: 127,
-      experience: "15 years",
-      availability: "Available",
-      capacityPercentage: 30,
-      skills: ["Hand Carving", "Wood Joining", "Traditional Polish", "Inlay Work"],
-      materials: ["Wood", "Bamboo", "Cane"],
-      crafts: ["Woodworking", "Carving", "Furniture Making"],
-      techniques: ["Hand Tools", "Traditional Methods"],
-      completionRate: 96,
-      profileImage: "👨‍🎨",
-      portfolio: ["Custom dining table", "Carved wooden panels", "Traditional chest"],
-      priceRange: "₹15,000 - ₹50,000",
-      responseTime: "2-4 hours",
-      languages: ["Hindi", "English", "Rajasthani"]
-    },
-    {
-      id: "priya-sharma",
-      name: "Priya Sharma",
-      location: "Delhi",
-      specialty: "Contemporary Ceramic Artist",
-      rating: 4.8,
-      reviews: 89,
-      experience: "12 years",
-      availability: "Available",
-      capacityPercentage: 45,
-      skills: ["Wheel Throwing", "Glazing", "Hand Painting", "Kiln Firing"],
-      materials: ["Clay", "Ceramic", "Porcelain"],
-      crafts: ["Pottery", "Ceramics", "Sculpture"],
-      techniques: ["Machine Work", "Modern Techniques"],
-      completionRate: 94,
-      profileImage: "👩‍🎨",
-      portfolio: ["Ceramic dinnerware set", "Decorative vases", "Custom tiles"],
-      priceRange: "₹8,000 - ₹25,000",
-      responseTime: "1-3 hours",
-      languages: ["Hindi", "English", "Punjabi"]
-    },
-    {
-      id: "kumar-singh",
-      name: "Kumar Singh",
-      location: "Ahmedabad, Gujarat",
-      specialty: "Heritage Textile Craftsman",
-      rating: 4.7,
-      reviews: 156,
-      experience: "18 years",
-      availability: "Busy",
-      capacityPercentage: 80,
-      skills: ["Block Printing", "Natural Dyeing", "Weaving", "Embroidery"],
-      materials: ["Cotton", "Silk", "Linen", "Wool"],
-      crafts: ["Textile", "Weaving", "Printing"],
-      techniques: ["Traditional Methods", "Hand Tools"],
-      completionRate: 92,
-      profileImage: "👨‍🎨",
-      portfolio: ["Block printed fabrics", "Traditional sarees", "Custom tapestries"],
-      priceRange: "₹5,000 - ₹30,000",
-      responseTime: "4-8 hours",
-      languages: ["Hindi", "Gujarati", "English"]
-    },
-    {
-      id: "anita-rao",
-      name: "Anita Rao",
-      location: "Bangalore, Karnataka",
-      specialty: "Modern Metal Sculptor",
-      rating: 4.9,
-      reviews: 73,
-      experience: "10 years",
-      availability: "Available",
-      capacityPercentage: 25,
-      skills: ["Welding", "Metal Forming", "Patina", "Assembly"],
-      materials: ["Steel", "Copper", "Bronze", "Aluminum"],
-      crafts: ["Metalwork", "Sculpture", "Jewelry"],
-      techniques: ["Machine Work", "Modern Techniques"],
-      completionRate: 98,
-      profileImage: "👩‍🎨",
-      portfolio: ["Garden sculptures", "Decorative panels", "Custom lighting"],
-      priceRange: "₹20,000 - ₹75,000",
-      responseTime: "1-2 hours",
-      languages: ["English", "Kannada", "Tamil"]
-    },
-    {
-      id: "mahesh-gupta",
-      name: "Mahesh Gupta",
-      location: "Jaipur, Rajasthan",
-      specialty: "Gemstone & Jewelry Artisan",
-      rating: 4.6,
-      reviews: 203,
-      experience: "22 years",
-      availability: "Available",
-      capacityPercentage: 40,
-      skills: ["Stone Setting", "Metal Casting", "Engraving", "Polish"],
-      materials: ["Gold", "Silver", "Gemstones", "Precious Metals"],
-      crafts: ["Jewelry", "Gemcutting", "Metalwork"],
-      techniques: ["Hand Tools", "Traditional Methods"],
-      completionRate: 89,
-      profileImage: "👨‍🎨",
-      portfolio: ["Custom wedding jewelry", "Traditional necklaces", "Stone rings"],
-      priceRange: "₹10,000 - ₹1,00,000",
-      responseTime: "3-6 hours",
-      languages: ["Hindi", "Rajasthani", "English"]
-    },
-    {
-      id: "lalita-devi",
-      name: "Lalita Devi",
-      location: "Lucknow, Uttar Pradesh",
-      specialty: "Chikankari Embroidery Expert",
-      rating: 4.8,
-      reviews: 134,
-      experience: "25 years",
-      availability: "Available",
-      capacityPercentage: 35,
-      skills: ["Hand Embroidery", "Pattern Design", "Thread Work", "Finishing"],
-      materials: ["Cotton", "Silk", "Muslin", "Chiffon"],
-      crafts: ["Embroidery", "Textile", "Fashion"],
-      techniques: ["Hand Tools", "Traditional Methods"],
-      completionRate: 95,
-      profileImage: "👩‍🎨",
-      portfolio: ["Chikankari kurtas", "Decorative dupattas", "Table linens"],
-      priceRange: "₹3,000 - ₹15,000",
-      responseTime: "2-5 hours",
-      languages: ["Hindi", "Urdu", "English"]
-    }
-  ];
+  useEffect(() => {
+    const loadArtisans = async () => {
+      try {
+        const artisansData = await mockDirectCreateAPI.getArtisans();
+        setAllMakers(artisansData.data);
+      } catch (error) {
+        console.error("Failed to load artisans:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadArtisans();
+  }, []);
 
   // Calculate match percentage based on project requirements
   const calculateMatchPercentage = (maker: any) => {
@@ -221,6 +109,14 @@ const MakerMatching = () => {
       });
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-lg text-muted-foreground">Loading artisans...</div>
+      </div>
+    );
+  }
 
   const topMaker = filteredMakers[0];
 
@@ -340,8 +236,12 @@ const MakerMatching = () => {
         {topMaker && (
           <div className="border-2 border-green-500 bg-green-50 dark:bg-green-950 rounded-3xl p-8 mb-8">
             <div className="flex items-start gap-6">
-              <div className="w-24 h-24 bg-muted rounded-2xl flex items-center justify-center text-4xl">
-                {topMaker.profileImage}
+              <div className="w-24 h-24 rounded-2xl overflow-hidden">
+                <img 
+                  src={topMaker.image} 
+                  alt={topMaker.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
               
               <div className="flex-1">
@@ -456,8 +356,12 @@ const MakerMatching = () => {
                   onClick={() => toggleMakerSelection(maker.id)}
                 >
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center text-2xl">
-                      {maker.profileImage}
+                    <div className="w-16 h-16 rounded-xl overflow-hidden">
+                      <img 
+                        src={maker.image} 
+                        alt={maker.name}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-foreground mb-1">{maker.name}</h3>
