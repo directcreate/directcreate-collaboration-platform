@@ -1,11 +1,13 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ProjectOverview from "@/components/project-form/ProjectOverview";
 import TimelineBudget from "@/components/project-form/TimelineBudget";
 import LocationPreferences from "@/components/project-form/LocationPreferences";
+import { mockDirectCreateAPI } from "../services/mockData";
 
 const ProjectForm = () => {
   const navigate = useNavigate();
@@ -20,14 +22,73 @@ const ProjectForm = () => {
     pinCode: ""
   });
 
+  const [materials, setMaterials] = useState([]);
+  const [crafts, setCrafts] = useState([]);
+  const [techniques, setTechniques] = useState([]);
+  const [selectedMaterial, setSelectedMaterial] = useState("");
+  const [selectedCraft, setSelectedCraft] = useState("");
+  const [selectedTechnique, setSelectedTechnique] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const contextData = location.state || {};
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        console.log('🔄 Loading all data for project form...');
+        
+        const [materialsResponse, craftsResponse, techniquesResponse] = await Promise.all([
+          mockDirectCreateAPI.getMaterials(),
+          mockDirectCreateAPI.getCrafts(),
+          mockDirectCreateAPI.getTechniques()
+        ]);
+
+        if (materialsResponse.success) {
+          setMaterials(materialsResponse.data);
+        }
+        if (craftsResponse.success) {
+          setCrafts(craftsResponse.data);
+        }
+        if (techniquesResponse.success) {
+          setTechniques(techniquesResponse.data);
+        }
+
+        // Pre-populate selections from previous pages
+        if (contextData.selectedMaterial) {
+          setSelectedMaterial(contextData.selectedMaterial.id.toString());
+        }
+        if (contextData.selectedCraft) {
+          setSelectedCraft(contextData.selectedCraft.id.toString());
+        }
+        if (contextData.selectedTechnique) {
+          setSelectedTechnique(contextData.selectedTechnique.id.toString());
+        }
+
+        console.log('✅ All data loaded successfully');
+      } catch (error) {
+        console.error('❌ Error loading data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [contextData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const selectedMaterialData = materials.find(m => m.id.toString() === selectedMaterial);
+    const selectedCraftData = crafts.find(c => c.id.toString() === selectedCraft);
+    const selectedTechniqueData = techniques.find(t => t.id.toString() === selectedTechnique);
+    
     navigate('/collaborate/makers', { 
       state: { 
         ...contextData,
-        projectDetails: formData
+        projectDetails: formData,
+        selectedMaterial: selectedMaterialData,
+        selectedCraft: selectedCraftData,
+        selectedTechnique: selectedTechniqueData
       } 
     });
   };
@@ -35,6 +96,21 @@ const ProjectForm = () => {
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const getSelectedMaterial = () => materials.find(m => m.id.toString() === selectedMaterial);
+  const getSelectedCraft = () => crafts.find(c => c.id.toString() === selectedCraft);
+  const getSelectedTechnique = () => techniques.find(t => t.id.toString() === selectedTechnique);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Loading project form...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,6 +145,119 @@ const ProjectForm = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Material, Craft, Technique Selection */}
+          <div className="bg-card rounded-2xl p-6 border border-border/20">
+            <h2 className="text-2xl font-semibold mb-6">Craft Specifications</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Material Selection */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-foreground">Material</label>
+                <Select value={selectedMaterial} onValueChange={setSelectedMaterial}>
+                  <SelectTrigger className="h-12 rounded-xl">
+                    <SelectValue placeholder="Choose material" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {materials.map((material) => (
+                      <SelectItem key={material.id} value={material.id.toString()}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{material.name}</span>
+                          <span className="text-xs text-muted-foreground">{material.category}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {getSelectedMaterial() && (
+                  <div className="text-xs text-muted-foreground p-3 bg-muted/30 rounded-lg">
+                    <p className="font-medium mb-1">{getSelectedMaterial().category}</p>
+                    <p>{getSelectedMaterial().description}</p>
+                    <p className="mt-1">Sustainability: {getSelectedMaterial().sustainability_rating}/10</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Craft Selection */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-foreground">Craft</label>
+                <Select value={selectedCraft} onValueChange={setSelectedCraft}>
+                  <SelectTrigger className="h-12 rounded-xl">
+                    <SelectValue placeholder="Choose craft" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {crafts.map((craft) => (
+                      <SelectItem key={craft.id} value={craft.id.toString()}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{craft.name}</span>
+                          <span className="text-xs text-muted-foreground">{craft.difficulty}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {getSelectedCraft() && (
+                  <div className="text-xs text-muted-foreground p-3 bg-muted/30 rounded-lg">
+                    <p className="font-medium mb-1">Difficulty: {getSelectedCraft().difficulty}</p>
+                    <p>{getSelectedCraft().description}</p>
+                    <p className="mt-1">Timeline: {getSelectedCraft().time_estimate}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Technique Selection */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-foreground">Technique</label>
+                <Select value={selectedTechnique} onValueChange={setSelectedTechnique}>
+                  <SelectTrigger className="h-12 rounded-xl">
+                    <SelectValue placeholder="Choose technique" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {techniques.map((technique) => (
+                      <SelectItem key={technique.id} value={technique.id.toString()}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{technique.name}</span>
+                          <span className="text-xs text-muted-foreground">{technique.category}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {getSelectedTechnique() && (
+                  <div className="text-xs text-muted-foreground p-3 bg-muted/30 rounded-lg">
+                    <p className="font-medium mb-1">{getSelectedTechnique().category}</p>
+                    <p>{getSelectedTechnique().description}</p>
+                    <p className="mt-1">Difficulty: {getSelectedTechnique().difficulty}</p>
+                    <p>Time: {getSelectedTechnique().time_required}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Show pre-selected context */}
+            {(contextData.selectedMaterial || contextData.selectedCraft || contextData.selectedTechnique) && (
+              <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-xl">
+                <p className="text-sm font-medium text-primary mb-2">From your previous selection:</p>
+                <div className="flex flex-wrap gap-2">
+                  {contextData.selectedMaterial && (
+                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                      Material: {contextData.selectedMaterial.name}
+                    </span>
+                  )}
+                  {contextData.selectedCraft && (
+                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                      Craft: {contextData.selectedCraft.name}
+                    </span>
+                  )}
+                  {contextData.selectedTechnique && (
+                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                      Technique: {contextData.selectedTechnique.name}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
           <ProjectOverview formData={formData} onInputChange={handleInputChange} />
           <TimelineBudget formData={formData} onInputChange={handleInputChange} />
           <LocationPreferences formData={formData} onInputChange={handleInputChange} />
