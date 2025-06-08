@@ -1,44 +1,52 @@
 
 import { useState } from "react";
-import { Sparkles, Loader2, Brain } from "lucide-react";
+import { Brain, Loader2, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { aiService } from "../../services/aiService";
+import { directCreateAPI } from "../../config/api";
 
 interface AIAnalysisProps {
   onSuggestionsApplied: (suggestions: any) => void;
 }
 
 const AIAnalysis = ({ onSuggestionsApplied }: AIAnalysisProps) => {
-  const [description, setDescription] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [suggestions, setSuggestions] = useState(null);
+  const [error, setError] = useState("");
 
   const handleAnalyze = async () => {
-    if (!description.trim()) return;
+    if (!projectDescription.trim()) {
+      setError("Please enter a project description");
+      return;
+    }
 
     try {
       setAnalyzing(true);
-      console.log('🧠 Analyzing project with AI:', description);
+      setError("");
+      console.log('🤖 Analyzing project with AI:', projectDescription);
       
-      const result = await aiService.analyzeProject(description);
+      const response = await directCreateAPI.analyzeProject(projectDescription);
       
-      if (result) {
-        setSuggestions(result.data);
-        console.log('✅ AI analysis complete:', result.data);
+      if (response && response.success) {
+        setSuggestions(response.data);
+        console.log('✅ AI analysis completed:', response.data);
       } else {
-        console.error('❌ AI analysis failed');
+        setError("AI analysis failed. Please try again.");
+        console.error('❌ AI analysis error:', response?.message);
       }
     } catch (error) {
       console.error('❌ Error during AI analysis:', error);
+      setError("Connection error. Please check your network and try again.");
     } finally {
       setAnalyzing(false);
     }
   };
 
-  const applySuggestions = () => {
+  const handleApplySuggestions = () => {
     if (suggestions) {
       onSuggestionsApplied(suggestions);
+      console.log('🎯 Applied AI suggestions to form');
     }
   };
 
@@ -47,29 +55,34 @@ const AIAnalysis = ({ onSuggestionsApplied }: AIAnalysisProps) => {
       <div className="flex items-center gap-3 mb-6">
         <Brain className="w-6 h-6 text-primary" />
         <h2 className="text-2xl font-semibold">AI Project Analysis</h2>
-        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">
-          <Sparkles className="w-3 h-3 inline mr-1" />
+        <div className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-medium">
           AI Enhanced
-        </span>
+        </div>
       </div>
-
-      <div className="space-y-6">
+      
+      <div className="space-y-4">
         <div>
-          <label className="block text-foreground font-medium mb-2">
+          <label className="block text-sm font-medium mb-2">
             Describe your project vision
           </label>
           <Textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
             placeholder="e.g., Traditional textile wall hanging with intricate patterns for living room..."
-            className="min-h-[100px] rounded-xl"
+            value={projectDescription}
+            onChange={(e) => setProjectDescription(e.target.value)}
+            className="min-h-[100px] resize-none"
           />
         </div>
 
+        {error && (
+          <div className="text-sm text-destructive p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+            {error}
+          </div>
+        )}
+
         <Button
           onClick={handleAnalyze}
-          disabled={!description.trim() || analyzing}
-          className="w-full h-12 rounded-xl"
+          disabled={analyzing || !projectDescription.trim()}
+          className="w-full"
         >
           {analyzing ? (
             <>
@@ -85,40 +98,45 @@ const AIAnalysis = ({ onSuggestionsApplied }: AIAnalysisProps) => {
         </Button>
 
         {suggestions && (
-          <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
-            <h3 className="font-semibold text-primary mb-3">AI Recommendations</h3>
-            <div className="space-y-3">
-              {suggestions.materials && (
+          <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <Lightbulb className="w-4 h-4 text-primary" />
+              <span className="font-medium text-primary">AI Suggestions</span>
+            </div>
+            
+            <div className="space-y-3 text-sm">
+              {suggestions.recommended_materials && (
                 <div>
-                  <p className="text-sm font-medium mb-1">Recommended Materials:</p>
-                  <p className="text-sm text-muted-foreground">{suggestions.materials}</p>
+                  <span className="font-medium">Recommended Materials:</span>
+                  <p className="text-muted-foreground mt-1">
+                    {suggestions.recommended_materials.slice(0, 2).map(m => m.name).join(", ")}
+                  </p>
                 </div>
               )}
-              {suggestions.crafts && (
+              
+              {suggestions.recommended_crafts && (
                 <div>
-                  <p className="text-sm font-medium mb-1">Suggested Crafts:</p>
-                  <p className="text-sm text-muted-foreground">{suggestions.crafts}</p>
+                  <span className="font-medium">Suggested Crafts:</span>
+                  <p className="text-muted-foreground mt-1">
+                    {suggestions.recommended_crafts.slice(0, 2).map(c => c.name).join(", ")}
+                  </p>
                 </div>
               )}
-              {suggestions.reasoning && (
+              
+              {suggestions.cultural_context && (
                 <div>
-                  <p className="text-sm font-medium mb-1">AI Reasoning:</p>
-                  <p className="text-sm text-muted-foreground">{suggestions.reasoning}</p>
-                </div>
-              )}
-              {suggestions.confidence && (
-                <div>
-                  <p className="text-sm font-medium mb-1">Confidence: {suggestions.confidence}%</p>
+                  <span className="font-medium">Cultural Context:</span>
+                  <p className="text-muted-foreground mt-1">{suggestions.cultural_context}</p>
                 </div>
               )}
             </div>
+
             <Button
-              onClick={applySuggestions}
-              variant="outline"
+              onClick={handleApplySuggestions}
               size="sm"
               className="mt-3"
             >
-              Apply Suggestions
+              Apply AI Suggestions
             </Button>
           </div>
         )}

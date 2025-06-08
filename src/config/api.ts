@@ -9,15 +9,42 @@ export { techniquesService } from '../services/techniquesService';
 export { artisansService } from '../services/artisansService';
 export { aiService } from '../services/aiService';
 
-// Maintain backward compatibility with existing directCreateAPI interface
+// Simplified directCreateAPI interface with proper async handling
 export const directCreateAPI = {
-  getMaterials: () => import('../services/materialsService').then(m => m.materialsService.getMaterials()),
-  getCrafts: () => import('../services/craftsService').then(c => c.craftsService.getCrafts()),
-  getTechniques: () => import('../services/techniquesService').then(t => t.techniquesService.getTechniques()),
-  getCompatibleCrafts: (materialId: number) => import('../services/craftsService').then(c => c.craftsService.getCompatibleCrafts(materialId)),
-  getCompatibleMaterials: (craftId: number) => import('../services/materialsService').then(m => m.materialsService.getCompatibleMaterials(craftId)),
-  getCompatibleTechniques: (materialId?: number, craftId?: number) => import('../services/techniquesService').then(t => t.techniquesService.getCompatibleTechniques(materialId, craftId)),
-  getCompatibleArtisans: (materialId?: number, craftId?: number, techniqueId?: number) => import('../services/artisansService').then(a => a.artisansService.getCompatibleArtisans(materialId, craftId, techniqueId)),
-  analyzeProject: (description: string, imageUrl?: string) => import('../services/aiService').then(ai => ai.aiService.analyzeProject(description, imageUrl)),
-  suggestMaterials: (projectType: string, style: string) => import('../services/aiService').then(ai => ai.aiService.suggestMaterials(projectType, style))
+  getMaterials: async () => {
+    const { materialsService } = await import('../services/materialsService');
+    return materialsService.getMaterials();
+  },
+  getCrafts: async () => {
+    const { craftsService } = await import('../services/craftsService');
+    return craftsService.getCrafts();
+  },
+  getTechniques: async () => {
+    const { techniquesService } = await import('../services/techniquesService');
+    return techniquesService.getTechniques();
+  },
+  getCompatibleCrafts: async (materialId: number) => {
+    const { craftsService } = await import('../services/craftsService');
+    return craftsService.getCompatibleCrafts(materialId);
+  },
+  getCompatibleMaterials: async (craftId: number) => {
+    const { materialsService } = await import('../services/materialsService');
+    return materialsService.getCompatibleMaterials(craftId);
+  },
+  getCompatibleTechniques: async (materialId?: number, craftId?: number) => {
+    const { techniquesService } = await import('../services/techniquesService');
+    return techniquesService.getCompatibleTechniques(materialId, craftId);
+  },
+  getCompatibleArtisans: async (materialId?: number, craftId?: number, techniqueId?: number) => {
+    const { artisansService } = await import('../services/artisansService');
+    return artisansService.getCompatibleArtisans(materialId, craftId, techniqueId);
+  },
+  analyzeProject: async (description: string, imageUrl?: string) => {
+    const { aiService } = await import('../services/aiService');
+    return aiService.analyzeProject(description, imageUrl);
+  },
+  suggestMaterials: async (projectType: string, style: string) => {
+    const { aiService } = await import('../services/aiService');
+    return aiService.suggestMaterials(projectType, style);
+  }
 };

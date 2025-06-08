@@ -15,50 +15,83 @@ export const useDirectCreateData = () => {
       setError("");
       console.log('🔄 Loading all DirectCreate data for project form...');
       
-      const [materialsResponse, craftsResponse, techniquesResponse] = await Promise.all([
+      // Use Promise.allSettled to handle partial failures gracefully
+      const results = await Promise.allSettled([
         directCreateAPI.getMaterials(),
         directCreateAPI.getCrafts(),
         directCreateAPI.getTechniques()
       ]);
 
-      if (materialsResponse.success) {
-        setMaterials(materialsResponse.data);
+      const [materialsResult, craftsResult, techniquesResult] = results;
+
+      // Process materials
+      if (materialsResult.status === 'fulfilled' && materialsResult.value.success) {
+        setMaterials(materialsResult.value.data);
+        console.log('✅ Materials loaded:', materialsResult.value.data.length);
       } else {
-        console.error('Materials API error:', materialsResponse.message);
-      }
-      
-      if (craftsResponse.success) {
-        setCrafts(craftsResponse.data);
-      } else {
-        console.error('Crafts API error:', craftsResponse.message);
-      }
-      
-      if (techniquesResponse.success) {
-        setTechniques(techniquesResponse.data);
-      } else {
-        console.error('Techniques API error:', techniquesResponse.message);
+        console.error('❌ Materials failed to load:', materialsResult);
+        setMaterials([]);
       }
 
-      // Check if any API calls failed
-      if (!materialsResponse.success || !craftsResponse.success || !techniquesResponse.success) {
+      // Process crafts
+      if (craftsResult.status === 'fulfilled' && craftsResult.value.success) {
+        setCrafts(craftsResult.value.data);
+        console.log('✅ Crafts loaded:', craftsResult.value.data.length);
+      } else {
+        console.error('❌ Crafts failed to load:', craftsResult);
+        setCrafts([]);
+      }
+
+      // Process techniques
+      if (techniquesResult.status === 'fulfilled' && techniquesResult.value.success) {
+        setTechniques(techniquesResult.value.data);
+        console.log('✅ Techniques loaded:', techniquesResult.value.data.length);
+      } else {
+        console.error('❌ Techniques failed to load:', techniquesResult);
+        setTechniques([]);
+      }
+
+      // Check if all requests failed
+      const allFailed = results.every(result => 
+        result.status === 'rejected' || 
+        (result.status === 'fulfilled' && !result.value.success)
+      );
+
+      if (allFailed) {
+        setError("Failed to load DirectCreate data. Please check your connection and try again.");
+      } else {
+        // Check for partial failures
         const failedAPIs = [];
-        if (!materialsResponse.success) failedAPIs.push('materials');
-        if (!craftsResponse.success) failedAPIs.push('crafts');
-        if (!techniquesResponse.success) failedAPIs.push('techniques');
-        
-        setError(`Failed to load: ${failedAPIs.join(', ')}`);
+        if (materialsResult.status === 'rejected' || !materialsResult.value?.success) {
+          failedAPIs.push('materials');
+        }
+        if (craftsResult.status === 'rejected' || !craftsResult.value?.success) {
+          failedAPIs.push('crafts');
+        }
+        if (techniquesResult.status === 'rejected' || !techniquesResult.value?.success) {
+          failedAPIs.push('techniques');
+        }
+
+        if (failedAPIs.length > 0) {
+          setError(`Some data failed to load: ${failedAPIs.join(', ')}. You can still use the available data.`);
+        }
       }
 
-      console.log('✅ DirectCreate data loaded successfully');
+      console.log('📊 DirectCreate data loading complete');
     } catch (error) {
       console.error('❌ Error loading DirectCreate data:', error);
-      setError(`Connection error: ${error.message}`);
+      setError(`Connection error: ${error.message}. Please verify the DirectCreate API is running.`);
+      // Set empty arrays as fallback
+      setMaterials([]);
+      setCrafts([]);
+      setTechniques([]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleRetry = () => {
+    console.log('🔄 Retrying DirectCreate data load...');
     loadData();
   };
 

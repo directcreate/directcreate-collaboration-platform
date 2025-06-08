@@ -1,8 +1,8 @@
 
 import { useState } from "react";
-import { Sparkles, Loader2, Home, Shirt, Armchair, Palette } from "lucide-react";
+import { Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { aiService } from "../../services/aiService";
+import { directCreateAPI } from "../../config/api";
 
 interface QuickProjectTypeProps {
   onSuggestionsApplied: (suggestions: any) => void;
@@ -13,45 +13,54 @@ const QuickProjectType = ({ onSuggestionsApplied }: QuickProjectTypeProps) => {
   const [selectedStyle, setSelectedStyle] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState(null);
+  const [error, setError] = useState("");
 
   const projectTypes = [
-    { id: "home-decor", label: "Home Decor", icon: Home },
-    { id: "fashion", label: "Fashion", icon: Shirt },
-    { id: "furniture", label: "Furniture", icon: Armchair },
-    { id: "art", label: "Art", icon: Palette }
+    { id: "home-decor", name: "Home Decor", icon: "🏠" },
+    { id: "fashion", name: "Fashion", icon: "👗" },
+    { id: "furniture", name: "Furniture", icon: "🪑" },
+    { id: "art", name: "Art", icon: "🎨" }
   ];
 
-  const styles = [
-    { id: "traditional", label: "Traditional" },
-    { id: "modern", label: "Modern" },
-    { id: "contemporary", label: "Contemporary" }
+  const styleTypes = [
+    { id: "traditional", name: "Traditional" },
+    { id: "modern", name: "Modern" },
+    { id: "contemporary", name: "Contemporary" },
+    { id: "minimalist", name: "Minimalist" }
   ];
 
   const handleGetSuggestions = async () => {
-    if (!selectedType || !selectedStyle) return;
+    if (!selectedType || !selectedStyle) {
+      setError("Please select both project type and style");
+      return;
+    }
 
     try {
       setLoading(true);
-      console.log('🔮 Getting AI suggestions for:', selectedType, selectedStyle);
+      setError("");
+      console.log('🤖 Getting AI material suggestions for:', selectedType, selectedStyle);
       
-      const result = await aiService.suggestMaterials(selectedType, selectedStyle);
+      const response = await directCreateAPI.suggestMaterials(selectedType, selectedStyle);
       
-      if (result) {
-        setSuggestions(result.data);
-        console.log('✅ AI suggestions received:', result.data);
+      if (response && response.success) {
+        setSuggestions(response.data);
+        console.log('✅ AI suggestions received:', response.data);
       } else {
-        console.error('❌ AI suggestions failed');
+        setError("Failed to get AI suggestions. Please try again.");
+        console.error('❌ AI suggestions error:', response?.message);
       }
     } catch (error) {
       console.error('❌ Error getting AI suggestions:', error);
+      setError("Connection error. Please check your network and try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const applySuggestions = () => {
+  const handleApplySuggestions = () => {
     if (suggestions) {
       onSuggestionsApplied(suggestions);
+      console.log('🎯 Applied quick AI suggestions to form');
     }
   };
 
@@ -59,47 +68,53 @@ const QuickProjectType = ({ onSuggestionsApplied }: QuickProjectTypeProps) => {
     <div className="bg-card rounded-2xl p-6 border border-border/20">
       <div className="flex items-center gap-3 mb-6">
         <Sparkles className="w-6 h-6 text-primary" />
-        <h2 className="text-2xl font-semibold">Quick AI Suggestions</h2>
+        <h2 className="text-2xl font-semibold">Quick Project Type</h2>
       </div>
-
+      
       <div className="space-y-6">
         <div>
-          <label className="block text-foreground font-medium mb-3">Project Type</label>
+          <label className="block text-sm font-medium mb-3">Project Type</label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {projectTypes.map(({ id, label, icon: Icon }) => (
+            {projectTypes.map((type) => (
               <Button
-                key={id}
-                variant={selectedType === id ? "default" : "outline"}
-                onClick={() => setSelectedType(id)}
-                className="h-auto p-4 flex flex-col gap-2"
+                key={type.id}
+                variant={selectedType === type.id ? "default" : "outline"}
+                onClick={() => setSelectedType(type.id)}
+                className="h-auto p-4 flex flex-col items-center gap-2"
               >
-                <Icon className="w-5 h-5" />
-                <span className="text-sm">{label}</span>
+                <span className="text-2xl">{type.icon}</span>
+                <span className="text-sm">{type.name}</span>
               </Button>
             ))}
           </div>
         </div>
 
         <div>
-          <label className="block text-foreground font-medium mb-3">Style Preference</label>
-          <div className="grid grid-cols-3 gap-3">
-            {styles.map(({ id, label }) => (
+          <label className="block text-sm font-medium mb-3">Style Preference</label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {styleTypes.map((style) => (
               <Button
-                key={id}
-                variant={selectedStyle === id ? "default" : "outline"}
-                onClick={() => setSelectedStyle(id)}
+                key={style.id}
+                variant={selectedStyle === style.id ? "default" : "outline"}
+                onClick={() => setSelectedStyle(style.id)}
                 className="h-12"
               >
-                {label}
+                {style.name}
               </Button>
             ))}
           </div>
         </div>
+
+        {error && (
+          <div className="text-sm text-destructive p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+            {error}
+          </div>
+        )}
 
         <Button
           onClick={handleGetSuggestions}
-          disabled={!selectedType || !selectedStyle || loading}
-          className="w-full h-12 rounded-xl"
+          disabled={loading || !selectedType || !selectedStyle}
+          className="w-full"
         >
           {loading ? (
             <>
@@ -115,35 +130,34 @@ const QuickProjectType = ({ onSuggestionsApplied }: QuickProjectTypeProps) => {
         </Button>
 
         {suggestions && (
-          <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
-            <h3 className="font-semibold text-primary mb-3">AI Recommendations</h3>
-            <div className="space-y-3">
-              {suggestions.recommended_materials?.map((material, index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium">{material.name}</p>
-                    <p className="text-xs text-muted-foreground">{material.reasoning}</p>
-                  </div>
-                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                    {material.confidence}%
-                  </span>
+          <div className="mt-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-medium text-primary">AI Recommendations</span>
+              <Button
+                onClick={handleApplySuggestions}
+                size="sm"
+              >
+                Apply Suggestions
+              </Button>
+            </div>
+            
+            <div className="space-y-2 text-sm">
+              {suggestions.recommended_materials && (
+                <div>
+                  <span className="font-medium">Materials:</span>
+                  <p className="text-muted-foreground">
+                    {suggestions.recommended_materials.slice(0, 3).map(m => m.name).join(", ")}
+                  </p>
                 </div>
-              ))}
-              {suggestions.cultural_context && (
-                <div className="pt-2 border-t border-border/50">
-                  <p className="text-sm font-medium mb-1">Cultural Context:</p>
-                  <p className="text-xs text-muted-foreground">{suggestions.cultural_context}</p>
+              )}
+              
+              {suggestions.reasoning && (
+                <div>
+                  <span className="font-medium">Why:</span>
+                  <p className="text-muted-foreground">{suggestions.reasoning}</p>
                 </div>
               )}
             </div>
-            <Button
-              onClick={applySuggestions}
-              variant="outline"
-              size="sm"
-              className="mt-3 w-full"
-            >
-              Apply AI Suggestions
-            </Button>
           </div>
         )}
       </div>
