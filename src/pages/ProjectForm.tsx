@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, AlertCircle, RefreshCw } from "lucide-react";
@@ -8,6 +7,7 @@ import ProjectOverview from "@/components/project-form/ProjectOverview";
 import TimelineBudget from "@/components/project-form/TimelineBudget";
 import LocationPreferences from "@/components/project-form/LocationPreferences";
 import CraftSelection from "@/components/project-form/CraftSelection";
+import ArtisanMatching from "@/components/project-form/ArtisanMatching";
 import { useDirectCreateData } from "../hooks/useDirectCreateData";
 
 const ProjectForm = () => {
@@ -140,6 +140,15 @@ const ProjectForm = () => {
             onCraftChange={setSelectedCraft}
             onTechniqueChange={setSelectedTechnique}
             contextData={contextData}
+          />
+
+          <ArtisanMatching
+            selectedMaterial={selectedMaterial}
+            selectedCraft={selectedCraft}
+            selectedTechnique={selectedTechnique}
+            materials={materials}
+            crafts={crafts}
+            techniques={techniques}
           />
 
           <ProjectOverview formData={formData} onInputChange={handleInputChange} />
