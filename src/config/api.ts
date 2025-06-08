@@ -9,7 +9,7 @@ export { techniquesService } from '../services/techniquesService';
 export { artisansService } from '../services/artisansService';
 export { aiService } from '../services/aiService';
 
-// Simplified directCreateAPI interface with proper async handling
+// Consolidated DirectCreate API interface with proper async handling
 export const directCreateAPI = {
   getMaterials: async () => {
     const { materialsService } = await import('../services/materialsService');

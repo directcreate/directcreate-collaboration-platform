@@ -25,27 +25,27 @@ export const useDirectCreateData = () => {
       const [materialsResult, craftsResult, techniquesResult] = results;
 
       // Process materials
-      if (materialsResult.status === 'fulfilled' && materialsResult.value.success) {
-        setMaterials(materialsResult.value.data);
-        console.log('✅ Materials loaded:', materialsResult.value.data.length);
+      if (materialsResult.status === 'fulfilled' && materialsResult.value?.success) {
+        setMaterials(materialsResult.value.data || []);
+        console.log('✅ Materials loaded:', materialsResult.value.data?.length || 0);
       } else {
         console.error('❌ Materials failed to load:', materialsResult);
         setMaterials([]);
       }
 
       // Process crafts
-      if (craftsResult.status === 'fulfilled' && craftsResult.value.success) {
-        setCrafts(craftsResult.value.data);
-        console.log('✅ Crafts loaded:', craftsResult.value.data.length);
+      if (craftsResult.status === 'fulfilled' && craftsResult.value?.success) {
+        setCrafts(craftsResult.value.data || []);
+        console.log('✅ Crafts loaded:', craftsResult.value.data?.length || 0);
       } else {
         console.error('❌ Crafts failed to load:', craftsResult);
         setCrafts([]);
       }
 
       // Process techniques
-      if (techniquesResult.status === 'fulfilled' && techniquesResult.value.success) {
-        setTechniques(techniquesResult.value.data);
-        console.log('✅ Techniques loaded:', techniquesResult.value.data.length);
+      if (techniquesResult.status === 'fulfilled' && techniquesResult.value?.success) {
+        setTechniques(techniquesResult.value.data || []);
+        console.log('✅ Techniques loaded:', techniquesResult.value.data?.length || 0);
       } else {
         console.error('❌ Techniques failed to load:', techniquesResult);
         setTechniques([]);
@@ -54,11 +54,11 @@ export const useDirectCreateData = () => {
       // Check if all requests failed
       const allFailed = results.every(result => 
         result.status === 'rejected' || 
-        (result.status === 'fulfilled' && !result.value.success)
+        (result.status === 'fulfilled' && !result.value?.success)
       );
 
       if (allFailed) {
-        setError("Failed to load DirectCreate data. Please check your connection and try again.");
+        setError("DirectCreate API unavailable. Please ensure the service is running on localhost:8081");
       } else {
         // Check for partial failures
         const failedAPIs = [];
@@ -73,14 +73,14 @@ export const useDirectCreateData = () => {
         }
 
         if (failedAPIs.length > 0) {
-          setError(`Some data failed to load: ${failedAPIs.join(', ')}. You can still use the available data.`);
+          setError(`Some DirectCreate endpoints failed: ${failedAPIs.join(', ')}. Check API server status.`);
         }
       }
 
       console.log('📊 DirectCreate data loading complete');
     } catch (error) {
       console.error('❌ Error loading DirectCreate data:', error);
-      setError(`Connection error: ${error.message}. Please verify the DirectCreate API is running.`);
+      setError(`DirectCreate connection failed: ${error.message}`);
       // Set empty arrays as fallback
       setMaterials([]);
       setCrafts([]);
