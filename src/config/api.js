@@ -1,7 +1,7 @@
 
 // DirectCreate API Configuration
 export const API_CONFIG = {
-  BASE_URL: 'https://48cf8f558b0213ec4f9c8cce340eb0e8.serveo.net',
+  BASE_URL: 'https://calm-showers-glow.loca.lt',
   ENDPOINTS: {
     materials: '/wizard/materials',
     crafts: '/wizard/crafts', 
@@ -23,19 +23,67 @@ export const buildApiUrl = (endpoint) => {
 export const directCreateAPI = {
   // Get materials list
   getMaterials: async () => {
-    const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.materials}`);
-    return response.json();
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.materials}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to fetch materials:', error);
+      throw error;
+    }
   },
 
   // Get crafts list  
   getCrafts: async () => {
-    const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.crafts}`);
-    return response.json();
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.crafts}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to fetch crafts:', error);
+      throw error;
+    }
   },
 
   // Get techniques list
   getTechniques: async () => {
-    const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.techniques}`);
-    return response.json();
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.techniques}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to fetch techniques:', error);
+      throw error;
+    }
   }
 };
