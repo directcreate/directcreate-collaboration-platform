@@ -1,51 +1,58 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Hammer, Plus } from "lucide-react";
+import { ArrowLeft, Hammer, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CraftFirst = () => {
   const navigate = useNavigate();
-  const [selectedMaterial, setSelectedMaterial] = useState("");
-  const [showAllMaterials, setShowAllMaterials] = useState(false);
+  const [selectedCraft, setSelectedCraft] = useState("");
+  const [showAllCrafts, setShowAllCrafts] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const initialMaterials = [
-    { id: "wood", name: "Wood", icon: "🌳", description: "Oak, Teak, Pine, and more" },
-    { id: "clay", name: "Clay", icon: "🏺", description: "Earthenware, Stoneware, Porcelain" },
-    { id: "textile", name: "Textile", icon: "🧶", description: "Cotton, Silk, Wool, and natural fibers" },
-    { id: "metal", name: "Metal", icon: "⚒️", description: "Iron, Brass, Silver, Copper" },
-    { id: "stone", name: "Stone", icon: "🗿", description: "Marble, Granite, Sandstone" },
-    { id: "glass", name: "Glass", icon: "💎", description: "Clear, Colored, Recycled" },
-    { id: "leather", name: "Leather", icon: "🦎", description: "Premium hides and artisan leather" },
-    { id: "bamboo", name: "Bamboo", icon: "🎋", description: "Sustainable and flexible bamboo" },
-    { id: "paper", name: "Paper", icon: "📜", description: "Handmade papers and specialty sheets" },
-    { id: "resin", name: "Resin", icon: "🧪", description: "Epoxy, polyurethane, and bio-resins" },
-    { id: "ceramic", name: "Ceramic", icon: "🏺", description: "Fine ceramics and specialty glazes" },
-    { id: "rubber", name: "Rubber", icon: "⚫", description: "Natural and synthetic rubber" }
+  const initialCrafts = [
+    { id: "pottery", name: "Pottery", icon: "🏺", description: "Wheel throwing, hand building, glazing" },
+    { id: "woodworking", name: "Woodworking", icon: "🪵", description: "Furniture, carving, turning" },
+    { id: "jewelry", name: "Jewelry Making", icon: "💍", description: "Metalsmithing, beading, wire work" },
+    { id: "textiles", name: "Textiles", icon: "🧶", description: "Weaving, knitting, embroidery" },
+    { id: "glassblowing", name: "Glassblowing", icon: "🫧", description: "Blown glass, fused glass, stained glass" },
+    { id: "leatherwork", name: "Leatherwork", icon: "🦴", description: "Bags, belts, bookbinding" },
+    { id: "metalwork", name: "Metalwork", icon: "🔨", description: "Blacksmithing, welding, casting" },
+    { id: "ceramics", name: "Ceramics", icon: "🏺", description: "Functional pottery, sculptural work" },
+    { id: "basketry", name: "Basketry", icon: "🧺", description: "Traditional weaving techniques" },
+    { id: "stonework", name: "Stonework", icon: "🗿", description: "Carving, masonry, sculpture" },
+    { id: "bookbinding", name: "Bookbinding", icon: "📚", description: "Traditional and modern binding" },
+    { id: "calligraphy", name: "Calligraphy", icon: "✒️", description: "Hand lettering and illumination" }
   ];
 
-  const allMaterials = [
-    ...initialMaterials,
-    { id: "cork", name: "Cork", icon: "🍾", description: "Sustainable cork from oak trees" },
-    { id: "bone", name: "Bone", icon: "🦴", description: "Ethically sourced bone and horn" },
-    { id: "shell", name: "Shell", icon: "🐚", description: "Mother of pearl and exotic shells" },
-    { id: "wax", name: "Wax", icon: "🕯️", description: "Beeswax, paraffin, and specialty waxes" },
-    { id: "foam", name: "Foam", icon: "🧽", description: "Memory foam, polyurethane foam" },
-    { id: "carbon", name: "Carbon Fiber", icon: "⚫", description: "Lightweight carbon composite materials" },
-    { id: "aluminum", name: "Aluminum", icon: "⚪", description: "Lightweight and corrosion-resistant" },
-    { id: "plastic", name: "Plastic", icon: "🔷", description: "Recycled and specialty polymers" },
-    { id: "wire", name: "Wire", icon: "🔗", description: "Copper, steel, and specialty wires" },
-    { id: "fur", name: "Fur", icon: "🐻", description: "Ethically sourced and faux fur options" }
+  const allCrafts = [
+    ...initialCrafts,
+    { id: "candle-making", name: "Candle Making", icon: "🕯️", description: "Hand-dipped, molded, decorative" },
+    { id: "soap-making", name: "Soap Making", icon: "🧼", description: "Cold process, melt and pour" },
+    { id: "brewing", name: "Brewing", icon: "🍺", description: "Beer, mead, fermentation" },
+    { id: "distilling", name: "Distilling", icon: "🥃", description: "Spirits, essential oils" },
+    { id: "perfumery", name: "Perfumery", icon: "🌸", description: "Natural fragrances, blending" },
+    { id: "instrument-making", name: "Instrument Making", icon: "🎸", description: "Guitars, violins, drums" },
+    { id: "furniture", name: "Furniture Making", icon: "🪑", description: "Custom furniture, restoration" },
+    { id: "upholstery", name: "Upholstery", icon: "🛋️", description: "Furniture restoration, custom work" },
+    { id: "millinery", name: "Millinery", icon: "🎩", description: "Hat making, headpieces" },
+    { id: "cobbling", name: "Cobbling", icon: "👞", description: "Shoe making, repair" },
+    { id: "paper-making", name: "Paper Making", icon: "📜", description: "Handmade papers, specialty sheets" },
+    { id: "printmaking", name: "Printmaking", icon: "🖨️", description: "Block printing, etching, screen printing" }
   ];
 
-  const displayedMaterials = showAllMaterials ? allMaterials : initialMaterials;
+  const filteredCrafts = (showAllCrafts ? allCrafts : initialCrafts).filter(craft =>
+    craft.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    craft.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleContinue = () => {
-    if (selectedMaterial) {
-      const material = allMaterials.find(m => m.id === selectedMaterial);
+    if (selectedCraft) {
+      const craft = allCrafts.find(c => c.id === selectedCraft);
       navigate('/collaborate/form', { 
-        state: { selectedMaterial: material } 
+        state: { selectedCraft: craft } 
       });
     }
   };
@@ -64,44 +71,55 @@ const CraftFirst = () => {
           Back
         </Button>
         
-        <h1 className="text-lg font-medium">Material First</h1>
+        <h1 className="text-lg font-medium">Craft First</h1>
         
         <div className="w-16" />
       </header>
 
       {/* Main Content */}
       <main className="flex-1 px-4 sm:px-6 py-8 max-w-6xl mx-auto w-full">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light text-foreground mb-6 leading-tight">
             Choose Your
             <br />
-            Material
+            Craft
           </h1>
-          <p className="text-xl sm:text-2xl text-muted-foreground font-light">
-            Start with the material that inspires your creation
+          <p className="text-xl sm:text-2xl text-muted-foreground font-light mb-8">
+            Start with the traditional craft you want to explore
           </p>
+          
+          {/* Search Bar */}
+          <div className="relative max-w-md mx-auto mb-12">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Input
+              placeholder="Search crafts..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-12 rounded-2xl border-2 text-base"
+            />
+          </div>
         </div>
         
-        {showAllMaterials ? (
+        {showAllCrafts ? (
           <ScrollArea className="h-[600px] mb-8">
             <div className="grid grid-cols-3 gap-4 sm:gap-6 pb-6">
-              {displayedMaterials.map((material) => (
+              {filteredCrafts.map((craft) => (
                 <div
-                  key={material.id}
-                  onClick={() => setSelectedMaterial(material.id)}
+                  key={craft.id}
+                  onClick={() => setSelectedCraft(craft.id)}
                   className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
-                    selectedMaterial === material.id
+                    selectedCraft === craft.id
                       ? 'ring-2 ring-primary shadow-lg'
                       : 'hover:shadow-md'
                   }`}
                 >
                   <div className="text-center">
-                    <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{material.icon}</div>
+                    <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{craft.icon}</div>
                     <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
-                      {material.name}
+                      {craft.name}
                     </h3>
                     <p className="text-muted-foreground text-xs sm:text-sm font-medium">
-                      {material.description}
+                      {craft.description}
                     </p>
                   </div>
                 </div>
@@ -110,23 +128,23 @@ const CraftFirst = () => {
           </ScrollArea>
         ) : (
           <div className="grid grid-cols-3 gap-4 sm:gap-6 mb-12">
-            {displayedMaterials.map((material) => (
+            {filteredCrafts.map((craft) => (
               <div
-                key={material.id}
-                onClick={() => setSelectedMaterial(material.id)}
+                key={craft.id}
+                onClick={() => setSelectedCraft(craft.id)}
                 className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
-                  selectedMaterial === material.id
+                  selectedCraft === craft.id
                     ? 'ring-2 ring-primary shadow-lg'
                     : 'hover:shadow-md'
                 }`}
               >
                 <div className="text-center">
-                  <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{material.icon}</div>
+                  <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{craft.icon}</div>
                   <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
-                    {material.name}
+                    {craft.name}
                   </h3>
                   <p className="text-muted-foreground text-xs sm:text-sm font-medium">
-                    {material.description}
+                    {craft.description}
                   </p>
                 </div>
               </div>
@@ -135,26 +153,26 @@ const CraftFirst = () => {
         )}
         
         <div className="text-center space-y-4">
-          {!showAllMaterials && (
+          {!showAllCrafts && (
             <Button
-              onClick={() => setShowAllMaterials(true)}
+              onClick={() => setShowAllCrafts(true)}
               variant="outline"
               size="lg"
               className="h-12 sm:h-14 px-8 sm:px-12 rounded-2xl border-2 border-muted-foreground/20 text-muted-foreground hover:bg-accent hover:text-accent-foreground font-medium text-base sm:text-lg mb-4"
             >
               <Plus className="w-5 h-5 mr-2 stroke-[1.5]" />
-              More Materials from DC Platform
+              More Crafts from DC Platform
             </Button>
           )}
           
           <Button
             onClick={handleContinue}
-            disabled={!selectedMaterial}
+            disabled={!selectedCraft}
             size="lg"
             className="h-12 sm:h-14 px-8 sm:px-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg disabled:opacity-30"
           >
             <Hammer className="w-5 h-5 mr-2 stroke-[1.5]" />
-            Continue with {selectedMaterial ? allMaterials.find(m => m.id === selectedMaterial)?.name : 'Selected Material'}
+            Continue with {selectedCraft ? allCrafts.find(c => c.id === selectedCraft)?.name : 'Selected Craft'}
           </Button>
         </div>
       </main>
