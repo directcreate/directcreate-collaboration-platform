@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Wrench, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { mockDirectCreateAPI } from "../services/mockData";
+import { directCreateAPI } from "../config/api";
 
 const TechniqueFirst = () => {
   const navigate = useNavigate();
@@ -14,6 +13,7 @@ const TechniqueFirst = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [techniques, setTechniques] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   // Category icon mapping
   const getTechniqueIcon = (category) => {
@@ -29,27 +29,34 @@ const TechniqueFirst = () => {
   useEffect(() => {
     const loadTechniques = async () => {
       try {
-        console.log('🔄 Loading techniques from mock API...');
-        const response = await mockDirectCreateAPI.getTechniques();
+        setLoading(true);
+        setError("");
+        console.log('🔄 Loading techniques from DirectCreate API...');
+        
+        const response = await directCreateAPI.getTechniques();
         
         if (response.success) {
           // Transform API response to match UI format
           const transformedTechniques = response.data.map(technique => ({
             id: technique.id.toString(),
             name: technique.name,
-            icon: getTechniqueIcon(technique.category),
+            icon: getTechniqueIcon(technique.category || "Modern Techniques"),
             description: technique.description,
-            category: technique.category,
-            difficulty: technique.difficulty,
-            time_required: technique.time_required,
-            tools_needed: technique.tools_needed
+            category: technique.category || "Modern Techniques",
+            difficulty: technique.difficulty || "Intermediate",
+            time_required: technique.time_required || "2-4 weeks",
+            tools_needed: technique.tools_needed || []
           }));
           
           setTechniques(transformedTechniques);
-          console.log('✅ Techniques loaded:', transformedTechniques.length);
+          console.log('✅ DirectCreate techniques loaded:', transformedTechniques.length);
+        } else {
+          setError(response.message || "Failed to load techniques");
+          console.error('❌ DirectCreate techniques API error:', response.message);
         }
       } catch (error) {
-        console.error('❌ Error loading techniques:', error);
+        console.error('❌ Error loading DirectCreate techniques:', error);
+        setError(`Connection error: ${error.message}`);
       } finally {
         setLoading(false);
       }
@@ -82,7 +89,18 @@ const TechniqueFirst = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg text-muted-foreground">Loading techniques...</p>
+          <p className="text-lg text-muted-foreground">Loading DirectCreate techniques...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-destructive mb-4">Error loading techniques: {error}</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
         </div>
       </div>
     );
@@ -232,7 +250,7 @@ const TechniqueFirst = () => {
               className="h-12 sm:h-14 px-8 sm:px-12 rounded-2xl border-2 border-muted-foreground/20 text-muted-foreground hover:bg-accent hover:text-accent-foreground font-medium text-base sm:text-lg mb-4"
             >
               <Plus className="w-5 h-5 mr-2 stroke-[1.5]" />
-              More Techniques from DC Platform
+              More Techniques from DirectCreate Platform
             </Button>
           )}
           

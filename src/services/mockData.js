@@ -382,5 +382,18 @@ export const mockDirectCreateAPI = {
       data: mockProducts,
       message: "Products loaded successfully"
     };
+  },
+
+  // Add the missing getTechniques function
+  getTechniques: async () => {
+    // Import the mock techniques data
+    const { mockTechniques } = await import('./mockTechniques.js');
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return {
+      success: true,
+      data: mockTechniques,
+      message: "Techniques loaded successfully"
+    };
   }
 };
