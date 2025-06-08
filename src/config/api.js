@@ -1,7 +1,7 @@
 
 // DirectCreate API Configuration
 export const API_CONFIG = {
-  BASE_URL: 'https://calm-showers-glow.loca.lt',
+  BASE_URL: 'https://48cf8f558b0213ec4f9c8cce340eb0e8.serveo.net',
   ENDPOINTS: {
     materials: '/wizard/materials',
     crafts: '/wizard/crafts', 
