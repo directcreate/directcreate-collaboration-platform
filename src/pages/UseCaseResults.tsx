@@ -1,6 +1,6 @@
 
 import { useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const UseCaseResults = () => {
@@ -32,6 +32,18 @@ const UseCaseResults = () => {
       timeline: "2-3 weeks"
     }
   ];
+
+  const handleReSearch = () => {
+    navigate('/collaborate/use-case/processing', { 
+      state: { vision, isReSearch: true } 
+    });
+  };
+
+  const handleRefineVision = () => {
+    navigate('/collaborate/use-case', { 
+      state: { previousVision: vision } 
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -106,7 +118,7 @@ const UseCaseResults = () => {
         
         {/* Alternative Options */}
         <h3 className="text-2xl font-light text-foreground mb-8">Other possibilities</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
           {matches.slice(1).map((item, i) => (
             <div key={i} className="bg-card rounded-3xl p-6">
               <div className="flex justify-between items-start mb-4">
@@ -123,6 +135,38 @@ const UseCaseResults = () => {
               </Button>
             </div>
           ))}
+        </div>
+
+        {/* More Options */}
+        <div className="bg-card rounded-3xl p-8 border border-border">
+          <h3 className="text-2xl font-light text-foreground mb-6 text-center">
+            Not finding exactly what you're looking for?
+          </h3>
+          <p className="text-muted-foreground text-center mb-8 max-w-2xl mx-auto">
+            We can help you explore more possibilities or refine your vision to find the perfect match.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Button
+              onClick={handleReSearch}
+              variant="outline"
+              size="lg"
+              className="h-14 rounded-2xl border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
+            >
+              <RefreshCw className="w-5 h-5 mr-3" />
+              Search for More Options
+            </Button>
+            
+            <Button
+              onClick={handleRefineVision}
+              variant="outline"
+              size="lg"
+              className="h-14 rounded-2xl border-2 border-secondary text-secondary-foreground hover:bg-secondary transition-colors"
+            >
+              <MessageCircle className="w-5 h-5 mr-3" />
+              Refine Your Vision
+            </Button>
+          </div>
         </div>
       </main>
     </div>
