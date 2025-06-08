@@ -3,6 +3,13 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ProjectForm = () => {
   const navigate = useNavigate();
@@ -109,36 +116,34 @@ const ProjectForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-foreground font-medium mb-2">Preferred Timeline</label>
-                <select 
-                  value={formData.timeline}
-                  onChange={(e) => handleInputChange('timeline', e.target.value)}
-                  className="w-full border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
-                  required
-                >
-                  <option value="">Select timeline</option>
-                  <option value="1-2 weeks">1-2 weeks</option>
-                  <option value="3-4 weeks">3-4 weeks</option>
-                  <option value="1-2 months">1-2 months</option>
-                  <option value="3+ months">3+ months</option>
-                  <option value="flexible">Flexible</option>
-                </select>
+                <Select value={formData.timeline} onValueChange={(value) => handleInputChange('timeline', value)}>
+                  <SelectTrigger className="w-full h-12 border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background">
+                    <SelectValue placeholder="Select timeline" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border rounded-xl shadow-lg">
+                    <SelectItem value="1-2 weeks">1-2 weeks</SelectItem>
+                    <SelectItem value="3-4 weeks">3-4 weeks</SelectItem>
+                    <SelectItem value="1-2 months">1-2 months</SelectItem>
+                    <SelectItem value="3+ months">3+ months</SelectItem>
+                    <SelectItem value="flexible">Flexible</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
                 <label className="block text-foreground font-medium mb-2">Budget Range</label>
-                <select 
-                  value={formData.budget}
-                  onChange={(e) => handleInputChange('budget', e.target.value)}
-                  className="w-full border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
-                  required
-                >
-                  <option value="">Select budget</option>
-                  <option value="under-5k">Under ₹5,000</option>
-                  <option value="5k-15k">₹5,000 - ₹15,000</option>
-                  <option value="15k-50k">₹15,000 - ₹50,000</option>
-                  <option value="50k-100k">₹50,000 - ₹1,00,000</option>
-                  <option value="100k+">₹1,00,000+</option>
-                </select>
+                <Select value={formData.budget} onValueChange={(value) => handleInputChange('budget', value)}>
+                  <SelectTrigger className="w-full h-12 border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background">
+                    <SelectValue placeholder="Select budget" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border rounded-xl shadow-lg">
+                    <SelectItem value="under-5k">Under ₹5,000</SelectItem>
+                    <SelectItem value="5k-15k">₹5,000 - ₹15,000</SelectItem>
+                    <SelectItem value="15k-50k">₹15,000 - ₹50,000</SelectItem>
+                    <SelectItem value="50k-100k">₹50,000 - ₹1,00,000</SelectItem>
+                    <SelectItem value="100k+">₹1,00,000+</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -150,20 +155,20 @@ const ProjectForm = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-foreground font-medium mb-2">Preferred Location</label>
-                <select 
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  className="w-full border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
-                >
-                  <option value="">Any location</option>
-                  <option value="rajasthan">Rajasthan</option>
-                  <option value="gujarat">Gujarat</option>
-                  <option value="delhi">Delhi NCR</option>
-                  <option value="mumbai">Mumbai</option>
-                  <option value="bangalore">Bangalore</option>
-                  <option value="chennai">Chennai</option>
-                  <option value="kolkata">Kolkata</option>
-                </select>
+                <Select value={formData.location} onValueChange={(value) => handleInputChange('location', value)}>
+                  <SelectTrigger className="w-full h-12 border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background">
+                    <SelectValue placeholder="Any location" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border border-border rounded-xl shadow-lg">
+                    <SelectItem value="rajasthan">Rajasthan</SelectItem>
+                    <SelectItem value="gujarat">Gujarat</SelectItem>
+                    <SelectItem value="delhi">Delhi NCR</SelectItem>
+                    <SelectItem value="mumbai">Mumbai</SelectItem>
+                    <SelectItem value="bangalore">Bangalore</SelectItem>
+                    <SelectItem value="chennai">Chennai</SelectItem>
+                    <SelectItem value="kolkata">Kolkata</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
@@ -172,7 +177,7 @@ const ProjectForm = () => {
                   type="text" 
                   value={formData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="w-full border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+                  className="w-full h-12 border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
                   placeholder="Enter city name"
                 />
               </div>
@@ -183,7 +188,7 @@ const ProjectForm = () => {
                   type="text" 
                   value={formData.pinCode}
                   onChange={(e) => handleInputChange('pinCode', e.target.value)}
-                  className="w-full border border-border rounded-xl p-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
+                  className="w-full h-12 border border-border rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-primary bg-background"
                   placeholder="Enter PIN code"
                   pattern="[0-9]{6}"
                   maxLength={6}
