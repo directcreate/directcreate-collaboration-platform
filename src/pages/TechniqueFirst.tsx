@@ -14,9 +14,7 @@ const TechniqueFirst = () => {
     { id: "weaving", name: "Weaving", icon: "🧵", description: "Interlacing fibers and threads" },
     { id: "forging", name: "Forging", icon: "🔨", description: "Shaping metal through heat" },
     { id: "glass-blowing", name: "Glass Blowing", icon: "💨", description: "Forming molten glass" },
-    { id: "hand-stitching", name: "Hand Stitching", icon: "🪡", description: "Traditional needlework" },
-    { id: "stone-carving", name: "Stone Carving", icon: "⛏️", description: "Sculpting with chisel and hammer" },
-    { id: "wood-turning", name: "Wood Turning", icon: "🌀", description: "Lathe-based shaping" }
+    { id: "hand-stitching", name: "Hand Stitching", icon: "🪡", description: "Traditional needlework" }
   ];
 
   const handleContinue = () => {
@@ -29,54 +27,54 @@ const TechniqueFirst = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="sticky top-0 bg-background/80 backdrop-blur-md border-b border-border/50 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/")}
-            className="hover:bg-accent"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          
-          <h1 className="text-lg font-semibold">Technique First</h1>
-          
-          <div className="w-16" />
-        </div>
+      <header className="px-4 sm:px-6 py-4 flex items-center justify-between border-b border-border/20 flex-shrink-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/")}
+          className="hover:bg-accent rounded-xl"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 stroke-[1.5]" />
+          Back
+        </Button>
+        
+        <h1 className="text-lg font-medium">Technique First</h1>
+        
+        <div className="w-16" />
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-light text-foreground mb-6 leading-tight">
-            Choose Your Technique
+      <main className="flex-1 px-4 sm:px-6 py-6 sm:py-8 max-w-6xl mx-auto w-full flex flex-col justify-center min-h-0">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light text-foreground mb-4 sm:mb-6 leading-tight">
+            Choose Your
+            <br />
+            Technique
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-xl sm:text-2xl text-muted-foreground font-light">
             Start with the traditional technique you want to explore
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
           {techniques.map((technique) => (
             <div
               key={technique.id}
               onClick={() => setSelectedTechnique(technique.id)}
-              className={`bg-card rounded-3xl p-6 cursor-pointer transition-all duration-200 hover:scale-105 ${
+              className={`bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg ${
                 selectedTechnique === technique.id
                   ? 'ring-2 ring-primary shadow-lg'
                   : 'hover:shadow-md'
               }`}
             >
               <div className="text-center">
-                <div className="text-4xl mb-4">{technique.icon}</div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">
+                <div className="text-5xl sm:text-6xl mb-4 sm:mb-6">{technique.icon}</div>
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2 sm:mb-3">
                   {technique.name}
                 </h3>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-sm sm:text-base font-medium">
                   {technique.description}
                 </p>
               </div>
@@ -89,9 +87,9 @@ const TechniqueFirst = () => {
             onClick={handleContinue}
             disabled={!selectedTechnique}
             size="lg"
-            className="h-14 px-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-lg disabled:opacity-30"
+            className="h-12 sm:h-14 px-8 sm:px-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg disabled:opacity-30"
           >
-            <Wrench className="w-5 h-5 mr-2" />
+            <Wrench className="w-5 h-5 mr-2 stroke-[1.5]" />
             Continue with {selectedTechnique ? techniques.find(t => t.id === selectedTechnique)?.name : 'Selected Technique'}
           </Button>
         </div>

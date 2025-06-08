@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, MessageCircle, Clock, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,80 +30,80 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="sticky top-0 bg-background/80 backdrop-blur-md border-b border-border/50 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/")}
-            className="hover:bg-accent"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Home
-          </Button>
-          
-          <h1 className="text-lg font-semibold">Dashboard</h1>
-          
-          <Button
-            onClick={() => navigate("/")}
-            size="sm"
-            className="rounded-xl"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Project
-          </Button>
-        </div>
+      <header className="px-4 sm:px-6 py-4 flex items-center justify-between border-b border-border/20 flex-shrink-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/")}
+          className="hover:bg-accent rounded-xl"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 stroke-[1.5]" />
+          Home
+        </Button>
+        
+        <h1 className="text-lg font-medium">Dashboard</h1>
+        
+        <Button
+          onClick={() => navigate("/")}
+          size="sm"
+          className="h-10 px-4 rounded-xl font-bold"
+        >
+          <Plus className="w-4 h-4 mr-2 stroke-[1.5]" />
+          New Project
+        </Button>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="mb-16">
-          <h1 className="text-4xl font-light text-foreground mb-4">
-            Your Collaborations
+      <main className="flex-1 px-4 sm:px-6 py-6 sm:py-8 max-w-7xl mx-auto w-full flex flex-col min-h-0">
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light text-foreground mb-4 sm:mb-6 leading-tight">
+            Your Creative
+            <br />
+            Collaborations
           </h1>
-          <p className="text-muted-foreground">
-            Track your creative projects and connect with talented makers
+          <p className="text-muted-foreground text-lg sm:text-xl font-light">
+            Track your projects and connect with talented makers
           </p>
         </div>
         
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
           {stats.map((stat, i) => {
             const IconComponent = stat.icon;
             return (
-              <div key={i} className="bg-card rounded-3xl p-6 text-center">
-                <div className="flex items-center justify-center mb-4">
-                  <div className={`p-3 rounded-2xl bg-${stat.color}-100 dark:bg-${stat.color}-900/20`}>
-                    <IconComponent className={`w-6 h-6 text-${stat.color}-600`} />
+              <div key={i} className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center">
+                <div className="flex items-center justify-center mb-4 sm:mb-6">
+                  <div className="p-3 sm:p-4 rounded-2xl bg-primary/10">
+                    <IconComponent className="w-6 h-6 sm:w-8 sm:h-8 text-primary stroke-[1.5]" />
                   </div>
                 </div>
-                <div className={`text-3xl font-bold text-${stat.color}-600 mb-2`}>{stat.value}</div>
-                <div className="text-muted-foreground">{stat.label}</div>
+                <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">{stat.value}</div>
+                <div className="text-muted-foreground font-medium text-sm sm:text-base">{stat.label}</div>
               </div>
             );
           })}
         </div>
         
         {/* Active Collaborations */}
-        <div className="space-y-6">
-          <h2 className="text-2xl font-light text-foreground">Active Collaborations</h2>
+        <div className="flex-1 min-h-0">
+          <h2 className="text-2xl sm:text-3xl font-light text-foreground mb-6 sm:mb-8">Active Collaborations</h2>
           
           {activeCollaborations.length === 0 ? (
-            <div className="bg-card rounded-3xl p-12 text-center">
-              <div className="text-6xl mb-4">🎨</div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">No active collaborations yet</h3>
-              <p className="text-muted-foreground mb-6">Start your first creative project with talented makers</p>
-              <Button onClick={() => navigate("/")} size="lg" className="rounded-2xl">
-                <Plus className="w-5 h-5 mr-2" />
+            <div className="bg-card rounded-2xl sm:rounded-3xl p-12 sm:p-16 text-center h-full flex flex-col justify-center">
+              <div className="text-6xl sm:text-8xl mb-6 sm:mb-8">🎨</div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 sm:mb-6">No active collaborations yet</h3>
+              <p className="text-muted-foreground mb-8 sm:mb-12 text-lg sm:text-xl font-light">Start your first creative project with talented makers</p>
+              <Button onClick={() => navigate("/")} size="lg" className="h-12 sm:h-14 px-8 sm:px-12 rounded-2xl font-bold text-base sm:text-lg">
+                <Plus className="w-5 h-5 mr-2 stroke-[1.5]" />
                 Start New Project
               </Button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {activeCollaborations.map((collaboration) => (
-                <div key={collaboration.id} className="bg-card rounded-3xl p-8">
+                <div key={collaboration.id} className="bg-card rounded-2xl sm:rounded-3xl p-8 sm:p-12">
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <h3 className="text-xl font-semibold text-foreground mb-2">{collaboration.title}</h3>

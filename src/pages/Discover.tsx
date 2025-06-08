@@ -93,48 +93,46 @@ const Discover = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="sticky top-0 bg-background/80 backdrop-blur-md border-b border-border/50 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/")}
-            className="hover:bg-accent"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          
-          <h1 className="text-lg font-semibold">Discover Makers</h1>
-          
-          <div className="w-16" /> {/* Spacer for center alignment */}
-        </div>
+      <header className="px-4 sm:px-6 py-4 flex items-center justify-between border-b border-border/20 flex-shrink-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/")}
+          className="hover:bg-accent rounded-xl"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 stroke-[1.5]" />
+          Back
+        </Button>
+        
+        <h1 className="text-lg font-medium">Discover Makers</h1>
+        
+        <div className="w-16" />
       </header>
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-light text-foreground mb-4">
-            Here are makers who can
+      <main className="flex-1 px-4 sm:px-6 py-6 sm:py-8 max-w-7xl mx-auto w-full flex flex-col min-h-0">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-foreground mb-3 sm:mb-4 leading-tight">
+            Perfect makers for
             <br />
-            bring your vision to life
+            your vision
           </h2>
           {intent && (
-            <p className="text-lg text-muted-foreground italic max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-muted-foreground italic max-w-3xl mx-auto font-light">
               "{intent}"
             </p>
           )}
         </div>
 
         {/* Makers Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8 flex-1 min-h-0 overflow-auto">
           {makers.map((maker) => (
             <div
               key={maker.id}
               onClick={() => toggleMaker(maker.id)}
-              className={`relative bg-card rounded-3xl p-6 cursor-pointer transition-all duration-300 hover:shadow-lg ${
+              className={`relative bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${
                 selectedMakers.includes(maker.id)
                   ? "ring-2 ring-primary shadow-lg"
                   : "hover:shadow-md"
@@ -142,33 +140,33 @@ const Discover = () => {
             >
               {/* Selection Indicator */}
               {selectedMakers.includes(maker.id) && (
-                <div className="absolute top-4 right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <Check className="w-4 h-4 text-primary-foreground" />
+                <div className="absolute top-3 right-3 sm:top-4 sm:right-4 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                  <Check className="w-4 h-4 text-primary-foreground stroke-[2]" />
                 </div>
               )}
 
               {/* Maker Photo */}
-              <div className="mb-4">
+              <div className="mb-3 sm:mb-4">
                 <img
                   src={maker.image}
                   alt={maker.name}
-                  className="w-20 h-20 rounded-full mx-auto object-cover"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full mx-auto object-cover"
                 />
               </div>
 
               {/* Maker Info */}
               <div className="text-center">
-                <h3 className="font-semibold text-foreground mb-1">
+                <h3 className="font-bold text-foreground mb-1 text-lg sm:text-xl">
                   {maker.name}
                 </h3>
-                <p className="text-sm text-muted-foreground mb-2">
+                <p className="text-sm sm:text-base text-muted-foreground mb-2 font-medium">
                   {maker.specialty}
                 </p>
-                <p className="text-xs text-muted-foreground mb-2">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2">
                   {maker.location}
                 </p>
                 <div className="flex items-center justify-center">
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-sm sm:text-base font-bold text-foreground">
                     ★ {maker.rating}
                   </span>
                 </div>
@@ -178,12 +176,12 @@ const Discover = () => {
         </div>
 
         {/* Connect Button */}
-        <div className="text-center">
+        <div className="text-center flex-shrink-0">
           <Button
             onClick={handleConnect}
             disabled={selectedMakers.length === 0}
             size="lg"
-            className="h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="h-12 sm:h-14 px-8 sm:px-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             Connect with {selectedMakers.length > 0 ? selectedMakers.length : ""} Maker{selectedMakers.length !== 1 ? "s" : ""}
           </Button>

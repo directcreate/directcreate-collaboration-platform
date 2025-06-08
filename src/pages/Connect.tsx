@@ -35,11 +35,9 @@ Looking forward to the possibility of creating something beautiful together.
 With respect and anticipation,`);
 
   const handleSend = () => {
-    // In a real app, this would send the message to the selected makers
     console.log("Sending message to makers:", selectedMakers);
     console.log("Message:", message);
     
-    // Navigate to confirmation page
     navigate("/", { 
       state: { 
         messageSent: true,
@@ -49,117 +47,91 @@ With respect and anticipation,`);
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="sticky top-0 bg-background/80 backdrop-blur-md border-b border-border/50 z-10">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/discover")}
-            className="hover:bg-accent"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          
-          <h1 className="text-lg font-semibold">Connect with Makers</h1>
-          
-          <div className="w-16" /> {/* Spacer for center alignment */}
-        </div>
+      <header className="px-4 sm:px-6 py-4 flex items-center justify-between border-b border-border/20 flex-shrink-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate("/discover")}
+          className="hover:bg-accent rounded-xl"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2 stroke-[1.5]" />
+          Back
+        </Button>
+        
+        <h1 className="text-lg font-medium">Connect with Makers</h1>
+        
+        <div className="w-16" />
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-light text-foreground mb-4">
+      <main className="flex-1 px-4 sm:px-6 py-6 sm:py-8 max-w-5xl mx-auto w-full flex flex-col min-h-0">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-foreground mb-3 sm:mb-4 leading-tight">
             Ready to start your
             <br />
             collaboration?
           </h2>
           {selectedMakers.length > 0 && (
-            <p className="text-lg text-muted-foreground">
+            <p className="text-lg sm:text-xl text-muted-foreground font-light">
               Your message to {selectedMakers.length} selected maker{selectedMakers.length !== 1 ? 's' : ''}
             </p>
           )}
         </div>
 
-        {/* Selected Makers */}
-        {selectedMakers.length > 0 && (
-          <div className="bg-card rounded-3xl p-8 mb-8">
-            <h3 className="text-xl font-semibold text-foreground mb-6">
-              Selected Makers
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {selectedMakers.map((maker) => (
-                <div key={maker.id} className="flex items-center gap-4">
-                  <img
-                    src={maker.image}
-                    alt={maker.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <h4 className="font-semibold text-foreground">
-                      {maker.name}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {maker.specialty} • {maker.location}
-                    </p>
+        <div className="flex-1 flex flex-col lg:flex-row gap-6 sm:gap-8 min-h-0">
+          {/* Selected Makers */}
+          {selectedMakers.length > 0 && (
+            <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:w-1/3 flex-shrink-0">
+              <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">
+                Selected Makers
+              </h3>
+              <div className="space-y-4 sm:space-y-6">
+                {selectedMakers.map((maker) => (
+                  <div key={maker.id} className="flex items-center gap-3 sm:gap-4">
+                    <img
+                      src={maker.image}
+                      alt={maker.name}
+                      className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
+                    />
+                    <div>
+                      <h4 className="font-bold text-foreground text-lg sm:text-xl">
+                        {maker.name}
+                      </h4>
+                      <p className="text-sm sm:text-base text-muted-foreground font-medium">
+                        {maker.specialty} • {maker.location}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Message Composer */}
-        <div className="bg-card rounded-3xl p-8 mb-8">
-          <h3 className="text-xl font-semibold text-foreground mb-6">
-            Your Message
-          </h3>
-          <Textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="min-h-[400px] text-base leading-relaxed resize-none border-border rounded-2xl"
-            placeholder="Write a thoughtful message to introduce yourself and your project..."
-          />
-        </div>
-
-        {/* Collaboration Understanding */}
-        <div className="bg-accent/30 rounded-3xl p-8 mb-8">
-          <h3 className="text-xl font-semibold text-foreground mb-6">
-            🤝 Collaboration Understanding
-          </h3>
-          
-          <div className="space-y-4 text-muted-foreground">
-            <div className="flex items-start gap-3">
-              <span className="text-primary mt-1">•</span>
-              <span>This is an invitation to explore a creative collaboration together</span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-primary mt-1">•</span>
-              <span>The maker may offer creative alternatives and suggestions to enhance your vision</span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-primary mt-1">•</span>
-              <span>Pricing and final timeline will be discussed after the maker expresses interest</span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-primary mt-1">•</span>
-              <span>Both parties can shape the creative direction through respectful collaboration</span>
-            </div>
+          {/* Message Composer */}
+          <div className="bg-card rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex-1 flex flex-col min-h-0">
+            <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">
+              Your Message
+            </h3>
+            <Textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="flex-1 text-base sm:text-lg leading-relaxed resize-none border-border/30 rounded-2xl bg-background/50 min-h-0"
+              placeholder="Write a thoughtful message to introduce yourself and your project..."
+            />
           </div>
         </div>
 
         {/* Send Button */}
-        <div className="text-center">
+        <div className="text-center mt-6 sm:mt-8 flex-shrink-0">
           <Button
             onClick={handleSend}
             disabled={!message.trim() || selectedMakers.length === 0}
             size="lg"
-            className="h-14 px-8 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="h-12 sm:h-14 px-8 sm:px-12 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-base sm:text-lg transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            <Send className="w-5 h-5 mr-2" />
+            <Send className="w-5 h-5 mr-2 stroke-[1.5]" />
             Send Messages
           </Button>
         </div>
