@@ -1,142 +1,85 @@
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { API_CONFIG, directCreateAPI } from '@/config/api.js';
+import React, { useState, useEffect } from 'react';
+import { directCreateAPI } from '../config/api';
 
 const APITest = () => {
-  const [response, setResponse] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [materials, setMaterials] = useState([]);
+  const [crafts, setCrafts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const testAPIConnection = async () => {
-    setLoading(true);
-    setError(null);
-    setResponse(null);
+  useEffect(() => {
+    const testAPI = async () => {
+      try {
+        console.log('🔄 Testing DirectCreate API...');
+        
+        const materialsResponse = await directCreateAPI.getMaterials();
+        if (materialsResponse.success) {
+          setMaterials(materialsResponse.data);
+          console.log('✅ Materials loaded:', materialsResponse.data.length);
+        }
 
-    try {
-      // Test basic API connection
-      const testResponse = await fetch(API_CONFIG.BASE_URL);
-      const result = await testResponse.text();
-      setResponse(result);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+        const craftsResponse = await directCreateAPI.getCrafts();
+        if (craftsResponse.success) {
+          setCrafts(craftsResponse.data);
+          console.log('✅ Crafts loaded:', craftsResponse.data.length);
+        }
 
-  const testMaterials = async () => {
-    setLoading(true);
-    setError(null);
-    setResponse(null);
+      } catch (err) {
+        setError('API Connection Failed: ' + err.message);
+        console.error('❌ API Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    try {
-      const materials = await directCreateAPI.getMaterials();
-      setResponse(materials);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    testAPI();
+  }, []);
 
-  const testCrafts = async () => {
-    setLoading(true);
-    setError(null);
-    setResponse(null);
+  if (loading) {
+    return (
+      <div className="p-6 bg-blue-50 rounded-lg">
+        <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+        <p className="mt-2">Testing DirectCreate API connection...</p>
+      </div>
+    );
+  }
 
-    try {
-      const crafts = await directCreateAPI.getCrafts();
-      setResponse(crafts);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const testTechniques = async () => {
-    setLoading(true);
-    setError(null);
-    setResponse(null);
-
-    try {
-      const techniques = await directCreateAPI.getTechniques();
-      setResponse(techniques);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (error) {
+    return (
+      <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
+        <h3 className="font-bold text-red-800">❌ API Connection Error</h3>
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <h2 className="text-2xl font-bold text-foreground">API Test Component</h2>
+    <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
+      <h2 className="text-xl font-bold text-green-800 mb-4">✅ DirectCreate API Connected!</h2>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Button 
-          onClick={testAPIConnection}
-          disabled={loading}
-          variant="outline"
-        >
-          Test Connection
-        </Button>
-        
-        <Button 
-          onClick={testMaterials}
-          disabled={loading}
-          variant="outline"
-        >
-          Test Materials
-        </Button>
-        
-        <Button 
-          onClick={testCrafts}
-          disabled={loading}
-          variant="outline"
-        >
-          Test Crafts
-        </Button>
-        
-        <Button 
-          onClick={testTechniques}
-          disabled={loading}
-          variant="outline"
-        >
-          Test Techniques
-        </Button>
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <h3 className="font-semibold text-green-700 mb-2">Materials ({materials.length})</h3>
+          <ul className="space-y-1">
+            {materials.slice(0, 5).map(material => (
+              <li key={material.id} className="text-sm">
+                <strong>{material.name}</strong> - {material.category}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-green-700 mb-2">Crafts ({crafts.length})</h3>
+          <ul className="space-y-1">
+            {crafts.slice(0, 3).map(craft => (
+              <li key={craft.id} className="text-sm">
+                <strong>{craft.name}</strong>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-
-      <Card className="p-4">
-        <h3 className="text-lg font-semibold mb-3">API Configuration</h3>
-        <p className="text-sm text-muted-foreground">
-          Base URL: {API_CONFIG.BASE_URL}
-        </p>
-      </Card>
-
-      {loading && (
-        <Card className="p-4">
-          <p className="text-primary">Loading...</p>
-        </Card>
-      )}
-
-      {error && (
-        <Card className="p-4 border-destructive">
-          <h3 className="text-lg font-semibold text-destructive mb-2">Error</h3>
-          <p className="text-destructive">{error}</p>
-        </Card>
-      )}
-
-      {response && (
-        <Card className="p-4">
-          <h3 className="text-lg font-semibold mb-2">Response</h3>
-          <pre className="bg-muted p-3 rounded text-sm overflow-auto max-h-96">
-            {typeof response === 'string' ? response : JSON.stringify(response, null, 2)}
-          </pre>
-        </Card>
-      )}
     </div>
   );
 };
