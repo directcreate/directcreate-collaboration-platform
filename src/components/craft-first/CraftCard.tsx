@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +25,10 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  // Debug log to see what's being received
+  console.log('🔍 Craft received in CraftCard:', craft.name);
+  console.log('🔍 Banner URL from API:', craft.bannerImage);
 
   // Clean HTML description and extract plain text
   const cleanDescription = (htmlDescription: string) => {
@@ -55,20 +60,12 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
     window.open(`https://directcreate.com/products?craft=${craft.id}`, '_blank');
   };
 
-  // Validate and get the best available image source
+  // Simplified image source logic - prioritize real DirectCreate banners
   const getImageSource = () => {
-    // Priority 1: Real DirectCreate bannerImage from API (CloudFront CDN)
+    // Priority 1: Real DirectCreate bannerImage from API (S3 URLs)
     if (!imageError && craft.bannerImage && craft.bannerImage.trim() !== '') {
-      // Validate CloudFront URL
-      if (craft.bannerImage.includes('d35l77wxi0xou3.cloudfront.net')) {
-        console.log(`🎨 Using real DirectCreate CloudFront banner for ${craft.name}:`, craft.bannerImage);
-        return craft.bannerImage;
-      }
-      // Other DirectCreate URLs
-      if (craft.bannerImage.startsWith('http')) {
-        console.log(`🎨 Using DirectCreate banner for ${craft.name}:`, craft.bannerImage);
-        return craft.bannerImage;
-      }
+      console.log(`🎨 Using REAL DirectCreate S3 banner for ${craft.name}:`, craft.bannerImage);
+      return craft.bannerImage;
     }
     
     // Priority 2: DirectCreate banner field (if available)
@@ -132,16 +129,14 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
-    console.log(`🖼️ Image failed for ${craft.name}. Tried:`, target.src);
+    console.log(`❌ FAILED: DirectCreate banner failed for ${craft.name}. URL:`, target.src);
     
-    // If this was a DirectCreate image, try fallback
+    // Only use fallback if the real DirectCreate URL fails
     if (!imageError) {
       setImageError(true);
       const fallbackUrl = getFallbackImage();
-      if (target.src !== fallbackUrl) {
-        target.src = fallbackUrl;
-        console.log(`🔄 Switching to fallback for ${craft.name}:`, fallbackUrl);
-      }
+      target.src = fallbackUrl;
+      console.log(`🔄 Switching to fallback for ${craft.name}:`, fallbackUrl);
     }
   };
 
@@ -150,7 +145,7 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
     setImageLoaded(true);
     
     if (craft.bannerImage && target.src === craft.bannerImage) {
-      console.log(`✅ Loaded real DirectCreate banner for ${craft.name}:`, target.src);
+      console.log(`✅ SUCCESS: Loaded REAL DirectCreate banner for ${craft.name}:`, target.src);
     } else {
       console.log(`📷 Loaded fallback image for ${craft.name}:`, target.src);
     }
@@ -179,7 +174,7 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
           crossOrigin="anonymous"
         />
         {/* Overlay badge for real DirectCreate images */}
-        {craft.bannerImage && !imageError && craft.bannerImage.includes('cloudfront') && (
+        {craft.bannerImage && !imageError && (
           <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
             DirectCreate
           </div>
