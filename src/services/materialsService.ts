@@ -1,14 +1,16 @@
 
-import { API_CONFIG } from '../config/apiConfig';
+import { API_CONFIG, logApiCall, logApiResponse } from '../config/apiConfig';
 
 const DIRECTCREATE_API = API_CONFIG.BASE_URL;
 
 export const materialsService = {
-  // Get materials from real DirectCreate database
   getMaterials: async () => {
+    const endpoint = '?path=materials';
+    logApiCall(endpoint);
+    
     try {
       console.log('🔄 Fetching materials from DirectCreate database...');
-      const response = await fetch(`${DIRECTCREATE_API}?path=materials`, {
+      const response = await fetch(`${DIRECTCREATE_API}${endpoint}`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -16,14 +18,15 @@ export const materialsService = {
         },
       });
       
+      console.log(`📊 HTTP Status: ${response.status} ${response.statusText}`);
+      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate materials loaded:', data);
+      logApiResponse(endpoint, data, data.success);
       
-      // Handle DirectCreate API response format
       if (data.success && Array.isArray(data.data)) {
         return {
           success: true,
@@ -35,7 +38,7 @@ export const materialsService = {
       }
     } catch (error) {
       console.error('❌ DirectCreate API Error:', error);
-      // Return empty array as fallback with error indication
+      logApiResponse(endpoint, null, false);
       return {
         success: false,
         data: [],

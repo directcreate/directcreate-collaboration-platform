@@ -1,4 +1,3 @@
-
 // DirectCreate API Configuration - Development Environment
 const DIRECTCREATE_API = 'http://localhost:8081/api-proxy.php';
 
@@ -18,7 +17,26 @@ export const API_CONFIG = {
   }
 };
 
-// Helper function to build API URLs
+// Enhanced helper function to build API URLs with logging
 export const buildApiUrl = (endpoint: string) => {
-  return `${API_CONFIG.BASE_URL}${endpoint}`;
+  const fullUrl = `${API_CONFIG.BASE_URL}${endpoint}`;
+  console.log(`🔗 Building API URL: ${fullUrl}`);
+  return fullUrl;
+};
+
+// Add debugging helper
+export const logApiCall = (endpoint: string, method: string = 'GET') => {
+  console.log(`📡 API Call: ${method} ${buildApiUrl(endpoint)}`);
+  console.log(`🕐 Timestamp: ${new Date().toISOString()}`);
+};
+
+// Add response logging helper
+export const logApiResponse = (endpoint: string, response: any, success: boolean) => {
+  const status = success ? '✅' : '❌';
+  console.log(`${status} API Response for ${endpoint}:`, {
+    success,
+    dataLength: response?.data?.length || 0,
+    message: response?.message,
+    timestamp: new Date().toISOString()
+  });
 };
