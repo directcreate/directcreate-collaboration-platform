@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Loader2, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -50,18 +49,18 @@ const MaterialSelection = ({
       const response = await directCreateAPI.getCompatibleMaterials(parseInt(craftId));
       
       if (response.success && Array.isArray(response.data) && response.data.length > 0) {
-        console.log('📋 Compatible materials from API:', response.data);
+        console.log('📋 Compatible material IDs from API:', response.data);
         
-        // The API returns full material objects with proper structure
-        const compatibleMaterials = response.data;
-        console.log('🔍 Compatible material IDs from API:', compatibleMaterials.map(cm => ({ id: cm.id, type: typeof cm.id })));
+        // CORRECT: response.data is an array of material IDs as numbers [90, 207, 213]
+        const compatibleMaterialIds = response.data;
+        console.log('🔍 Compatible material IDs (actual data):', compatibleMaterialIds.map(id => ({ id, type: typeof id })));
         
         // Filter the main materials list to show only compatible ones
-        // Ensure both IDs are compared as numbers
+        // Compare material.id with the returned ID numbers
         const filteredMaterialsList = materials.filter(material => {
           const materialIdNum = typeof material.id === 'string' ? parseInt(material.id) : material.id;
-          const isCompatible = compatibleMaterials.some(compatible => {
-            const compatibleIdNum = typeof compatible.id === 'string' ? parseInt(compatible.id) : compatible.id;
+          const isCompatible = compatibleMaterialIds.some(compatibleId => {
+            const compatibleIdNum = typeof compatibleId === 'string' ? parseInt(compatibleId) : compatibleId;
             return compatibleIdNum === materialIdNum;
           });
           console.log(`🔍 Checking material ${material.name} (ID: ${materialIdNum}): ${isCompatible ? 'COMPATIBLE' : 'not compatible'}`);

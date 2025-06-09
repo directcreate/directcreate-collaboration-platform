@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Loader2, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -50,18 +49,18 @@ const CraftSelectionDropdown = ({
       const response = await directCreateAPI.getCompatibleCrafts(parseInt(materialId));
       
       if (response.success && Array.isArray(response.data) && response.data.length > 0) {
-        console.log('📋 Compatible crafts from API:', response.data);
+        console.log('📋 Compatible craft IDs from API:', response.data);
         
-        // The API returns full craft objects with proper structure
-        const compatibleCrafts = response.data;
-        console.log('🔍 Compatible craft IDs from API:', compatibleCrafts.map(cc => ({ id: cc.id, type: typeof cc.id })));
+        // CORRECT: response.data is an array of craft IDs as numbers [167, 170, 177, etc.]
+        const compatibleCraftIds = response.data;
+        console.log('🔍 Compatible craft IDs (actual data):', compatibleCraftIds.map(id => ({ id, type: typeof id })));
         
         // Filter the main crafts list to show only compatible ones
-        // Ensure both IDs are compared as numbers
+        // Compare craft.id with the returned ID numbers
         const filteredCraftsList = crafts.filter(craft => {
           const craftIdNum = typeof craft.id === 'string' ? parseInt(craft.id) : craft.id;
-          const isCompatible = compatibleCrafts.some(compatible => {
-            const compatibleIdNum = typeof compatible.id === 'string' ? parseInt(compatible.id) : compatible.id;
+          const isCompatible = compatibleCraftIds.some(compatibleId => {
+            const compatibleIdNum = typeof compatibleId === 'string' ? parseInt(compatibleId) : compatibleId;
             return compatibleIdNum === craftIdNum;
           });
           console.log(`🔍 Checking craft ${craft.name} (ID: ${craftIdNum}): ${isCompatible ? 'COMPATIBLE' : 'not compatible'}`);
