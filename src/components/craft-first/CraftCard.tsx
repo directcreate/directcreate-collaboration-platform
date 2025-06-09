@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +23,7 @@ interface CraftCardProps {
 const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Clean HTML description and extract plain text
   const cleanDescription = (htmlDescription: string) => {
@@ -55,12 +55,20 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
     window.open(`https://directcreate.com/products?craft=${craft.id}`, '_blank');
   };
 
-  // Get real DirectCreate banner or intelligent fallback
-  const getDisplayImage = () => {
+  // Validate and get the best available image source
+  const getImageSource = () => {
     // Priority 1: Real DirectCreate bannerImage from API (CloudFront CDN)
     if (!imageError && craft.bannerImage && craft.bannerImage.trim() !== '') {
-      console.log(`🎨 Using real DirectCreate banner for ${craft.name}:`, craft.bannerImage);
-      return craft.bannerImage;
+      // Validate CloudFront URL
+      if (craft.bannerImage.includes('d35l77wxi0xou3.cloudfront.net')) {
+        console.log(`🎨 Using real DirectCreate CloudFront banner for ${craft.name}:`, craft.bannerImage);
+        return craft.bannerImage;
+      }
+      // Other DirectCreate URLs
+      if (craft.bannerImage.startsWith('http')) {
+        console.log(`🎨 Using DirectCreate banner for ${craft.name}:`, craft.bannerImage);
+        return craft.bannerImage;
+      }
     }
     
     // Priority 2: DirectCreate banner field (if available)
@@ -122,21 +130,34 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
     return 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&h=300&fit=crop&auto=format';
   };
 
-  const handleImageError = () => {
-    console.log(`🖼️ Image failed for ${craft.name}. Tried:`, getDisplayImage());
-    setImageError(true);
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    console.log(`🖼️ Image failed for ${craft.name}. Tried:`, target.src);
+    
+    // If this was a DirectCreate image, try fallback
+    if (!imageError) {
+      setImageError(true);
+      const fallbackUrl = getFallbackImage();
+      if (target.src !== fallbackUrl) {
+        target.src = fallbackUrl;
+        console.log(`🔄 Switching to fallback for ${craft.name}:`, fallbackUrl);
+      }
+    }
   };
 
-  const handleImageLoad = () => {
-    const imageUrl = getDisplayImage();
-    if (craft.bannerImage && imageUrl === craft.bannerImage) {
-      console.log(`✅ Loaded real DirectCreate banner for ${craft.name}:`, imageUrl);
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = e.target as HTMLImageElement;
+    setImageLoaded(true);
+    
+    if (craft.bannerImage && target.src === craft.bannerImage) {
+      console.log(`✅ Loaded real DirectCreate banner for ${craft.name}:`, target.src);
     } else {
-      console.log(`📷 Loaded fallback image for ${craft.name}:`, imageUrl);
+      console.log(`📷 Loaded fallback image for ${craft.name}:`, target.src);
     }
   };
 
   const fullDescription = cleanDescription(craft.description);
+  const imageSource = getImageSource();
 
   return (
     <Card
@@ -150,16 +171,23 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
       {/* Craft Banner Image */}
       <div className="relative h-48 overflow-hidden bg-muted">
         <img
-          src={getDisplayImage()}
+          src={imageSource}
           alt={craft.name}
           className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
           onError={handleImageError}
           onLoad={handleImageLoad}
+          crossOrigin="anonymous"
         />
         {/* Overlay badge for real DirectCreate images */}
-        {craft.bannerImage && !imageError && (
+        {craft.bannerImage && !imageError && craft.bannerImage.includes('cloudfront') && (
           <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
             DirectCreate
+          </div>
+        )}
+        {/* Loading indicator */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-muted animate-pulse flex items-center justify-center">
+            <span className="text-muted-foreground text-sm">Loading...</span>
           </div>
         )}
       </div>
