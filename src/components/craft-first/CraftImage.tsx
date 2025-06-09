@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { getImageSource, getFallbackImage } from "./utils/imageUtils";
+import { getFallbackImage } from "./utils/imageUtils";
 
 interface Craft {
   id: string;
@@ -13,15 +12,25 @@ interface CraftImageProps {
   craft: Craft;
 }
 
+// Proxy function to handle DirectCreate S3 URLs
+const getProxiedImageUrl = (bannerImage: string) => {
+  // If it's a DirectCreate S3 URL, proxy it to bypass CORS
+  if (bannerImage && bannerImage.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com')) {
+    return `https://healthcare-basket-thu-labour.trycloudflare.com/api-proxy.php?path=image-proxy&url=${encodeURIComponent(bannerImage)}`;
+  }
+  // Otherwise use the URL directly (for Unsplash fallbacks, etc.)
+  return bannerImage;
+};
+
 const CraftImage = ({ craft }: CraftImageProps) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const target = e.target as HTMLImageElement;
-    console.log(`❌ FAILED: DirectCreate banner failed for ${craft.name}. URL:`, target.src);
+    console.log(`❌ FAILED: Even proxy failed for ${craft.name}. URL:`, target.src);
     
-    // Only use fallback if the real DirectCreate URL fails
+    // Only use fallback if the proxied DirectCreate URL fails
     if (!imageError) {
       setImageError(true);
       const fallbackUrl = getFallbackImage(craft.name);
@@ -34,14 +43,38 @@ const CraftImage = ({ craft }: CraftImageProps) => {
     const target = e.target as HTMLImageElement;
     setImageLoaded(true);
     
-    if (craft.bannerImage && target.src === craft.bannerImage) {
-      console.log(`✅ SUCCESS: Loaded REAL DirectCreate banner for ${craft.name}:`, target.src);
+    if (craft.bannerImage && !imageError) {
+      console.log(`✅ SUCCESS: Real DirectCreate banner loaded via proxy for ${craft.name}`);
     } else {
       console.log(`📷 Loaded fallback image for ${craft.name}:`, target.src);
     }
   };
 
-  const imageSource = getImageSource(craft, imageError);
+  // Get the best image source with proxy support
+  const getImageSource = () => {
+    // Priority 1: Real DirectCreate bannerImage from API (S3 URLs with proxy)
+    if (!imageError && craft.bannerImage && craft.bannerImage.trim() !== '') {
+      const proxiedUrl = getProxiedImageUrl(craft.bannerImage);
+      console.log(`🎨 Using PROXIED DirectCreate S3 banner for ${craft.name}:`, proxiedUrl);
+      return proxiedUrl;
+    }
+    
+    // Priority 2: DirectCreate banner field (if available)
+    if (!imageError && craft.banner && craft.banner.trim() !== '') {
+      // Check if it's already a full URL
+      if (craft.banner.startsWith('http')) {
+        return getProxiedImageUrl(craft.banner);
+      }
+      // If it's a relative path, make it absolute to DirectCreate and proxy it
+      const fullUrl = `https://directcreate.com/uploads/crafts/${craft.banner}`;
+      return getProxiedImageUrl(fullUrl);
+    }
+    
+    // Priority 3: Categorized fallback images
+    return getFallbackImage(craft.name);
+  };
+
+  const imageSource = getImageSource();
 
   return (
     <div className="relative h-48 overflow-hidden bg-muted">
