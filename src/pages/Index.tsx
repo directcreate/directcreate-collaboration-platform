@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import APITester from "@/components/debug/APITester";
 import ConnectionStatus from "@/components/debug/ConnectionStatus";
+import APIDiagnostics from "@/components/debug/APIDiagnostics";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -34,13 +36,23 @@ const Index = () => {
         </a>
         <div className="flex items-center gap-4">
           <ConnectionStatus />
-          
         </div>
       </header>
 
-      
+      {/* Add API Diagnostics section - priority debugging tool */}
+      <section className="py-16 px-4 sm:px-6 bg-red-50/50 border-b">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4 text-red-800">🚨 API Connection Diagnostics</h2>
+            <p className="text-lg text-red-600">
+              Diagnose and identify the exact DirectCreate API connection issue
+            </p>
+          </div>
+          <APIDiagnostics />
+        </div>
+      </section>
 
-      {/* Add API Tester section before the main content */}
+      {/* Add API Tester section */}
       <section className="py-16 px-4 sm:px-6 bg-muted/30">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8">
