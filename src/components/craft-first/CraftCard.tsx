@@ -14,6 +14,7 @@ interface CraftCardProps {
     difficulty: string;
     time_estimate: string;
     banner: string;
+    bannerImage?: string; // Real DirectCreate banner from API
     category: string;
   };
   isSelected: boolean;
@@ -50,13 +51,19 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
 
   const openCraftDetails = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Use correct DirectCreate URL structure - check for crafts section
-    window.open(`https://directcreate.com/crafts/${craft.id}`, '_blank');
+    // Use correct DirectCreate URL structure for craft details
+    window.open(`https://directcreate.com/products?craft=${craft.id}`, '_blank');
   };
 
-  // Get DirectCreate image or fallback
+  // Get real DirectCreate banner or intelligent fallback
   const getDisplayImage = () => {
-    // If we have a DirectCreate banner and no error, use it
+    // Priority 1: Real DirectCreate bannerImage from API (CloudFront CDN)
+    if (!imageError && craft.bannerImage && craft.bannerImage.trim() !== '') {
+      console.log(`🎨 Using real DirectCreate banner for ${craft.name}:`, craft.bannerImage);
+      return craft.bannerImage;
+    }
+    
+    // Priority 2: DirectCreate banner field (if available)
     if (!imageError && craft.banner && craft.banner.trim() !== '') {
       // Check if it's already a full URL
       if (craft.banner.startsWith('http')) {
@@ -66,39 +73,67 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
       return `https://directcreate.com/uploads/crafts/${craft.banner}`;
     }
     
-    // Fallback to categorized images
+    // Priority 3: Categorized fallback images
     return getFallbackImage();
   };
 
-  // Get a fallback image based on craft name/category
+  // Get a professional fallback image based on craft name/category
   const getFallbackImage = () => {
     const name = craft.name.toLowerCase();
-    if (name.includes('painting') || name.includes('3d painting')) {
-      return 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop&auto=format';
-    }
-    if (name.includes('accessories') || name.includes('jewelry')) {
-      return 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop&auto=format';
-    }
-    if (name.includes('weaving') || name.includes('textile')) {
+    
+    // Traditional textile crafts
+    if (name.includes('ajrakh') || name.includes('block printing') || name.includes('bagru')) {
       return 'https://images.unsplash.com/photo-1586985289906-406988974504?w=400&h=300&fit=crop&auto=format';
     }
+    if (name.includes('bandhani') || name.includes('tie dye')) {
+      return 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&auto=format';
+    }
+    if (name.includes('applique') || name.includes('embroidery')) {
+      return 'https://images.unsplash.com/photo-1586985289906-406988974504?w=400&h=300&fit=crop&auto=format';
+    }
+    if (name.includes('batik')) {
+      return 'https://images.unsplash.com/photo-1586985289906-406988974504?w=400&h=300&fit=crop&auto=format';
+    }
+    
+    // Metalwork and jewelry
+    if (name.includes('bell metal') || name.includes('metal')) {
+      return 'https://images.unsplash.com/photo-1609205807107-171cea41d6cd?w=400&h=300&fit=crop&auto=format';
+    }
+    if (name.includes('jewelry') || name.includes('jewellery')) {
+      return 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop&auto=format';
+    }
+    
+    // Pottery and ceramics
     if (name.includes('pottery') || name.includes('ceramic')) {
       return 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&auto=format';
     }
+    
+    // Weaving and textiles
+    if (name.includes('weaving') || name.includes('textile')) {
+      return 'https://images.unsplash.com/photo-1586985289906-406988974504?w=400&h=300&fit=crop&auto=format';
+    }
+    
+    // Wood and carving
     if (name.includes('wood') || name.includes('carving')) {
       return 'https://images.unsplash.com/photo-1609205807107-171cea41d6cd?w=400&h=300&fit=crop&auto=format';
     }
-    // Default fallback
+    
+    // Default heritage craft fallback
     return 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&h=300&fit=crop&auto=format';
   };
 
   const handleImageError = () => {
-    console.log(`🖼️ DirectCreate banner failed for ${craft.name}:`, craft.banner);
+    console.log(`🖼️ Image failed for ${craft.name}. Tried:`, getDisplayImage());
     setImageError(true);
   };
 
   const handleImageLoad = () => {
-    console.log(`✅ Image loaded for ${craft.name}:`, getDisplayImage());
+    const imageUrl = getDisplayImage();
+    if (craft.bannerImage && imageUrl === craft.bannerImage) {
+      console.log(`✅ Loaded real DirectCreate banner for ${craft.name}:`, imageUrl);
+    } else {
+      console.log(`📷 Loaded fallback image for ${craft.name}:`, imageUrl);
+    }
   };
 
   const fullDescription = cleanDescription(craft.description);
@@ -121,6 +156,12 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
           onError={handleImageError}
           onLoad={handleImageLoad}
         />
+        {/* Overlay badge for real DirectCreate images */}
+        {craft.bannerImage && !imageError && (
+          <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+            DirectCreate
+          </div>
+        )}
       </div>
 
       <CardContent className="p-4">
