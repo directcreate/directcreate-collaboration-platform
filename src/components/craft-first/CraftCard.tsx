@@ -50,10 +50,27 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
 
   const openCraftDetails = (e: React.MouseEvent) => {
     e.stopPropagation();
+    // Use correct DirectCreate URL structure - check for crafts section
     window.open(`https://directcreate.com/crafts/${craft.id}`, '_blank');
   };
 
-  // Get a fallback image based on craft name/category - only used when DC image fails
+  // Get DirectCreate image or fallback
+  const getDisplayImage = () => {
+    // If we have a DirectCreate banner and no error, use it
+    if (!imageError && craft.banner && craft.banner.trim() !== '') {
+      // Check if it's already a full URL
+      if (craft.banner.startsWith('http')) {
+        return craft.banner;
+      }
+      // If it's a relative path, make it absolute to DirectCreate
+      return `https://directcreate.com/uploads/crafts/${craft.banner}`;
+    }
+    
+    // Fallback to categorized images
+    return getFallbackImage();
+  };
+
+  // Get a fallback image based on craft name/category
   const getFallbackImage = () => {
     const name = craft.name.toLowerCase();
     if (name.includes('painting') || name.includes('3d painting')) {
@@ -75,25 +92,16 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
     return 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&h=300&fit=crop&auto=format';
   };
 
-  const fullDescription = cleanDescription(craft.description);
-  
-  // Prioritize DirectCreate banner, only use fallback if DC image fails or is empty
-  const getDisplayImage = () => {
-    if (imageError || !craft.banner || craft.banner.trim() === '') {
-      return getFallbackImage();
-    }
-    return craft.banner;
-  };
-
   const handleImageError = () => {
     console.log(`🖼️ DirectCreate banner failed for ${craft.name}:`, craft.banner);
     setImageError(true);
   };
 
   const handleImageLoad = () => {
-    console.log(`✅ DirectCreate banner loaded for ${craft.name}:`, craft.banner);
-    setImageError(false);
+    console.log(`✅ Image loaded for ${craft.name}:`, getDisplayImage());
   };
+
+  const fullDescription = cleanDescription(craft.description);
 
   return (
     <Card
