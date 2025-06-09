@@ -59,18 +59,18 @@ const CraftSelection = ({
         craftId ? parseInt(craftId) : undefined
       );
       
-      if (response.success && Array.isArray(response.data)) {
-        setSuggestedTechniques(response.data);
-        if (response.data.length === 0) {
-          setTechniqueFilterMessage("No technique suggestions available for this combination");
-        } else {
-          setTechniqueFilterMessage(`${response.data.length} suggested technique${response.data.length !== 1 ? 's' : ''} found`);
-        }
-        console.log('✅ Compatible techniques loaded:', response.data.length);
+      if (response.success && Array.isArray(response.data) && response.data.length > 0) {
+        console.log('📋 Compatible techniques from API:', response.data);
+        
+        // The API returns full technique objects, not just IDs
+        const compatibleTechniques = response.data;
+        setSuggestedTechniques(compatibleTechniques);
+        setTechniqueFilterMessage(`${compatibleTechniques.length} suggested technique${compatibleTechniques.length !== 1 ? 's' : ''} found`);
+        console.log('✅ Compatible techniques loaded:', compatibleTechniques.length);
       } else {
-        console.error('Compatible techniques API error:', response.message);
+        console.log('⚠️ No compatible techniques found');
         setSuggestedTechniques([]);
-        setTechniqueFilterMessage("Unable to load technique suggestions");
+        setTechniqueFilterMessage("No technique suggestions available for this combination");
       }
     } catch (error) {
       console.error('❌ Error loading compatible techniques:', error);

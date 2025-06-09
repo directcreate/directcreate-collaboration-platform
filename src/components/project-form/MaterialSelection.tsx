@@ -48,34 +48,31 @@ const MaterialSelection = ({
       
       const response = await directCreateAPI.getCompatibleMaterials(parseInt(craftId));
       
-      if (response.success && Array.isArray(response.data)) {
-        console.log('📋 Compatible material IDs from API:', response.data.map(m => m.id));
-        console.log('📋 Available materials:', materials.map(m => ({ id: m.id, name: m.name })));
+      if (response.success && Array.isArray(response.data) && response.data.length > 0) {
+        console.log('📋 Compatible materials from API:', response.data);
         
-        // Filter materials based on the compatible IDs returned by API
-        const compatibleIds = response.data.map(material => material.id);
+        // The API returns full material objects, not just IDs
+        const compatibleMaterials = response.data;
+        
+        // Filter the main materials list to show only compatible ones
         const filteredMaterialsList = materials.filter(material => 
-          compatibleIds.includes(material.id)
+          compatibleMaterials.some(compatible => compatible.id === material.id)
         );
         
-        console.log('✨ Filtered materials:', filteredMaterialsList.map(m => ({ id: m.id, name: m.name })));
+        console.log('✨ Filtered compatible materials:', filteredMaterialsList.map(m => ({ id: m.id, name: m.name })));
         
         setFilteredMaterials(filteredMaterialsList);
-        if (filteredMaterialsList.length === 0) {
-          setMaterialFilterMessage("No compatible materials found for this craft");
-        } else {
-          setMaterialFilterMessage(`Showing ${filteredMaterialsList.length} compatible material${filteredMaterialsList.length !== 1 ? 's' : ''} for this craft`);
-        }
+        setMaterialFilterMessage(`${filteredMaterialsList.length} compatible material${filteredMaterialsList.length !== 1 ? 's' : ''} found for this craft`);
         console.log('✅ Compatible materials loaded:', filteredMaterialsList.length);
       } else {
-        console.error('Compatible materials API error:', response.message);
+        console.log('⚠️ No compatible materials found, showing all materials');
         setFilteredMaterials(materials);
-        setMaterialFilterMessage("Unable to filter materials - showing all options");
+        setMaterialFilterMessage("No specific material compatibility found - showing all options");
       }
     } catch (error) {
       console.error('❌ Error loading compatible materials:', error);
       setFilteredMaterials(materials);
-      setMaterialFilterMessage("Error filtering materials - showing all options");
+      setMaterialFilterMessage("Error loading compatibility - showing all options");
     } finally {
       setLoadingCompatibleMaterials(false);
     }
