@@ -6,6 +6,7 @@ import ProjectFormTitle from "@/components/project-form/ProjectFormTitle";
 import ErrorDisplay from "@/components/project-form/ErrorDisplay";
 import LoadingScreen from "@/components/project-form/LoadingScreen";
 import ProjectFormContent from "@/components/project-form/ProjectFormContent";
+import ContextDisplay from "@/components/project-form/ContextDisplay";
 import { useDirectCreateData } from "../hooks/useDirectCreateData";
 
 const ProjectForm = () => {
@@ -73,9 +74,12 @@ const ProjectForm = () => {
     <div className="min-h-screen bg-background">
       <ProjectFormHeader onBack={handleBack} />
       
-      <ProjectFormTitle />
+      <ProjectFormTitle contextData={contextData} />
       
       <ErrorDisplay error={error} onRetry={handleRetry} />
+
+      {/* Context Display */}
+      <ContextDisplay contextData={contextData} />
 
       <ProjectFormContent
         formData={formData}
