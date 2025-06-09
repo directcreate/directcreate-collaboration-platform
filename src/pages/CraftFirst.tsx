@@ -5,7 +5,7 @@ import { ArrowLeft, Hammer, Plus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { mockDirectCreateAPI } from "../services/mockData";
+import { directCreateAPI } from "../config/api";
 
 const CraftFirst = () => {
   const navigate = useNavigate();
@@ -37,8 +37,8 @@ const CraftFirst = () => {
   useEffect(() => {
     const loadCrafts = async () => {
       try {
-        console.log('🔄 Loading crafts from mock API...');
-        const response = await mockDirectCreateAPI.getCrafts();
+        console.log('🔄 Loading crafts from DirectCreate API...');
+        const response = await directCreateAPI.getCrafts();
         
         if (response.success) {
           // Transform API response to match UI format

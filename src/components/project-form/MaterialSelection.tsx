@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { directCreateAPI } from "../../config/api";
 
@@ -116,10 +116,16 @@ const MaterialSelection = ({
 
   return (
     <div className="space-y-3">
-      <label className="text-sm font-medium text-foreground">
+      <label className="text-sm font-medium text-foreground flex items-center gap-2">
         Material
         {loadingCompatibleMaterials && (
-          <Loader2 className="w-3 h-3 animate-spin inline ml-2" />
+          <Loader2 className="w-3 h-3 animate-spin" />
+        )}
+        {selectedCraft && !loadingCompatibleMaterials && filteredMaterials.length < materials.length && (
+          <div className="flex items-center gap-1 text-primary">
+            <Filter className="w-3 h-3" />
+            <span className="text-xs">Filtered</span>
+          </div>
         )}
       </label>
       <Select 
@@ -147,11 +153,25 @@ const MaterialSelection = ({
           ))}
         </SelectContent>
       </Select>
+      
+      {/* Enhanced filtering status with visual feedback */}
       {materialFilterMessage && (
-        <div className="text-xs text-primary p-2 bg-primary/5 border border-primary/20 rounded-lg">
-          {materialFilterMessage}
+        <div className={`text-xs p-2 border rounded-lg ${
+          filteredMaterials.length === 0 
+            ? 'text-destructive bg-destructive/5 border-destructive/20'
+            : selectedCraft && filteredMaterials.length < materials.length
+              ? 'text-primary bg-primary/5 border-primary/20'
+              : 'text-muted-foreground bg-muted/30 border-border'
+        }`}>
+          <div className="flex items-center gap-1">
+            {selectedCraft && filteredMaterials.length < materials.length && (
+              <Filter className="w-3 h-3" />
+            )}
+            {materialFilterMessage}
+          </div>
         </div>
       )}
+      
       {getSelectedMaterial() && (
         <div className="text-xs text-muted-foreground p-3 bg-muted/30 rounded-lg">
           <p className="font-medium mb-1">{getSelectedMaterial().category}</p>
