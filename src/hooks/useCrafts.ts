@@ -11,6 +11,7 @@ interface Craft {
   time_estimate: string;
   banner: string;
   bannerImage?: string; // ✅ Add bannerImage property
+  detailUrl?: string; // ✅ Add detailUrl property
   category: string;
 }
 
@@ -44,7 +45,7 @@ export const useCrafts = () => {
         const response = await directCreateAPI.getCrafts();
         
         if (response.success) {
-          // Transform API response to match UI format with proper bannerImage mapping
+          // Transform API response to match UI format with proper bannerImage and detailUrl mapping
           const transformedCrafts = response.data.map((craft: any) => {
             const transformed = {
               id: craft.id.toString(),
@@ -55,12 +56,14 @@ export const useCrafts = () => {
               time_estimate: craft.time_estimate,
               banner: craft.banner,
               bannerImage: craft.bannerImage, // ✅ Ensure bannerImage is mapped
+              detailUrl: craft.detailUrl, // ✅ Ensure detailUrl is mapped
               category: craft.category || 'Traditional Craft'
             };
             
             // Debug: Log craft transformation
             console.log(`🔍 useCrafts transformation for ${craft.name}:`, transformed);
             console.log(`🔍 bannerImage value for ${craft.name}:`, transformed.bannerImage);
+            console.log(`🔍 detailUrl value for ${craft.name}:`, transformed.detailUrl);
             
             return transformed;
           });

@@ -28,10 +28,11 @@ export const craftsService = {
         console.log('🔍 RAW API RESPONSE first craft:', data.data[0]);
         console.log('🔍 Available properties:', Object.keys(data.data[0]));
         console.log('🔍 BANNER URL IN RAW:', data.data[0].bannerImage);
+        console.log('🔍 DETAIL URL IN RAW:', data.data[0].detailUrl);
       }
       
       if (data.success && Array.isArray(data.data)) {
-        // Transform data and ensure bannerImage is properly mapped
+        // Transform data and ensure bannerImage and detailUrl are properly mapped
         const transformedCrafts = data.data.map((craft: any) => {
           const transformed = {
             id: craft.id.toString(),
@@ -41,12 +42,14 @@ export const craftsService = {
             time_estimate: craft.time_estimate,
             banner: craft.banner,
             bannerImage: craft.bannerImage, // ✅ Ensure this is mapped correctly
+            detailUrl: craft.detailUrl, // ✅ Map detailUrl from API
             category: craft.category || 'Traditional Craft'
           };
           
           // Debug: Log transformation
           console.log(`🔍 AFTER TRANSFORMATION for ${craft.name}:`, transformed);
           console.log(`🔍 BANNER AFTER TRANSFORM for ${craft.name}:`, transformed.bannerImage);
+          console.log(`🔍 DETAIL URL AFTER TRANSFORM for ${craft.name}:`, transformed.detailUrl);
           
           return transformed;
         });

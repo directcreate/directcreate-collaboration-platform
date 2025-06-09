@@ -12,6 +12,7 @@ interface Craft {
   difficulty: string;
   time_estimate: string;
   category: string;
+  detailUrl?: string; // Add detailUrl property from API
 }
 
 interface CraftContentProps {
@@ -28,8 +29,17 @@ const CraftContent = ({ craft }: CraftContentProps) => {
 
   const openCraftDetails = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Use correct DirectCreate URL structure for craft details
-    window.open(`https://directcreate.com/products?craft=${craft.id}`, '_blank');
+    
+    // Debug logging to see what URLs are being used
+    console.log('🔍 Craft detailUrl from API:', craft.detailUrl);
+    console.log('🌐 Opening URL:', craft.detailUrl);
+    
+    // Use the detailUrl from API instead of constructing our own
+    if (craft.detailUrl) {
+      window.open(craft.detailUrl, '_blank');
+    } else {
+      console.warn('⚠️ No detailUrl provided for craft:', craft.name);
+    }
   };
 
   const fullDescription = cleanDescription(craft.description);

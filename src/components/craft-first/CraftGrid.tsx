@@ -11,6 +11,7 @@ interface Craft {
   banner: string;
   bannerImage?: string; // ✅ Add bannerImage property
   category: string;
+  detailUrl?: string; // Add detailUrl property from API
 }
 
 interface CraftGridProps {
