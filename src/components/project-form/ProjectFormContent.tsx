@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import CraftSelection from "./CraftSelection";
 import ArtisanMatching from "./ArtisanMatching";
@@ -78,7 +77,7 @@ const ProjectFormContent = ({
         {/* AI-Enhanced Features */}
         <AIAnalysis onSuggestionsApplied={handleAISuggestions} contextData={contextData} />
         
-        <QuickProjectType onSuggestionsApplied={handleAISuggestions} />
+        <QuickProjectType onSuggestionsApplied={handleAISuggestions} contextData={contextData} />
 
         <CraftSelection
           materials={materials}
