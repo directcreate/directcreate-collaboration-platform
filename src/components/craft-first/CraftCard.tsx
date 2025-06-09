@@ -22,6 +22,7 @@ interface CraftCardProps {
 
 const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   // Clean HTML description and extract plain text
   const cleanDescription = (htmlDescription: string) => {
@@ -49,10 +50,33 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
 
   const openCraftDetails = (e: React.MouseEvent) => {
     e.stopPropagation();
-    window.open(`https://directcreate.com/craft/${craft.id}`, '_blank');
+    window.open(`https://directcreate.com/crafts/${craft.id}`, '_blank');
+  };
+
+  // Get a fallback image based on craft name/category
+  const getFallbackImage = () => {
+    const name = craft.name.toLowerCase();
+    if (name.includes('painting') || name.includes('3d painting')) {
+      return 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=300&fit=crop&auto=format';
+    }
+    if (name.includes('accessories') || name.includes('jewelry')) {
+      return 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=300&fit=crop&auto=format';
+    }
+    if (name.includes('weaving') || name.includes('textile')) {
+      return 'https://images.unsplash.com/photo-1586985289906-406988974504?w=400&h=300&fit=crop&auto=format';
+    }
+    if (name.includes('pottery') || name.includes('ceramic')) {
+      return 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop&auto=format';
+    }
+    if (name.includes('wood') || name.includes('carving')) {
+      return 'https://images.unsplash.com/photo-1609205807107-171cea41d6cd?w=400&h=300&fit=crop&auto=format';
+    }
+    // Default fallback
+    return 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&h=300&fit=crop&auto=format';
   };
 
   const fullDescription = cleanDescription(craft.description);
+  const displayImage = imageError ? getFallbackImage() : (craft.banner || getFallbackImage());
 
   return (
     <Card
@@ -63,16 +87,14 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
           : 'hover:shadow-md'
       }`}
     >
-      {/* Craft Banner Image - No overlay */}
-      <div className="relative h-48 overflow-hidden">
+      {/* Craft Banner Image */}
+      <div className="relative h-48 overflow-hidden bg-muted">
         <img
-          src={craft.banner || 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop'}
+          src={displayImage}
           alt={craft.name}
           className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
-          onError={(e) => {
-            // Fallback to placeholder if banner fails to load
-            e.currentTarget.src = 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop';
-          }}
+          onError={() => setImageError(true)}
+          onLoad={() => setImageError(false)}
         />
       </div>
 
