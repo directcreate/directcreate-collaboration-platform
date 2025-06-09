@@ -53,7 +53,7 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
     window.open(`https://directcreate.com/crafts/${craft.id}`, '_blank');
   };
 
-  // Get a fallback image based on craft name/category
+  // Get a fallback image based on craft name/category - only used when DC image fails
   const getFallbackImage = () => {
     const name = craft.name.toLowerCase();
     if (name.includes('painting') || name.includes('3d painting')) {
@@ -76,7 +76,24 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
   };
 
   const fullDescription = cleanDescription(craft.description);
-  const displayImage = imageError ? getFallbackImage() : (craft.banner || getFallbackImage());
+  
+  // Prioritize DirectCreate banner, only use fallback if DC image fails or is empty
+  const getDisplayImage = () => {
+    if (imageError || !craft.banner || craft.banner.trim() === '') {
+      return getFallbackImage();
+    }
+    return craft.banner;
+  };
+
+  const handleImageError = () => {
+    console.log(`🖼️ DirectCreate banner failed for ${craft.name}:`, craft.banner);
+    setImageError(true);
+  };
+
+  const handleImageLoad = () => {
+    console.log(`✅ DirectCreate banner loaded for ${craft.name}:`, craft.banner);
+    setImageError(false);
+  };
 
   return (
     <Card
@@ -90,11 +107,11 @@ const CraftCard = ({ craft, isSelected, onSelect }: CraftCardProps) => {
       {/* Craft Banner Image */}
       <div className="relative h-48 overflow-hidden bg-muted">
         <img
-          src={displayImage}
+          src={getDisplayImage()}
           alt={craft.name}
           className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
-          onError={() => setImageError(true)}
-          onLoad={() => setImageError(false)}
+          onError={handleImageError}
+          onLoad={handleImageLoad}
         />
       </div>
 
