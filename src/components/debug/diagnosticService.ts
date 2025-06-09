@@ -10,15 +10,16 @@ export class DiagnosticService {
   }
 
   async runAllTests() {
-    // Test 1: Environment Check - HTTPS to HTTPS
+    // Test 1: Environment Check - HTTPS to HTTPS with NEW TUNNEL
     this.addResult({
       test: 'Environment Check',
       status: 'info',
-      message: `HTTPS → HTTPS: ${window.location.origin} → ${API_CONFIG.BASE_URL}`,
+      message: `🆕 NEW STABLE TUNNEL: ${window.location.origin} → ${API_CONFIG.BASE_URL}`,
       details: {
         origin: window.location.origin,
         target: API_CONFIG.BASE_URL,
-        protocol: 'HTTPS to HTTPS - Secure ✅'
+        protocol: 'HTTPS to HTTPS - New Stable Tunnel ✅',
+        tunnelStatus: 'genres-competent-anger-clusters.trycloudflare.com - STABLE'
       }
     });
 
@@ -26,21 +27,21 @@ export class DiagnosticService {
     await this.testEndpoint(
       'Materials API',
       buildApiUrl(API_CONFIG.ENDPOINTS.materials),
-      'Basic materials fetch'
+      'Basic materials fetch from new tunnel'
     );
 
     // Test 3: Crafts Test
     await this.testEndpoint(
       'Crafts API',
       buildApiUrl(API_CONFIG.ENDPOINTS.crafts),
-      'Basic crafts fetch'
+      'Basic crafts fetch from new tunnel'
     );
 
     // Test 4: Techniques Test
     await this.testEndpoint(
       'Techniques API',
       buildApiUrl(API_CONFIG.ENDPOINTS.techniques),
-      'Basic techniques fetch'
+      'Basic techniques fetch from new tunnel'
     );
 
     // Test 5: Compatible Crafts with sample material (GOTS Organic Cotton)
@@ -88,7 +89,7 @@ export class DiagnosticService {
 
   private async testEndpoint(testName: string, url: string, description: string) {
     try {
-      console.log(`🧪 Testing ${testName}: ${url}`);
+      console.log(`🧪 Testing ${testName} with NEW TUNNEL: ${url}`);
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -111,6 +112,7 @@ export class DiagnosticService {
             statusText: response.statusText,
             dataCount: dataCount,
             success: data.success,
+            tunnelUrl: 'genres-competent-anger-clusters.trycloudflare.com',
             sampleData: Array.isArray(data.data) ? data.data.slice(0, 3) : data.data
           }
         });
@@ -122,12 +124,13 @@ export class DiagnosticService {
           details: {
             status: response.status,
             statusText: response.statusText,
-            url: url
+            url: url,
+            tunnelUrl: 'genres-competent-anger-clusters.trycloudflare.com'
           }
         });
       }
     } catch (error) {
-      console.error(`🚨 ${testName} failed:`, error);
+      console.error(`🚨 ${testName} failed with NEW TUNNEL:`, error);
       this.addResult({
         test: testName,
         status: 'error',
@@ -135,7 +138,8 @@ export class DiagnosticService {
         details: {
           name: error.name,
           message: error.message,
-          url: url
+          url: url,
+          tunnelUrl: 'genres-competent-anger-clusters.trycloudflare.com'
         }
       });
     }
