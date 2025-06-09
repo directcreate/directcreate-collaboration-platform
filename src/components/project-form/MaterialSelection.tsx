@@ -49,13 +49,24 @@ const MaterialSelection = ({
       const response = await directCreateAPI.getCompatibleMaterials(parseInt(craftId));
       
       if (response.success && Array.isArray(response.data)) {
-        setFilteredMaterials(response.data);
-        if (response.data.length === 0) {
+        console.log('📋 Compatible material IDs from API:', response.data.map(m => m.id));
+        console.log('📋 Available materials:', materials.map(m => ({ id: m.id, name: m.name })));
+        
+        // Filter materials based on the compatible IDs returned by API
+        const compatibleIds = response.data.map(material => material.id);
+        const filteredMaterialsList = materials.filter(material => 
+          compatibleIds.includes(material.id)
+        );
+        
+        console.log('✨ Filtered materials:', filteredMaterialsList.map(m => ({ id: m.id, name: m.name })));
+        
+        setFilteredMaterials(filteredMaterialsList);
+        if (filteredMaterialsList.length === 0) {
           setMaterialFilterMessage("No compatible materials found for this craft");
         } else {
-          setMaterialFilterMessage(`Showing ${response.data.length} compatible material${response.data.length !== 1 ? 's' : ''}`);
+          setMaterialFilterMessage(`Showing ${filteredMaterialsList.length} compatible material${filteredMaterialsList.length !== 1 ? 's' : ''} for this craft`);
         }
-        console.log('✅ Compatible materials loaded:', response.data.length);
+        console.log('✅ Compatible materials loaded:', filteredMaterialsList.length);
       } else {
         console.error('Compatible materials API error:', response.message);
         setFilteredMaterials(materials);
@@ -72,7 +83,6 @@ const MaterialSelection = ({
 
   const handleMaterialChange = (materialId: string) => {
     onMaterialChange(materialId);
-    onCraftChange(""); // Clear craft selection when material changes
     
     // Load technique suggestions if craft is still selected
     if (selectedCraft) {
@@ -84,15 +94,21 @@ const MaterialSelection = ({
 
   // Initialize filtered data when base data is loaded
   useEffect(() => {
-    if (materials.length > 0) {
+    if (materials.length > 0 && filteredMaterials.length === 0) {
+      console.log('🔄 Initializing filtered materials with all materials');
       setFilteredMaterials(materials);
     }
   }, [materials]);
 
-  // Load compatible data if craft is pre-selected
+  // Load compatible data when craft is selected
   useEffect(() => {
     if (selectedCraft && materials.length > 0) {
+      console.log('🎯 Craft selected, loading compatible materials for ID:', selectedCraft);
       loadCompatibleMaterials(selectedCraft);
+    } else if (!selectedCraft && materials.length > 0) {
+      console.log('🔄 No craft selected, showing all materials');
+      setFilteredMaterials(materials);
+      setMaterialFilterMessage("");
     }
   }, [selectedCraft, materials]);
 
