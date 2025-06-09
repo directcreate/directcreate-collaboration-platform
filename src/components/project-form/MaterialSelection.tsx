@@ -45,21 +45,30 @@ const MaterialSelection = ({
       setLoadingCompatibleMaterials(true);
       setMaterialFilterMessage("");
       console.log('🔄 Loading compatible materials for craft:', craftId);
+      console.log('🔍 All available materials:', materials.map(m => ({ id: m.id, type: typeof m.id, name: m.name })));
       
       const response = await directCreateAPI.getCompatibleMaterials(parseInt(craftId));
       
       if (response.success && Array.isArray(response.data) && response.data.length > 0) {
         console.log('📋 Compatible materials from API:', response.data);
         
-        // The API returns full material objects, not just IDs
+        // The API returns full material objects with proper structure
         const compatibleMaterials = response.data;
+        console.log('🔍 Compatible material IDs from API:', compatibleMaterials.map(cm => ({ id: cm.id, type: typeof cm.id })));
         
         // Filter the main materials list to show only compatible ones
-        const filteredMaterialsList = materials.filter(material => 
-          compatibleMaterials.some(compatible => compatible.id === material.id)
-        );
+        // Ensure both IDs are compared as numbers
+        const filteredMaterialsList = materials.filter(material => {
+          const materialIdNum = typeof material.id === 'string' ? parseInt(material.id) : material.id;
+          const isCompatible = compatibleMaterials.some(compatible => {
+            const compatibleIdNum = typeof compatible.id === 'string' ? parseInt(compatible.id) : compatible.id;
+            return compatibleIdNum === materialIdNum;
+          });
+          console.log(`🔍 Checking material ${material.name} (ID: ${materialIdNum}): ${isCompatible ? 'COMPATIBLE' : 'not compatible'}`);
+          return isCompatible;
+        });
         
-        console.log('✨ Filtered compatible materials:', filteredMaterialsList.map(m => ({ id: m.id, name: m.name })));
+        console.log('✨ Final filtered materials:', filteredMaterialsList.map(m => ({ id: m.id, name: m.name })));
         
         setFilteredMaterials(filteredMaterialsList);
         setMaterialFilterMessage(`${filteredMaterialsList.length} compatible material${filteredMaterialsList.length !== 1 ? 's' : ''} found for this craft`);

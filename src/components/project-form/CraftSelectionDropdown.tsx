@@ -45,21 +45,30 @@ const CraftSelectionDropdown = ({
       setLoadingCompatibleCrafts(true);
       setCraftFilterMessage("");
       console.log('🔄 Loading compatible crafts for material:', materialId);
+      console.log('🔍 All available crafts:', crafts.map(c => ({ id: c.id, type: typeof c.id, name: c.name })));
       
       const response = await directCreateAPI.getCompatibleCrafts(parseInt(materialId));
       
       if (response.success && Array.isArray(response.data) && response.data.length > 0) {
         console.log('📋 Compatible crafts from API:', response.data);
         
-        // The API returns full craft objects, not just IDs
+        // The API returns full craft objects with proper structure
         const compatibleCrafts = response.data;
+        console.log('🔍 Compatible craft IDs from API:', compatibleCrafts.map(cc => ({ id: cc.id, type: typeof cc.id })));
         
         // Filter the main crafts list to show only compatible ones
-        const filteredCraftsList = crafts.filter(craft => 
-          compatibleCrafts.some(compatible => compatible.id === craft.id)
-        );
+        // Ensure both IDs are compared as numbers
+        const filteredCraftsList = crafts.filter(craft => {
+          const craftIdNum = typeof craft.id === 'string' ? parseInt(craft.id) : craft.id;
+          const isCompatible = compatibleCrafts.some(compatible => {
+            const compatibleIdNum = typeof compatible.id === 'string' ? parseInt(compatible.id) : compatible.id;
+            return compatibleIdNum === craftIdNum;
+          });
+          console.log(`🔍 Checking craft ${craft.name} (ID: ${craftIdNum}): ${isCompatible ? 'COMPATIBLE' : 'not compatible'}`);
+          return isCompatible;
+        });
         
-        console.log('✨ Filtered compatible crafts:', filteredCraftsList.map(c => ({ id: c.id, name: c.name })));
+        console.log('✨ Final filtered crafts:', filteredCraftsList.map(c => ({ id: c.id, name: c.name })));
         
         setFilteredCrafts(filteredCraftsList);
         setCraftFilterMessage(`${filteredCraftsList.length} compatible craft${filteredCraftsList.length !== 1 ? 's' : ''} found for this material`);
