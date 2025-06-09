@@ -9,6 +9,7 @@ interface Craft {
   difficulty: string;
   time_estimate: string;
   banner: string;
+  bannerImage?: string; // ✅ Add bannerImage property
   category: string;
 }
 

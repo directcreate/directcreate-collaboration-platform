@@ -10,6 +10,7 @@ interface Craft {
   difficulty: string;
   time_estimate: string;
   banner: string;
+  bannerImage?: string; // ✅ Add bannerImage property
   category: string;
 }
 
@@ -43,17 +44,26 @@ export const useCrafts = () => {
         const response = await directCreateAPI.getCrafts();
         
         if (response.success) {
-          // Transform API response to match UI format
-          const transformedCrafts = response.data.map((craft: any) => ({
-            id: craft.id.toString(),
-            name: craft.name,
-            icon: getCraftIcon(craft.name),
-            description: craft.description,
-            difficulty: craft.difficulty,
-            time_estimate: craft.time_estimate,
-            banner: craft.banner,
-            category: craft.category || 'Traditional Craft'
-          }));
+          // Transform API response to match UI format with proper bannerImage mapping
+          const transformedCrafts = response.data.map((craft: any) => {
+            const transformed = {
+              id: craft.id.toString(),
+              name: craft.name,
+              icon: getCraftIcon(craft.name),
+              description: craft.description,
+              difficulty: craft.difficulty,
+              time_estimate: craft.time_estimate,
+              banner: craft.banner,
+              bannerImage: craft.bannerImage, // ✅ Ensure bannerImage is mapped
+              category: craft.category || 'Traditional Craft'
+            };
+            
+            // Debug: Log craft transformation
+            console.log(`🔍 useCrafts transformation for ${craft.name}:`, transformed);
+            console.log(`🔍 bannerImage value for ${craft.name}:`, transformed.bannerImage);
+            
+            return transformed;
+          });
           
           setCrafts(transformedCrafts);
           console.log('✅ Crafts loaded:', transformedCrafts.length);
