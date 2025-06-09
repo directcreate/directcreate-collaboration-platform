@@ -7,6 +7,7 @@ import TimelineBudget from "./TimelineBudget";
 import LocationPreferences from "./LocationPreferences";
 import AIAnalysis from "./AIAnalysis";
 import QuickProjectType from "./QuickProjectType";
+import WhatHappensNext from "./WhatHappensNext";
 
 interface ProjectFormContentProps {
   formData: {
@@ -75,7 +76,7 @@ const ProjectFormContent = ({
     <main className="max-w-4xl mx-auto px-6 py-12">
       <form onSubmit={onSubmit} className="space-y-8">
         {/* AI-Enhanced Features */}
-        <AIAnalysis onSuggestionsApplied={handleAISuggestions} />
+        <AIAnalysis onSuggestionsApplied={handleAISuggestions} contextData={contextData} />
         
         <QuickProjectType onSuggestionsApplied={handleAISuggestions} />
 
@@ -104,6 +105,9 @@ const ProjectFormContent = ({
         <ProjectOverview formData={formData} onInputChange={onInputChange} />
         <TimelineBudget formData={formData} onInputChange={onInputChange} />
         <LocationPreferences formData={formData} onInputChange={onInputChange} />
+
+        {/* What Happens Next Section */}
+        <WhatHappensNext contextData={contextData} />
 
         <div className="text-center">
           <Button

@@ -7,13 +7,27 @@ import { directCreateAPI } from "../../config/api";
 
 interface AIAnalysisProps {
   onSuggestionsApplied: (suggestions: any) => void;
+  contextData?: any;
 }
 
-const AIAnalysis = ({ onSuggestionsApplied }: AIAnalysisProps) => {
+const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
   const [projectDescription, setProjectDescription] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [suggestions, setSuggestions] = useState(null);
   const [error, setError] = useState("");
+
+  const getContextualAIPrompt = () => {
+    if (contextData?.selectedCraft) {
+      return `e.g., Traditional ${contextData.selectedCraft.name} wall hanging with intricate patterns for living room, modern color palette, budget ₹15,000`;
+    }
+    if (contextData?.selectedMaterial) {
+      return `e.g., ${contextData.selectedMaterial.name} dining table with traditional finish for modern home, contemporary design, budget ₹25,000`;
+    }
+    if (contextData?.selectedTechnique) {
+      return `e.g., Handcrafted item using ${contextData.selectedTechnique.name} technique for home decor, artistic finish, budget ₹20,000`;
+    }
+    return "e.g., Traditional textile wall hanging with intricate patterns for living room...";
+  };
 
   const handleAnalyze = async () => {
     if (!projectDescription.trim()) {
@@ -66,7 +80,7 @@ const AIAnalysis = ({ onSuggestionsApplied }: AIAnalysisProps) => {
             Describe your project vision
           </label>
           <Textarea
-            placeholder="e.g., Traditional textile wall hanging with intricate patterns for living room..."
+            placeholder={getContextualAIPrompt()}
             value={projectDescription}
             onChange={(e) => setProjectDescription(e.target.value)}
             className="min-h-[100px] resize-none"
