@@ -30,8 +30,14 @@ const CraftFirst = () => {
   const handleContinue = () => {
     if (selectedCraft) {
       const craft = allCrafts.find(c => c.id === selectedCraft);
+      console.log('🎯 Selected craft for intelligent workflow:', craft);
+      
+      // Pass craft data to form page for intelligent filtering
       navigate('/collaborate/form', { 
-        state: { selectedCraft: craft } 
+        state: { 
+          selectedCraft: craft,
+          craftFirst: true // Flag to indicate this came from craft-first workflow
+        } 
       });
     }
   };
