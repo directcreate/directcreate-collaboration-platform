@@ -46,42 +46,42 @@ export class DiagnosticService {
     // Test 5: Compatible Crafts with sample material (GOTS Organic Cotton)
     await this.testEndpoint(
       'Compatible Crafts',
-      `${buildApiUrl(API_CONFIG.ENDPOINTS.crafts)}&material_id=90`,
+      `${API_CONFIG.BASE_URL}?path=compatible-crafts&material_id=90`,
       'Compatible crafts for GOTS Organic Cotton (ID: 90)'
     );
 
     // Test 6: Compatible Materials with sample craft (Ajrakh Printing)
     await this.testEndpoint(
       'Compatible Materials',
-      `${buildApiUrl(API_CONFIG.ENDPOINTS.materials)}&craft_id=167`,
+      `${API_CONFIG.BASE_URL}?path=compatible-materials&craft_id=167`,
       'Compatible materials for Ajrakh Printing (ID: 167)'
     );
 
     // Test 7: Compatible Techniques with sample parameters
     await this.testEndpoint(
       'Compatible Techniques',
-      `${buildApiUrl(API_CONFIG.ENDPOINTS.techniques)}&material_id=90&craft_id=167`,
+      `${API_CONFIG.BASE_URL}?path=compatible-techniques&material_id=90&craft_id=167`,
       'Compatible techniques for cotton + Ajrakh'
     );
 
     // Test 8: AI Material Suggestions
     await this.testEndpoint(
       'AI Material Suggestions',
-      `${buildApiUrl(API_CONFIG.ENDPOINTS.aiMaterialSuggestions)}&project_type=textile&style=traditional`,
+      buildApiUrl(API_CONFIG.ENDPOINTS.aiMaterialSuggestions) + '&project_type=textile&style=traditional',
       'AI material suggestions for textile project'
     );
 
     // Test 9: AI Project Analysis
     await this.testEndpoint(
       'AI Project Analysis',
-      `${buildApiUrl(API_CONFIG.ENDPOINTS.aiProjectAnalysis)}&description=traditional wall hanging&style=handwoven`,
+      buildApiUrl(API_CONFIG.ENDPOINTS.aiProjectAnalysis) + '&description=traditional wall hanging&style=handwoven',
       'AI project analysis for wall hanging'
     );
 
     // Test 10: Find Artisans
     await this.testEndpoint(
       'Find Artisans',
-      `${buildApiUrl(API_CONFIG.ENDPOINTS.findArtisans)}&material_id=90&craft_id=167`,
+      `${API_CONFIG.BASE_URL}?path=compatible-artisans&material_id=90&craft_id=167`,
       'Find artisans for cotton + Ajrakh'
     );
   }
