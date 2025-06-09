@@ -6,7 +6,7 @@ import { AlertTriangle } from "lucide-react";
 import { DiagnosticResult } from "./types";
 import { DiagnosticService } from "./diagnosticService";
 import DiagnosticControls from "./DiagnosticControls";
-import DiagnosticResult as DiagnosticResultComponent from "./DiagnosticResult";
+import DiagnosticResultComponent from "./DiagnosticResult";
 import DiagnosticEmptyState from "./DiagnosticEmptyState";
 
 const APIDiagnostics = () => {
