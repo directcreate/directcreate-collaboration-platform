@@ -1,7 +1,5 @@
-
-
 // DirectCreate API Configuration - LIVE PRODUCTION API
-const DIRECTCREATE_API = 'https://3053-2401-4900-417f-4067-19d6-c759-d006-21fa.ngrok-free.app/production-api.php';
+const DIRECTCREATE_API = 'https://c57d-2401-4900-417f-4067-19d6-c759-d006-21fa.ngrok-free.app/production-api.php';
 
 export const API_CONFIG = {
   BASE_URL: DIRECTCREATE_API,
@@ -83,4 +81,3 @@ export const logApiResponse = (endpoint: string, response: any, success: boolean
     });
   }
 };
-
