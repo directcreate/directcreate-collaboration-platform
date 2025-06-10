@@ -1,17 +1,19 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMaterials } from "../hooks/useMaterials";
+import { useIsMobile } from "../hooks/use-mobile";
 import MaterialFirstHeader from "../components/material-first/MaterialFirstHeader";
 import MaterialLoadingScreen from "../components/material-first/MaterialLoadingScreen";
 import MaterialErrorDisplay from "../components/material-first/MaterialErrorDisplay";
 import MaterialSearch from "../components/material-first/MaterialSearch";
 import MaterialGrid from "../components/material-first/MaterialGrid";
 import MaterialActions from "../components/material-first/MaterialActions";
+import MaterialStickyActions from "../components/material-first/MaterialStickyActions";
 import MaterialEmptyState from "../components/material-first/MaterialEmptyState";
 
 const MaterialFirst = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const { materials, loading, error, retryLoading } = useMaterials();
   const [selectedMaterial, setSelectedMaterial] = useState("");
   const [showAllMaterials, setShowAllMaterials] = useState(false);
@@ -43,7 +45,7 @@ const MaterialFirst = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <MaterialFirstHeader onBack={() => navigate("/")} />
 
-      <main className="flex-1 px-4 sm:px-6 py-6 sm:py-8 max-w-6xl mx-auto w-full">
+      <main className={`flex-1 px-4 sm:px-6 py-6 sm:py-8 max-w-6xl mx-auto w-full ${isMobile ? 'pb-32' : ''}`}>
         <div className="text-center mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-light text-foreground mb-4 sm:mb-6 leading-tight px-2">
             Choose Your
@@ -74,18 +76,33 @@ const MaterialFirst = () => {
                 showAllMaterials={showAllMaterials}
               />
               
-              <MaterialActions
-                selectedMaterialId={selectedMaterial}
-                allMaterials={allMaterials}
-                showAllMaterials={showAllMaterials}
-                totalMaterialsCount={materials.length}
-                onShowAll={() => setShowAllMaterials(true)}
-                onContinue={handleContinue}
-              />
+              {/* Keep original actions for desktop when no material is selected */}
+              {!isMobile && !selectedMaterial && (
+                <MaterialActions
+                  selectedMaterialId={selectedMaterial}
+                  allMaterials={allMaterials}
+                  showAllMaterials={showAllMaterials}
+                  totalMaterialsCount={materials.length}
+                  onShowAll={() => setShowAllMaterials(true)}
+                  onContinue={handleContinue}
+                />
+              )}
             </>
           )
         )}
       </main>
+
+      {/* Sticky Actions for both mobile and desktop */}
+      {materials.length > 0 && (
+        <MaterialStickyActions
+          selectedMaterialId={selectedMaterial}
+          allMaterials={allMaterials}
+          showAllMaterials={showAllMaterials}
+          totalMaterialsCount={materials.length}
+          onShowAll={() => setShowAllMaterials(true)}
+          onContinue={handleContinue}
+        />
+      )}
     </div>
   );
 };
