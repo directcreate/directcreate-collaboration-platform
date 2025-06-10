@@ -1,5 +1,5 @@
 
-// Production-ready DirectCreate Image Utilities
+// DirectCreate Image Utilities with Working Proxy System
 
 // High-quality categorized fallback images
 const FALLBACK_IMAGES = {
@@ -41,33 +41,41 @@ export const getCategorizedFallback = (craftName: string): string => {
   return FALLBACK_IMAGES.default;
 };
 
-// Production image source resolver - NO PROXY LOGIC
-export const getProductionImageSource = (craft: { bannerImage?: string; banner?: string; name: string }): string => {
-  // Priority 1: Real DirectCreate S3 bannerImage (from database)
-  if (craft.bannerImage && craft.bannerImage.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com')) {
-    return craft.bannerImage; // Direct S3 URL - NO PROXY NEEDED
+// Working image proxy helper function
+export const getProxiedImageUrl = (imageUrl: string): string => {
+  // Only proxy DirectCreate S3/CloudFront URLs
+  if (imageUrl.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com') ||
+      imageUrl.includes('d35l77wxi0xou3.cloudfront.net')) {
+    const encodedUrl = encodeURIComponent(imageUrl);
+    return `http://localhost:8081/api-proxy.php?path=image-proxy&url=${encodedUrl}`;
+  }
+  return imageUrl;
+};
+
+// Image source resolver using working proxy system
+export const getImageSource = (craft: { bannerImage?: string; banner?: string; name: string }): string => {
+  // Priority 1: Real DirectCreate S3/CloudFront images - USE PROXY
+  if (craft.bannerImage && 
+      (craft.bannerImage.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com') ||
+       craft.bannerImage.includes('d35l77wxi0xou3.cloudfront.net'))) {
+    return getProxiedImageUrl(craft.bannerImage);
   }
   
-  // Priority 2: CloudFront CDN bannerImage (from database)  
-  if (craft.bannerImage && craft.bannerImage.includes('d35l77wxi0xou3.cloudfront.net')) {
-    return craft.bannerImage; // Direct CloudFront URL - NO PROXY NEEDED
-  }
-  
-  // Priority 3: Any other valid HTTP bannerImage URL
+  // Priority 2: Any other valid HTTP bannerImage URL
   if (craft.bannerImage && craft.bannerImage.startsWith('http')) {
     return craft.bannerImage;
   }
   
-  // Priority 4: Banner field fallback (if it's a full URL)
+  // Priority 3: Banner field fallback (if it's a full URL)
   if (craft.banner && craft.banner.startsWith('http')) {
     return craft.banner;
   }
   
-  // Priority 5: High-quality categorized fallbacks
+  // Priority 4: High-quality categorized fallbacks
   return getCategorizedFallback(craft.name);
 };
 
-// Production error handler - minimal logging
+// Error handler with categorized fallbacks
 export const handleImageError = (craft: { id: string; name: string; bannerImage?: string }) => {
   if (process.env.NODE_ENV === 'development') {
     console.log(`Image failed for ${craft.name}, using fallback`);

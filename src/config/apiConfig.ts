@@ -1,4 +1,3 @@
-
 // DirectCreate API Configuration - PRODUCTION READY
 const DIRECTCREATE_API = 'http://localhost:8081/api-proxy.php';
 
@@ -20,7 +19,8 @@ export const API_CONFIG = {
     findArtisans: '?path=wizard/find-artisans',
     completeWizard: '?path=wizard/complete-wizard',
     aiProjectAnalysis: '?path=ai-project-analysis',
-    aiMaterialSuggestions: '?path=ai-material-suggestions'
+    aiMaterialSuggestions: '?path=ai-material-suggestions',
+    imageProxy: '?path=image-proxy&url=' // Add image proxy endpoint
   }
 };
 
@@ -31,6 +31,12 @@ export const buildApiUrl = (endpoint: string) => {
     console.log(`🔗 API URL: ${fullUrl}`);
   }
   return fullUrl;
+};
+
+// Helper function to build proxied image URLs
+export const buildProxiedImageUrl = (imageUrl: string) => {
+  const encodedUrl = encodeURIComponent(imageUrl);
+  return buildApiUrl(`${API_CONFIG.ENDPOINTS.imageProxy}${encodedUrl}`);
 };
 
 // Production health check function
