@@ -1,12 +1,13 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Camera, MessageCircle, Hammer, Package, Settings, Grid3X3 } from "lucide-react";
 import HamburgerMenu from "@/components/navigation/HamburgerMenu";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [projectDescription, setProjectDescription] = useState("");
 
   const startingPoints = [
     {
@@ -58,6 +59,7 @@ const Index = () => {
   };
 
   const handleStartCreating = () => {
+    // TODO: Pass the projectDescription to the next page or store it
     navigate('/collaborate/visual/upload');
   };
 
@@ -93,8 +95,16 @@ const Index = () => {
           {/* Description Input Area */}
           <div className="mb-8">
             <div className="bg-muted/30 rounded-2xl p-6 mb-6 border border-border/20">
-              <p className="text-muted-foreground mb-4">Describe what you'd like to create...</p>
+              <h2 className="text-xl text-foreground mb-4">Describe what you'd like to create...</h2>
               <p className="text-sm text-muted-foreground mb-6">Share your vision or choose a starting point below</p>
+              
+              <Textarea
+                placeholder="Enter your idea, project description, or keywords here..."
+                value={projectDescription}
+                onChange={(e) => setProjectDescription(e.target.value)}
+                className="min-h-[120px] mb-6 text-base resize-none"
+              />
+              
               <Button
                 onClick={handleStartCreating}
                 size="lg"
