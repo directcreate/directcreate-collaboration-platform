@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import TestPage from "./pages/TestPage";
 import Discover from "./pages/Discover";
 import Connect from "./pages/Connect";
 import VisualUpload from "./pages/VisualUpload";
@@ -34,6 +35,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/test" element={<TestPage />} />
           <Route path="/discover" element={<Discover />} />
           <Route path="/connect" element={<Connect />} />
           <Route path="/collaborate/visual/upload" element={<VisualUpload />} />
