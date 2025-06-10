@@ -1,5 +1,5 @@
 
-// DirectCreate Image Utilities with Working Proxy System
+import { API_CONFIG } from '../../../config/apiConfig';
 
 // High-quality categorized fallback images
 const FALLBACK_IMAGES = {
@@ -41,13 +41,13 @@ export const getCategorizedFallback = (craftName: string): string => {
   return FALLBACK_IMAGES.default;
 };
 
-// Working image proxy helper function
+// Working image proxy helper function using the correct API endpoint
 export const getProxiedImageUrl = (imageUrl: string): string => {
   // Only proxy DirectCreate S3/CloudFront URLs
   if (imageUrl.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com') ||
       imageUrl.includes('d35l77wxi0xou3.cloudfront.net')) {
     const encodedUrl = encodeURIComponent(imageUrl);
-    return `http://localhost:8081/api-proxy.php?path=image-proxy&url=${encodedUrl}`;
+    return `${API_CONFIG.BASE_URL}?path=image-proxy&url=${encodedUrl}`;
   }
   return imageUrl;
 };
