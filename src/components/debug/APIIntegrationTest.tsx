@@ -107,11 +107,12 @@ const APIIntegrationTest = () => {
   };
 
   const getStatusBadge = (result: TestResult | undefined) => {
-    if (!result) {
+    // Handle null/undefined result
+    if (!result || !result.status) {
       return (
         <Badge variant="outline" className="gap-1 border-gray-200 text-gray-500 bg-gray-50">
           <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-          Pending
+          Not tested
         </Badge>
       );
     }
@@ -148,9 +149,9 @@ const APIIntegrationTest = () => {
     }
   };
 
-  const successCount = testResults.filter(r => r.status === 'success').length;
-  const errorCount = testResults.filter(r => r.status === 'error').length;
-  const totalDataItems = testResults.reduce((sum, r) => sum + (r.itemCount || 0), 0);
+  const successCount = testResults.filter(r => r && r.status === 'success').length;
+  const errorCount = testResults.filter(r => r && r.status === 'error').length;
+  const totalDataItems = testResults.reduce((sum, r) => sum + (r?.itemCount || 0), 0);
 
   // Auto-run tests on component mount
   useEffect(() => {
@@ -213,7 +214,7 @@ const APIIntegrationTest = () => {
           <ScrollArea className="h-96">
             <div className="space-y-4">
               {endpoints.map((endpoint, index) => {
-                const result = testResults.find(r => r.endpoint === endpoint.name);
+                const result = testResults.find(r => r?.endpoint === endpoint.name);
                 
                 return (
                   <div key={endpoint.name} className="border rounded-lg p-4 space-y-3">
