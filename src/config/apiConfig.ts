@@ -1,5 +1,6 @@
+
 // DirectCreate API Configuration - PRODUCTION READY
-const DIRECTCREATE_API = 'http://localhost:8081/api-proxy.php';
+const DIRECTCREATE_API = 'http://localhost:8081/production-api.php';
 
 export const API_CONFIG = {
   BASE_URL: DIRECTCREATE_API,
