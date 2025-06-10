@@ -1,6 +1,7 @@
 
-// DirectCreate API Configuration - PRODUCTION READY
-const DIRECTCREATE_API = 'http://localhost:8081/production-api.php';
+
+// DirectCreate API Configuration - LIVE PRODUCTION API
+const DIRECTCREATE_API = 'https://3053-2401-4900-417f-4067-19d6-c759-d006-21fa.ngrok-free.app/production-api.php';
 
 export const API_CONFIG = {
   BASE_URL: DIRECTCREATE_API,
@@ -29,7 +30,7 @@ export const API_CONFIG = {
 export const buildApiUrl = (endpoint: string) => {
   const fullUrl = `${API_CONFIG.BASE_URL}${endpoint}`;
   if (process.env.NODE_ENV === 'development') {
-    console.log(`🔗 API URL: ${fullUrl}`);
+    console.log(`🔗 Live API URL: ${fullUrl}`);
   }
   return fullUrl;
 };
@@ -40,7 +41,7 @@ export const buildProxiedImageUrl = (imageUrl: string) => {
   return buildApiUrl(`${API_CONFIG.ENDPOINTS.imageProxy}${encodedUrl}`);
 };
 
-// Production health check function
+// Live API health check function
 export const checkApiHealth = async () => {
   try {
     const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.health), {
@@ -58,26 +59,27 @@ export const checkApiHealth = async () => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('❌ API Health Check Failed:', error);
+    console.error('❌ Live API Health Check Failed:', error);
     return { success: false, message: `Health check failed: ${error.message}` };
   }
 };
 
-// Production API call logging (development only)
+// Live API call logging (development only)
 export const logApiCall = (endpoint: string, method: string = 'GET') => {
   if (process.env.NODE_ENV === 'development') {
-    console.log(`📡 API Call: ${method} ${buildApiUrl(endpoint)}`);
+    console.log(`📡 Live API Call: ${method} ${buildApiUrl(endpoint)}`);
   }
 };
 
-// Production response logging (development only)
+// Live API response logging (development only)
 export const logApiResponse = (endpoint: string, response: any, success: boolean) => {
   if (process.env.NODE_ENV === 'development') {
     const status = success ? '✅' : '❌';
-    console.log(`${status} API Response for ${endpoint}:`, {
+    console.log(`${status} Live API Response for ${endpoint}:`, {
       success,
       dataLength: response?.data?.length || 0,
       message: response?.message
     });
   }
 };
+
