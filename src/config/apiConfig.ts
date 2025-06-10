@@ -26,6 +26,31 @@ export const buildApiUrl = (endpoint: string) => {
   return fullUrl;
 };
 
+// Health check function - now exported for use in components
+export const checkApiHealth = async () => {
+  try {
+    console.log('🔍 Testing API health...');
+    const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.health), {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('✅ API Health Check Response:', data);
+    return data;
+  } catch (error) {
+    console.error('❌ API Health Check Failed:', error);
+    return { success: false, message: `Health check failed: ${error.message}` };
+  }
+};
+
 // Add debugging helper
 export const logApiCall = (endpoint: string, method: string = 'GET') => {
   console.log(`📡 API Call: ${method} ${buildApiUrl(endpoint)}`);
