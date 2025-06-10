@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import APITester from "@/components/debug/APITester";
 import ConnectionStatus from "@/components/debug/ConnectionStatus";
 import APIDiagnostics from "@/components/debug/APIDiagnostics";
+import APIIntegrationTest from "../components/debug/APIIntegrationTest";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted">
       
       {/* Add connection status to header */}
       <header className="px-4 sm:px-6 py-4 flex items-center justify-between border-b border-border/20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -62,6 +62,19 @@ const Index = () => {
             </p>
           </div>
           <APITester />
+        </div>
+      </section>
+
+      {/* Add API Integration Test Section */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">API Integration Status</h2>
+            <p className="text-muted-foreground">
+              Testing DirectCreate Enhanced ML API integration
+            </p>
+          </div>
+          <APIIntegrationTest />
         </div>
       </section>
 
