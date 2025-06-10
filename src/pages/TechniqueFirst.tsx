@@ -1,6 +1,7 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Wrench, Plus, Search } from "lucide-react";
+import { ArrowLeft, Wrench, Plus, Search, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -14,6 +15,36 @@ const TechniqueFirst = () => {
   const [techniques, setTechniques] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [expandedTechniques, setExpandedTechniques] = useState(new Set());
+
+  // Clean HTML content and extract plain text
+  const cleanDescription = (htmlDescription) => {
+    if (!htmlDescription) return '';
+    
+    // Create a temporary div to extract text from HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlDescription;
+    const cleanText = tempDiv.textContent || tempDiv.innerText || '';
+    
+    return cleanText.trim();
+  };
+
+  // Truncate text to 3 lines (approximately 150 characters)
+  const truncateDescription = (description, maxLength = 150) => {
+    const cleanText = cleanDescription(description);
+    if (cleanText.length <= maxLength) return cleanText;
+    return cleanText.substring(0, maxLength).trim() + '...';
+  };
+
+  const toggleExpanded = (techniqueId) => {
+    const newExpanded = new Set(expandedTechniques);
+    if (newExpanded.has(techniqueId)) {
+      newExpanded.delete(techniqueId);
+    } else {
+      newExpanded.add(techniqueId);
+    }
+    setExpandedTechniques(newExpanded);
+  };
 
   // Category icon mapping
   const getTechniqueIcon = (category) => {
@@ -71,7 +102,7 @@ const TechniqueFirst = () => {
 
   const filteredTechniques = (showAllTechniques ? allTechniques : initialTechniques).filter(technique =>
     technique.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    technique.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    cleanDescription(technique.description).toLowerCase().includes(searchTerm.toLowerCase()) ||
     technique.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -105,6 +136,72 @@ const TechniqueFirst = () => {
       </div>
     );
   }
+
+  const TechniqueCard = ({ technique }) => {
+    const isExpanded = expandedTechniques.has(technique.id);
+    const cleanText = cleanDescription(technique.description);
+    const truncatedText = truncateDescription(technique.description);
+    const shouldShowReadMore = cleanText.length > 150;
+
+    return (
+      <div
+        key={technique.id}
+        onClick={() => setSelectedTechnique(technique.id)}
+        className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg border-2 ${
+          selectedTechnique === technique.id
+            ? 'border-primary shadow-lg'
+            : 'border-transparent hover:border-border'
+        }`}
+      >
+        <div className="text-center">
+          <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{technique.icon}</div>
+          <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
+            {technique.name}
+          </h3>
+          <div className="text-muted-foreground text-xs sm:text-sm font-medium mb-3">
+            <p className="leading-relaxed">
+              {isExpanded ? cleanText : truncatedText}
+            </p>
+            {shouldShowReadMore && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleExpanded(technique.id);
+                }}
+                className="text-primary text-xs hover:underline flex items-center gap-1 mt-2 mx-auto"
+              >
+                {isExpanded ? (
+                  <>Show Less <ChevronUp className="w-3 h-3" /></>
+                ) : (
+                  <>Read More <ChevronDown className="w-3 h-3" /></>
+                )}
+              </button>
+            )}
+          </div>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <div className="flex justify-between">
+              <span>Category:</span>
+              <span className="font-medium">{technique.category}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Difficulty:</span>
+              <span className="font-medium">{technique.difficulty}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Time:</span>
+              <span className="font-medium">{technique.time_required}</span>
+            </div>
+            <div className="mt-2 pt-2 border-t border-border/30">
+              <span className="text-xs text-muted-foreground/80">
+                Tools: {Array.isArray(technique.tools_needed) ? technique.tools_needed.slice(0, 2).join(", ") : technique.tools_needed}
+                {Array.isArray(technique.tools_needed) && technique.tools_needed.length > 2 && "..."}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -153,90 +250,14 @@ const TechniqueFirst = () => {
           <ScrollArea className="h-[600px] mb-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-6">
               {filteredTechniques.map((technique) => (
-                <div
-                  key={technique.id}
-                  onClick={() => setSelectedTechnique(technique.id)}
-                  className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg border-2 ${
-                    selectedTechnique === technique.id
-                      ? 'border-primary shadow-lg'
-                      : 'border-transparent hover:border-border'
-                  }`}
-                >
-                  <div className="text-center">
-                    <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{technique.icon}</div>
-                    <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
-                      {technique.name}
-                    </h3>
-                    <p className="text-muted-foreground text-xs sm:text-sm font-medium mb-3">
-                      {technique.description}
-                    </p>
-                    <div className="text-xs text-muted-foreground space-y-1">
-                      <div className="flex justify-between">
-                        <span>Category:</span>
-                        <span className="font-medium">{technique.category}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Difficulty:</span>
-                        <span className="font-medium">{technique.difficulty}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Time:</span>
-                        <span className="font-medium">{technique.time_required}</span>
-                      </div>
-                      <div className="mt-2 pt-2 border-t border-border/30">
-                        <span className="text-xs text-muted-foreground/80">
-                          Tools: {Array.isArray(technique.tools_needed) ? technique.tools_needed.slice(0, 2).join(", ") : technique.tools_needed}
-                          {Array.isArray(technique.tools_needed) && technique.tools_needed.length > 2 && "..."}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <TechniqueCard key={technique.id} technique={technique} />
               ))}
             </div>
           </ScrollArea>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
             {filteredTechniques.map((technique) => (
-              <div
-                key={technique.id}
-                onClick={() => setSelectedTechnique(technique.id)}
-                className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg border-2 ${
-                  selectedTechnique === technique.id
-                    ? 'border-primary shadow-lg'
-                    : 'border-transparent hover:border-border'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{technique.icon}</div>
-                  <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
-                    {technique.name}
-                  </h3>
-                  <p className="text-muted-foreground text-xs sm:text-sm font-medium mb-3">
-                    {technique.description}
-                  </p>
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    <div className="flex justify-between">
-                      <span>Category:</span>
-                      <span className="font-medium">{technique.category}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Difficulty:</span>
-                      <span className="font-medium">{technique.difficulty}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Time:</span>
-                      <span className="font-medium">{technique.time_required}</span>
-                    </div>
-                    <div className="mt-2 pt-2 border-t border-border/30">
-                      <span className="text-xs text-muted-foreground/80">
-                        Tools: {Array.isArray(technique.tools_needed) ? technique.tools_needed.slice(0, 2).join(", ") : technique.tools_needed}
-                        {Array.isArray(technique.tools_needed) && technique.tools_needed.length > 2 && "..."}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <TechniqueCard key={technique.id} technique={technique} />
             ))}
           </div>
         )}
