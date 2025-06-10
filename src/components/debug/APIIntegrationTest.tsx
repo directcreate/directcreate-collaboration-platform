@@ -106,7 +106,16 @@ const APIIntegrationTest = () => {
     }
   };
 
-  const getStatusBadge = (result: TestResult) => {
+  const getStatusBadge = (result: TestResult | undefined) => {
+    if (!result) {
+      return (
+        <Badge variant="outline" className="gap-1 border-gray-200 text-gray-500 bg-gray-50">
+          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+          Pending
+        </Badge>
+      );
+    }
+
     switch (result.status) {
       case 'success':
         return (
@@ -130,7 +139,12 @@ const APIIntegrationTest = () => {
           </Badge>
         );
       default:
-        return null;
+        return (
+          <Badge variant="outline" className="gap-1 border-gray-200 text-gray-500 bg-gray-50">
+            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+            Unknown
+          </Badge>
+        );
     }
   };
 
