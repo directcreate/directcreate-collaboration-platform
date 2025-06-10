@@ -16,6 +16,7 @@ export const artisansService = {
       const response = await fetch(`${DIRECTCREATE_API}?path=compatible-artisans&${params}`, {
         method: 'GET',
         headers: {
+          'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },

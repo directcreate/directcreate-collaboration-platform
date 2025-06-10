@@ -11,6 +11,7 @@ export const techniquesService = {
       const response = await fetch(`${DIRECTCREATE_API}?path=techniques`, {
         method: 'GET',
         headers: {
+          'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
@@ -54,6 +55,7 @@ export const techniquesService = {
       const response = await fetch(`${DIRECTCREATE_API}?path=compatible-techniques&${params}`, {
         method: 'GET',
         headers: {
+          'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },

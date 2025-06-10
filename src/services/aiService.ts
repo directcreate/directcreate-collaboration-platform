@@ -9,7 +9,14 @@ export const aiService = {
     
     try {
       console.log('🤖 Sending project analysis request to DirectCreate Enhanced ML AI...');
-      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.aiProjectAnalysis + '&' + params.toString()));
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.aiProjectAnalysis + '&' + params.toString()), {
+        method: 'GET',
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -32,7 +39,14 @@ export const aiService = {
     
     try {
       console.log('🤖 Requesting AI material suggestions from DirectCreate Enhanced ML...');
-      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.aiMaterialSuggestions + '&' + params.toString()));
+      const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.aiMaterialSuggestions + '&' + params.toString()), {
+        method: 'GET',
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

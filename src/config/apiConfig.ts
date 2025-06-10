@@ -47,6 +47,7 @@ export const checkApiHealth = async () => {
     const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.health), {
       method: 'GET',
       headers: {
+        'ngrok-skip-browser-warning': 'true',
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },

@@ -13,6 +13,7 @@ export const materialsService = {
       const response = await fetch(`${DIRECTCREATE_API}${endpoint}`, {
         method: 'GET',
         headers: {
+          'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
@@ -55,6 +56,7 @@ export const materialsService = {
       const response = await fetch(`${DIRECTCREATE_API}?path=compatible-materials&craft_id=${craftId}`, {
         method: 'GET',
         headers: {
+          'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
