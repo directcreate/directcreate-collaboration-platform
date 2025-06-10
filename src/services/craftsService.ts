@@ -1,13 +1,12 @@
-
 import { API_CONFIG } from '../config/apiConfig';
 
 const DIRECTCREATE_API = API_CONFIG.BASE_URL;
 
 export const craftsService = {
-  // Get crafts from real DirectCreate database  
+  // Get crafts from real DirectCreate Enhanced ML API
   getCrafts: async () => {
     try {
-      console.log('🔄 Fetching crafts from DirectCreate database...');
+      console.log('🔄 Fetching crafts from DirectCreate Enhanced ML API...');
       const response = await fetch(`${DIRECTCREATE_API}?path=crafts`, {
         method: 'GET',
         headers: {
@@ -21,7 +20,7 @@ export const craftsService = {
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate crafts loaded:', data);
+      console.log('✅ DirectCreate Enhanced ML crafts loaded:', data);
       
       // Debug: Log raw API response
       if (data.data && data.data.length > 0) {
@@ -57,13 +56,13 @@ export const craftsService = {
         return {
           success: true,
           data: transformedCrafts,
-          message: "Real crafts loaded from DirectCreate database"
+          message: "Real crafts loaded from DirectCreate Enhanced ML API"
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate API Error:', error);
+      console.error('❌ DirectCreate Enhanced ML API Error:', error);
       return {
         success: false,
         data: [],

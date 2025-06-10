@@ -8,7 +8,7 @@ export const aiService = {
     if (imageUrl) params.append('image_url', imageUrl);
     
     try {
-      console.log('🤖 Sending project analysis request to DirectCreate AI...');
+      console.log('🤖 Sending project analysis request to DirectCreate Enhanced ML AI...');
       const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.aiProjectAnalysis + '&' + params.toString()));
       
       if (!response.ok) {
@@ -16,11 +16,11 @@ export const aiService = {
       }
       
       const data = await response.json();
-      console.log('✅ AI project analysis response:', data);
+      console.log('✅ Enhanced ML AI project analysis response:', data);
       
       return data.success ? data : { success: false, message: 'AI analysis failed' };
     } catch (error) {
-      console.error('❌ AI project analysis error:', error);
+      console.error('❌ Enhanced ML AI project analysis error:', error);
       return { success: false, message: `Connection error: ${error.message}` };
     }
   },
@@ -31,7 +31,7 @@ export const aiService = {
     params.append('style', style);
     
     try {
-      console.log('🤖 Requesting AI material suggestions from DirectCreate...');
+      console.log('🤖 Requesting AI material suggestions from DirectCreate Enhanced ML...');
       const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.aiMaterialSuggestions + '&' + params.toString()));
       
       if (!response.ok) {
@@ -39,11 +39,11 @@ export const aiService = {
       }
       
       const data = await response.json();
-      console.log('✅ AI material suggestions response:', data);
+      console.log('✅ Enhanced ML AI material suggestions response:', data);
       
       return data.success ? data : { success: false, message: 'AI suggestions failed' };
     } catch (error) {
-      console.error('❌ AI material suggestions error:', error);
+      console.error('❌ Enhanced ML AI material suggestions error:', error);
       return { success: false, message: `Connection error: ${error.message}` };
     }
   }

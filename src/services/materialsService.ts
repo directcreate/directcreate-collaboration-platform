@@ -9,7 +9,7 @@ export const materialsService = {
     logApiCall(endpoint);
     
     try {
-      console.log('🔄 Fetching materials from DirectCreate database...');
+      console.log('🔄 Fetching materials from DirectCreate Enhanced ML API...');
       const response = await fetch(`${DIRECTCREATE_API}${endpoint}`, {
         method: 'GET',
         headers: {
@@ -31,13 +31,13 @@ export const materialsService = {
         return {
           success: true,
           data: data.data,
-          message: "Real materials loaded from DirectCreate database"
+          message: "Real materials loaded from DirectCreate Enhanced ML API"
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate API Error:', error);
+      console.error('❌ DirectCreate Enhanced ML API Error:', error);
       logApiResponse(endpoint, null, false);
       return {
         success: false,

@@ -4,10 +4,10 @@ import { API_CONFIG } from '../config/apiConfig';
 const DIRECTCREATE_API = API_CONFIG.BASE_URL;
 
 export const techniquesService = {
-  // Get techniques from real DirectCreate database
+  // Get techniques from real DirectCreate Enhanced ML API
   getTechniques: async () => {
     try {
-      console.log('🔄 Fetching techniques from DirectCreate database...');
+      console.log('🔄 Fetching techniques from DirectCreate Enhanced ML API...');
       const response = await fetch(`${DIRECTCREATE_API}?path=techniques`, {
         method: 'GET',
         headers: {
@@ -21,19 +21,19 @@ export const techniquesService = {
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate techniques loaded:', data);
+      console.log('✅ DirectCreate Enhanced ML techniques loaded:', data);
       
       if (data.success && Array.isArray(data.data)) {
         return {
           success: true,
           data: data.data,
-          message: "Real techniques loaded from DirectCreate database"
+          message: "Real techniques loaded from DirectCreate Enhanced ML API"
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate API Error:', error);
+      console.error('❌ DirectCreate Enhanced ML API Error:', error);
       return {
         success: false,
         data: [],

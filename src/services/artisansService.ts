@@ -26,13 +26,13 @@ export const artisansService = {
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate compatible artisans loaded:', data);
+      console.log('✅ DirectCreate Enhanced ML compatible artisans loaded:', data);
       
       if (data.success && Array.isArray(data.data)) {
         return {
           success: true,
           data: data.data,
-          message: "Compatible artisans loaded from DirectCreate database"
+          message: "Compatible artisans loaded from DirectCreate Enhanced ML API"
         };
       } else {
         throw new Error('Invalid API response format');

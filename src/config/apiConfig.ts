@@ -1,10 +1,11 @@
 
-// DirectCreate API Configuration - New Stable Tunnel
-const DIRECTCREATE_API = 'https://genres-competent-anger-clusters.trycloudflare.com/api-proxy.php';
+// DirectCreate API Configuration - New Enhanced ML API Endpoint
+const DIRECTCREATE_API = 'https://angry-regression-respondent-served.trycloudflare.com/enhanced-ml-api.php';
 
 export const API_CONFIG = {
   BASE_URL: DIRECTCREATE_API,
   ENDPOINTS: {
+    health: '?path=health',
     materials: '?path=materials',
     crafts: '?path=crafts', 
     techniques: '?path=techniques',
