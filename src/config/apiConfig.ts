@@ -1,5 +1,6 @@
-// DirectCreate API Configuration - New Enhanced ML API Endpoint
-const DIRECTCREATE_API = 'https://devel-dx-purchased-intend.trycloudflare.com/enhanced-ml-api.php';
+
+// DirectCreate API Configuration - PRODUCTION READY
+const DIRECTCREATE_API = 'http://localhost:8081/api-proxy.php';
 
 export const API_CONFIG = {
   BASE_URL: DIRECTCREATE_API,
@@ -8,6 +9,11 @@ export const API_CONFIG = {
     materials: '?path=materials',
     crafts: '?path=crafts', 
     techniques: '?path=techniques',
+    artisans: '?path=artisans',
+    compatibleCrafts: '?path=compatible-crafts',
+    compatibleMaterials: '?path=compatible-materials',
+    compatibleTechniques: '?path=compatible-techniques',
+    compatibleArtisans: '?path=compatible-artisans',
     initialize: '?path=wizard/initialize',
     saveStep: '?path=wizard/save-step',
     analyzeVision: '?path=wizard/analyze-vision',
@@ -18,17 +24,18 @@ export const API_CONFIG = {
   }
 };
 
-// Enhanced helper function to build API URLs with logging
+// Production helper function to build API URLs
 export const buildApiUrl = (endpoint: string) => {
   const fullUrl = `${API_CONFIG.BASE_URL}${endpoint}`;
-  console.log(`🔗 Building API URL: ${fullUrl}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`🔗 API URL: ${fullUrl}`);
+  }
   return fullUrl;
 };
 
-// Health check function - now exported for use in components
+// Production health check function
 export const checkApiHealth = async () => {
   try {
-    console.log('🔍 Testing API health...');
     const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.health), {
       method: 'GET',
       headers: {
@@ -42,7 +49,6 @@ export const checkApiHealth = async () => {
     }
     
     const data = await response.json();
-    console.log('✅ API Health Check Response:', data);
     return data;
   } catch (error) {
     console.error('❌ API Health Check Failed:', error);
@@ -50,19 +56,21 @@ export const checkApiHealth = async () => {
   }
 };
 
-// Add debugging helper
+// Production API call logging (development only)
 export const logApiCall = (endpoint: string, method: string = 'GET') => {
-  console.log(`📡 API Call: ${method} ${buildApiUrl(endpoint)}`);
-  console.log(`🕐 Timestamp: ${new Date().toISOString()}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`📡 API Call: ${method} ${buildApiUrl(endpoint)}`);
+  }
 };
 
-// Add response logging helper
+// Production response logging (development only)
 export const logApiResponse = (endpoint: string, response: any, success: boolean) => {
-  const status = success ? '✅' : '❌';
-  console.log(`${status} API Response for ${endpoint}:`, {
-    success,
-    dataLength: response?.data?.length || 0,
-    message: response?.message,
-    timestamp: new Date().toISOString()
-  });
+  if (process.env.NODE_ENV === 'development') {
+    const status = success ? '✅' : '❌';
+    console.log(`${status} API Response for ${endpoint}:`, {
+      success,
+      dataLength: response?.data?.length || 0,
+      message: response?.message
+    });
+  }
 };
