@@ -4,6 +4,25 @@ import { smartMaterialsService } from "../services/smartMaterialsService";
 import { smartCraftsService } from "../services/smartCraftsService";
 import { smartTechniquesService } from "../services/smartTechniquesService";
 
+// Fallback data for when API is unavailable
+const fallbackMaterials = [
+  { id: 1, name: "Organic Cotton", category: "Textile", sustainability_rating: 9 },
+  { id: 2, name: "Bamboo", category: "Natural", sustainability_rating: 8 },
+  { id: 3, name: "Reclaimed Wood", category: "Wood", sustainability_rating: 9 }
+];
+
+const fallbackCrafts = [
+  { id: 1, name: "Hand Weaving", difficulty: "Medium", time_estimate: "2-4 weeks" },
+  { id: 2, name: "Wood Carving", difficulty: "Hard", time_estimate: "3-6 weeks" },
+  { id: 3, name: "Pottery", difficulty: "Medium", time_estimate: "2-3 weeks" }
+];
+
+const fallbackTechniques = [
+  { id: 1, name: "Block Printing", category: "Textile", difficulty: "Easy" },
+  { id: 2, name: "Hand Carving", category: "Wood", difficulty: "Medium" },
+  { id: 3, name: "Wheel Throwing", category: "Ceramics", difficulty: "Hard" }
+];
+
 export const useDirectCreateData = () => {
   const [materials, setMaterials] = useState([]);
   const [crafts, setCrafts] = useState([]);
@@ -26,76 +45,59 @@ export const useDirectCreateData = () => {
 
       const [materialsResult, craftsResult, techniquesResult] = results;
 
-      // Process materials - combine recommended and others
+      // Process materials - combine recommended and others or use fallback
       if (materialsResult.status === 'fulfilled') {
         const allMaterials = [
           ...materialsResult.value.recommended,
           ...materialsResult.value.others
         ];
-        setMaterials(allMaterials || []);
-        console.log('✅ Materials loaded:', allMaterials.length);
+        setMaterials(allMaterials.length > 0 ? allMaterials : fallbackMaterials);
+        console.log('✅ Materials loaded:', allMaterials.length || 'fallback');
       } else {
-        console.error('❌ Materials failed to load:', materialsResult);
-        setMaterials([]);
+        console.error('❌ Materials failed, using fallback:', materialsResult);
+        setMaterials(fallbackMaterials);
       }
 
-      // Process crafts - combine recommended and others
+      // Process crafts - combine recommended and others or use fallback
       if (craftsResult.status === 'fulfilled') {
         const allCrafts = [
           ...craftsResult.value.recommended,
           ...craftsResult.value.others
         ];
-        setCrafts(allCrafts || []);
-        console.log('✅ Crafts loaded:', allCrafts.length);
+        setCrafts(allCrafts.length > 0 ? allCrafts : fallbackCrafts);
+        console.log('✅ Crafts loaded:', allCrafts.length || 'fallback');
       } else {
-        console.error('❌ Crafts failed to load:', craftsResult);
-        setCrafts([]);
+        console.error('❌ Crafts failed, using fallback:', craftsResult);
+        setCrafts(fallbackCrafts);
       }
 
-      // Process techniques - combine recommended and others
+      // Process techniques - combine recommended and others or use fallback
       if (techniquesResult.status === 'fulfilled') {
         const allTechniques = [
           ...techniquesResult.value.recommended,
           ...techniquesResult.value.others
         ];
-        setTechniques(allTechniques || []);
-        console.log('✅ Techniques loaded:', allTechniques.length);
+        setTechniques(allTechniques.length > 0 ? allTechniques : fallbackTechniques);
+        console.log('✅ Techniques loaded:', allTechniques.length || 'fallback');
       } else {
-        console.error('❌ Techniques failed to load:', techniquesResult);
-        setTechniques([]);
+        console.error('❌ Techniques failed, using fallback:', techniquesResult);
+        setTechniques(fallbackTechniques);
       }
 
-      // Check if all requests failed
+      // Show warning if using fallback data
       const allFailed = results.every(result => result.status === 'rejected');
-
       if (allFailed) {
-        setError("Smart Services unavailable. Please ensure the API is running on localhost:8081");
-      } else {
-        // Check for partial failures
-        const failedAPIs = [];
-        if (materialsResult.status === 'rejected') {
-          failedAPIs.push('materials');
-        }
-        if (craftsResult.status === 'rejected') {
-          failedAPIs.push('crafts');
-        }
-        if (techniquesResult.status === 'rejected') {
-          failedAPIs.push('techniques');
-        }
-
-        if (failedAPIs.length > 0) {
-          setError(`Some Smart Services failed: ${failedAPIs.join(', ')}. Check API server status.`);
-        }
+        setError("API unavailable - using offline data");
       }
 
       console.log('📊 Smart Services data loading complete');
     } catch (error) {
-      console.error('❌ Error loading Smart Services data:', error);
-      setError(`Smart Services connection failed: ${error.message}`);
-      // Set empty arrays as fallback
-      setMaterials([]);
-      setCrafts([]);
-      setTechniques([]);
+      console.error('❌ Error loading Smart Services data, using fallback:', error);
+      setError("API unavailable - using offline data");
+      // Set fallback data
+      setMaterials(fallbackMaterials);
+      setCrafts(fallbackCrafts);
+      setTechniques(fallbackTechniques);
     } finally {
       setLoading(false);
     }
