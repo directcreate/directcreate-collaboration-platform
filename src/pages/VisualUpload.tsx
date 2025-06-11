@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,14 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { UploadCloud, CheckCircle2, XCircle } from "lucide-react";
+import { UploadCloud, CheckCircle2, Package, Hammer, Settings, Grid3X3 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { descriptionAnalysisService } from "@/services/descriptionAnalysisService";
 
 const VisualUpload = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [selectedPath, setSelectedPath] = useState("");
   const [detailedDescription, setDetailedDescription] = useState("");
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -49,15 +49,11 @@ const VisualUpload = () => {
           title: "Intelligent analysis complete!",
           description: "Automatically routing to the best path based on your description.",
         });
-        // Implement auto-routing logic here based on analysisResult.suggestedPaths
-        // For example, navigate(analysisResult.suggestedPaths[0]);
       } else {
         toast({
           title: "Analysis complete!",
           description: "Select a path below to continue.",
         });
-        // Optionally, display suggested paths to the user
-        setSelectedPath("visual"); // Set a default path
       }
     } catch (error) {
       toast({
@@ -71,18 +67,12 @@ const VisualUpload = () => {
   };
 
   const handlePathSelection = (pathId: string) => {
-    console.log('🎯 Path selected:', pathId, 'with description:', initialDescription);
+    console.log('🎯 Path selected:', pathId, 'with description:', detailedDescription);
     
     // Create URL with description parameter for intelligent filtering
-    const descriptionParam = initialDescription ? `?description=${encodeURIComponent(initialDescription)}` : '';
+    const descriptionParam = detailedDescription ? `?description=${encodeURIComponent(detailedDescription)}` : '';
     
     switch (pathId) {
-      case 'visual':
-        setSelectedPath('visual');
-        break;
-      case 'text':
-        setSelectedPath('text');
-        break;
       case 'materials':
         navigate(`/collaborate/material${descriptionParam}`);
         break;
@@ -92,10 +82,47 @@ const VisualUpload = () => {
       case 'techniques':
         navigate(`/collaborate/technique${descriptionParam}`);
         break;
+      case 'visual':
+        // Stay on current page but show visual options
+        break;
+      case 'text':
+        // Stay on current page but focus on text description
+        break;
       default:
         console.warn('Unknown path:', pathId);
     }
   };
+
+  const pathOptions = [
+    {
+      id: 'materials',
+      title: 'Materials',
+      subtitle: 'Start with base materials',
+      icon: Package,
+      description: 'Choose from 197+ real materials'
+    },
+    {
+      id: 'crafts', 
+      title: 'Crafts',
+      subtitle: 'Traditional techniques',
+      icon: Hammer,
+      description: 'Explore 134+ verified crafts'
+    },
+    {
+      id: 'techniques',
+      title: 'Techniques',
+      subtitle: 'Select making methods',
+      icon: Settings,
+      description: 'Pick specific approaches'
+    },
+    {
+      id: 'gallery',
+      title: 'Browse',
+      subtitle: 'Explore examples',
+      icon: Grid3X3,
+      description: 'See what others created'
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -107,79 +134,141 @@ const VisualUpload = () => {
         <div className="w-16" />
       </header>
 
-      <main className="flex flex-col items-center justify-center px-4 sm:px-6 py-8">
-        <div className="max-w-3xl mx-auto space-y-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+        {/* Project Description - Always visible at top */}
+        {detailedDescription && (
+          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-8">
+            <h3 className="font-semibold text-primary mb-2">Your Project</h3>
+            <p className="text-foreground">"{detailedDescription}"</p>
+            <button 
+              onClick={() => document.getElementById('description')?.focus()}
+              className="text-primary text-sm hover:underline mt-1"
+            >
+              Edit description
+            </button>
+          </div>
+        )}
+
+        <div className="space-y-8">
+          {/* Description Section */}
           <Card>
             <CardHeader>
               <CardTitle>Project Description</CardTitle>
               <CardDescription>
-                Provide a detailed description of your project to get personalized recommendations.
+                Provide a detailed description to get personalized recommendations.
               </CardDescription>
             </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="grid gap-2">
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
                 <Label htmlFor="description">Detailed Description</Label>
                 <Textarea
                   id="description"
                   placeholder="e.g., A hand-woven cotton bedsheet with block-printed floral patterns."
                   value={detailedDescription}
                   onChange={handleDetailedDescriptionChange}
-                  className="resize-none"
+                  className="resize-none min-h-[120px]"
                 />
               </div>
-              <Button onClick={handleAnalyzeDescription} disabled={isAnalyzing}>
+              <Button onClick={handleAnalyzeDescription} disabled={isAnalyzing || !detailedDescription.trim()}>
                 {isAnalyzing ? "Analyzing..." : "Analyze Description"}
               </Button>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Image Upload (Optional)</CardTitle>
-              <CardDescription>
-                Upload an image to help us understand your project better.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="picture">Upload Image</Label>
-                <Input type="file" id="picture" accept="image/*" onChange={handleImageUpload} />
-              </div>
-              {selectedImageFile && (
-                <Alert variant="default">
-                  <CheckCircle2 className="h-4 w-4" />
-                  <AlertTitle>Image Uploaded!</AlertTitle>
-                  <AlertDescription>
-                    {selectedImageFile.name} - {selectedImageFile.size} bytes
-                  </AlertDescription>
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
+          {/* Main Content Grid - Equal Height Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            {/* Image Upload Section */}
+            <Card className="min-h-[320px]">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <UploadCloud className="w-5 h-5" />
+                  Visual Inspiration
+                </CardTitle>
+                <CardDescription>
+                  Upload reference images to help us understand your vision (optional).
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col justify-center flex-1">
+                <div className="border-2 border-dashed border-border rounded-xl p-8 text-center">
+                  <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                  <div className="space-y-2 mb-4">
+                    <Label htmlFor="picture" className="text-base font-medium cursor-pointer hover:text-primary">
+                      Choose files or drag here
+                    </Label>
+                    <p className="text-sm text-muted-foreground">Support for images up to 10MB</p>
+                  </div>
+                  <Input 
+                    type="file" 
+                    id="picture" 
+                    accept="image/*" 
+                    onChange={handleImageUpload}
+                    className="max-w-xs mx-auto"
+                  />
+                </div>
+                
+                {selectedImageFile && (
+                  <Alert className="mt-4">
+                    <CheckCircle2 className="h-4 w-4" />
+                    <AlertTitle>Image Uploaded!</AlertTitle>
+                    <AlertDescription>
+                      {selectedImageFile.name} - {Math.round(selectedImageFile.size / 1024)}KB
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Choose a Path</CardTitle>
-              <CardDescription>Select a path to start building your project.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid sm:grid-cols-2 gap-4">
-              <Button variant="outline" onClick={() => handlePathSelection("materials")}>
-                Start with Materials
-              </Button>
-              <Button variant="outline" onClick={() => handlePathSelection("crafts")}>
-                Explore Crafts
-              </Button>
-              <Button variant="outline" onClick={() => handlePathSelection("techniques")}>
-                Choose Techniques
-              </Button>
-              <Button variant="outline" onClick={() => handlePathSelection("visual")}>
-                Visual Inspiration
-              </Button>
-              <Button variant="outline" onClick={() => handlePathSelection("text")}>
-                Text Description
-              </Button>
-            </CardContent>
-          </Card>
+            {/* Path Selection Section */}
+            <Card className="min-h-[320px]">
+              <CardHeader>
+                <CardTitle>Choose Your Path</CardTitle>
+                <CardDescription>Select where you'd like to start building your project.</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-col justify-center flex-1">
+                <div className="grid grid-cols-2 gap-3">
+                  {pathOptions.map((option) => {
+                    const Icon = option.icon;
+                    return (
+                      <button
+                        key={option.id}
+                        onClick={() => handlePathSelection(option.id)}
+                        className="border border-border rounded-xl p-4 h-24 flex flex-col justify-center items-center hover:border-primary hover:bg-primary/5 transition-all duration-200 group"
+                      >
+                        <Icon className="w-6 h-6 mb-1 text-muted-foreground group-hover:text-primary" />
+                        <span className="font-medium text-sm text-foreground">{option.title}</span>
+                        <span className="text-xs text-muted-foreground">{option.subtitle}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                <div className="mt-4 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    Each path will show personalized recommendations based on your description
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="text-center">
+            <Button 
+              onClick={() => handlePathSelection('materials')}
+              disabled={!detailedDescription.trim()}
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-2xl"
+            >
+              Start Creating with Materials
+            </Button>
+            <p className="text-sm text-muted-foreground mt-2">
+              {!detailedDescription.trim() 
+                ? "Add a description above to get started" 
+                : "Or choose any path above"
+              }
+            </p>
+          </div>
         </div>
       </main>
     </div>

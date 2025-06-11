@@ -27,9 +27,20 @@ const MaterialFirst = () => {
     if (selectedMaterial) {
       const material = materials.find(m => m.id === selectedMaterial);
       navigate('/collaborate/form', { 
-        state: { selectedMaterial: material } 
+        state: { 
+          selectedMaterial: material,
+          projectDescription // Pass along the original description
+        } 
       });
     }
+  };
+
+  const handleBack = () => {
+    // Navigate back to VisualUpload with preserved description
+    const backUrl = projectDescription 
+      ? `/collaborate/visual/upload?description=${encodeURIComponent(projectDescription)}`
+      : '/collaborate/visual/upload';
+    navigate(backUrl);
   };
 
   const renderMaterial = (material, isRecommended = false, reason = '') => (
@@ -75,7 +86,17 @@ const MaterialFirst = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <MaterialFirstHeader onBack={() => navigate("/")} />
+      <MaterialFirstHeader onBack={handleBack} />
+
+      {/* Show project context if description exists */}
+      {projectDescription && (
+        <div className="bg-primary/5 border-b border-primary/20 px-4 sm:px-6 py-3">
+          <div className="max-w-6xl mx-auto">
+            <p className="text-sm text-muted-foreground mb-1">Your project:</p>
+            <p className="text-foreground font-medium">"{projectDescription}"</p>
+          </div>
+        </div>
+      )}
 
       <main className={`flex-1 px-4 sm:px-6 py-6 sm:py-8 max-w-6xl mx-auto w-full ${isMobile ? 'pb-32' : ''}`}>
         <MaterialErrorDisplay error={error} onRetry={retryLoading} />

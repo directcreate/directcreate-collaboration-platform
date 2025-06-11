@@ -29,10 +29,19 @@ const CraftFirst = () => {
       navigate('/collaborate/form', { 
         state: { 
           selectedCraft: craft,
-          craftFirst: true // Flag to indicate this came from craft-first workflow
+          craftFirst: true, // Flag to indicate this came from craft-first workflow
+          projectDescription // Pass along the original description
         } 
       });
     }
+  };
+
+  const handleBack = () => {
+    // Navigate back to VisualUpload with preserved description
+    const backUrl = projectDescription 
+      ? `/collaborate/visual/upload?description=${encodeURIComponent(projectDescription)}`
+      : '/collaborate/visual/upload';
+    navigate(backUrl);
   };
 
   const renderCraft = (craft, isRecommended = false, reason = '') => (
@@ -82,7 +91,17 @@ const CraftFirst = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <CraftHeader onBack={() => navigate("/")} />
+      <CraftHeader onBack={handleBack} />
+
+      {/* Show project context if description exists */}
+      {projectDescription && (
+        <div className="bg-primary/5 border-b border-primary/20 px-4 sm:px-6 py-3">
+          <div className="max-w-6xl mx-auto">
+            <p className="text-sm text-muted-foreground mb-1">Your project:</p>
+            <p className="text-foreground font-medium">"{projectDescription}"</p>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="flex-1 px-4 sm:px-6 py-8 max-w-6xl mx-auto w-full">
