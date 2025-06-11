@@ -2,6 +2,27 @@
 // config/apiConfig.ts - SINGLE SOURCE OF TRUTH FOR DIRECTCREATE API
 export const API_CONFIG = {
   baseUrl: 'http://localhost:8081/api-proxy.php',
+  primary: {
+    baseUrl: 'http://localhost:8081/api-proxy.php',
+    endpoints: {
+      health: '?path=health',
+      materials: '?path=materials',
+      crafts: '?path=crafts', 
+      techniques: '?path=techniques',
+      artisans: '?path=artisans',
+      
+      // Compatibility endpoints
+      compatibleCrafts: '?path=compatible-crafts',
+      compatibleMaterials: '?path=compatible-materials',
+      compatibleTechniques: '?path=compatible-techniques',
+      compatibleArtisans: '?path=compatible-artisans',
+      
+      // AI-powered endpoints
+      aiAnalysis: '?path=ai-project-analysis',
+      aiMaterials: '?path=ai-material-suggestions',
+      aiArtisans: '?path=ai-artisan-matching'
+    }
+  },
   endpoints: {
     // Core data endpoints
     health: '?path=health',

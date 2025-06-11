@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Wifi, WifiOff, Clock } from "lucide-react";
-import { directCreateAPI } from "../../config/api";
+import { checkApiHealth } from "../../config/apiConfig";
 
 const ConnectionStatus = () => {
   const [status, setStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
@@ -11,7 +11,7 @@ const ConnectionStatus = () => {
   const checkConnection = async () => {
     try {
       console.log('🔍 Checking DirectCreate API connection...');
-      const response = await directCreateAPI.getMaterials();
+      const response = await checkApiHealth();
       
       if (response && response.success) {
         setStatus('connected');
