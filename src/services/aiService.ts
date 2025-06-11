@@ -1,10 +1,10 @@
 
-import { API_CONFIG, apiClient } from '../config/apiConfig';
+import { apiClient } from '../config/apiConfig';
 
 export const aiService = {
   analyzeProject: async (description: string, imageUrl?: string) => {
     try {
-      console.log('🤖 Sending project analysis request to local DirectCreate AI...');
+      console.log('🤖 Sending project analysis request to DirectCreate AI...');
       const response = await apiClient.post('aiAnalysis', { 
         description, 
         image_url: imageUrl 
@@ -26,7 +26,7 @@ export const aiService = {
 
   suggestMaterials: async (projectType: string, style: string) => {
     try {
-      console.log('🤖 Requesting AI material suggestions from local DirectCreate API...');
+      console.log('🤖 Requesting AI material suggestions from DirectCreate API...');
       const response = await apiClient.get('aiMaterials', `project_type=${projectType}&style=${style}`);
       
       if (!response.ok) {
@@ -45,7 +45,7 @@ export const aiService = {
 
   matchArtisans: async (materialIds: number[], craftIds: number[], description: string) => {
     try {
-      console.log('🤖 Requesting AI artisan matching from local DirectCreate API...');
+      console.log('🤖 Requesting AI artisan matching from DirectCreate API...');
       const response = await apiClient.post('aiArtisans', { 
         material_ids: materialIds, 
         craft_ids: craftIds,

@@ -1,10 +1,12 @@
 
-import { API_CONFIG, apiClient } from '../config/apiConfig';
+import { apiClient } from '../config/apiConfig';
 
 export const techniquesService = {
   getTechniques: async () => {
+    console.log('⚠️  DEPRECATED: Use smartTechniquesService.getTechniques() instead');
+    
     try {
-      console.log('🔄 Fetching techniques from local DirectCreate API...');
+      console.log('🔄 Fetching techniques from DirectCreate API...');
       const response = await apiClient.get('techniques');
       
       if (!response.ok) {
@@ -12,20 +14,20 @@ export const techniquesService = {
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate local techniques loaded:', data);
+      console.log('✅ DirectCreate techniques loaded:', data);
       
       if (data.success && Array.isArray(data.data)) {
-        console.log(`✅ ${data.data.length} techniques loaded from local API`);
+        console.log(`✅ ${data.data.length} techniques loaded from DirectCreate API`);
         return {
           success: true,
           data: data.data,
-          message: `${data.data.length} techniques loaded from DirectCreate local API`
+          message: `${data.data.length} techniques loaded from DirectCreate API`
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate local API Error:', error);
+      console.error('❌ DirectCreate API Error:', error);
       return {
         success: false,
         data: [],
@@ -55,7 +57,7 @@ export const techniquesService = {
         return {
           success: true,
           data: data.data,
-          message: "Compatible techniques loaded from local DirectCreate API"
+          message: "Compatible techniques loaded from DirectCreate API"
         };
       } else {
         throw new Error('Invalid API response format');

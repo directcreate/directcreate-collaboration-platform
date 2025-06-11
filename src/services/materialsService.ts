@@ -1,12 +1,12 @@
 
-import { API_CONFIG, apiClient, logApiCall, logApiResponse } from '../config/apiConfig';
+import { apiClient } from '../config/apiConfig';
 
 export const materialsService = {
   getMaterials: async () => {
-    logApiCall('materials');
+    console.log('⚠️  DEPRECATED: Use smartMaterialsService.getMaterials() instead');
     
     try {
-      console.log('🔄 Fetching materials from local DirectCreate API...');
+      console.log('🔄 Fetching materials from DirectCreate API...');
       const response = await apiClient.get('materials');
       
       console.log(`📊 HTTP Status: ${response.status} ${response.statusText}`);
@@ -16,21 +16,19 @@ export const materialsService = {
       }
       
       const data = await response.json();
-      logApiResponse('materials', data, data.success);
       
       if (data.success && Array.isArray(data.data)) {
-        console.log(`✅ ${data.data.length} materials loaded from local API`);
+        console.log(`✅ ${data.data.length} materials loaded from DirectCreate API`);
         return {
           success: true,
           data: data.data,
-          message: `${data.data.length} materials loaded from DirectCreate local API`
+          message: `${data.data.length} materials loaded from DirectCreate API`
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate local API Error:', error);
-      logApiResponse('materials', null, false);
+      console.error('❌ DirectCreate API Error:', error);
       return {
         success: false,
         data: [],
@@ -56,7 +54,7 @@ export const materialsService = {
         return {
           success: true,
           data: data.data,
-          message: "Compatible materials loaded from local DirectCreate API"
+          message: "Compatible materials loaded from DirectCreate API"
         };
       } else {
         throw new Error('Invalid API response format');

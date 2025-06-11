@@ -1,10 +1,12 @@
 
-import { API_CONFIG, apiClient } from '../config/apiConfig';
+import { apiClient } from '../config/apiConfig';
 
 export const craftsService = {
   getCrafts: async () => {
+    console.log('⚠️  DEPRECATED: Use smartCraftsService.getCrafts() instead');
+    
     try {
-      console.log('🔄 Fetching crafts from local DirectCreate API...');
+      console.log('🔄 Fetching crafts from DirectCreate API...');
       const response = await apiClient.get('crafts');
       
       if (!response.ok) {
@@ -26,18 +28,18 @@ export const craftsService = {
           category: craft.category || 'Traditional Craft'
         }));
         
-        console.log(`✅ ${transformedCrafts.length} crafts loaded from local API`);
+        console.log(`✅ ${transformedCrafts.length} crafts loaded from DirectCreate API`);
         
         return {
           success: true,
           data: transformedCrafts,
-          message: `${transformedCrafts.length} crafts loaded from DirectCreate local API`
+          message: `${transformedCrafts.length} crafts loaded from DirectCreate API`
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate local API Error:', error);
+      console.error('❌ DirectCreate API Error:', error);
       return {
         success: false,
         data: [],
@@ -61,7 +63,7 @@ export const craftsService = {
         return {
           success: true,
           data: data.data,
-          message: "Compatible crafts loaded from local API"
+          message: "Compatible crafts loaded from DirectCreate API"
         };
       } else {
         throw new Error('Invalid API response format');

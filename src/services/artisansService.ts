@@ -1,8 +1,10 @@
 
-import { API_CONFIG, apiClient } from '../config/apiConfig';
+import { apiClient } from '../config/apiConfig';
 
 export const artisansService = {
   getCompatibleArtisans: async (materialId?: number, craftId?: number, techniqueId?: number) => {
+    console.log('⚠️  DEPRECATED: Use smartArtisansService.getArtisans() instead');
+    
     const params = new URLSearchParams();
     if (materialId) params.append('material_id', materialId.toString());
     if (craftId) params.append('craft_id', craftId.toString());
@@ -17,13 +19,13 @@ export const artisansService = {
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate local compatible artisans loaded:', data);
+      console.log('✅ DirectCreate compatible artisans loaded:', data);
       
       if (data.success && Array.isArray(data.data)) {
         return {
           success: true,
           data: data.data,
-          message: "Compatible artisans loaded from DirectCreate local API"
+          message: "Compatible artisans loaded from DirectCreate API"
         };
       } else {
         throw new Error('Invalid API response format');
