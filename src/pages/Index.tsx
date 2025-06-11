@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,10 @@ const Index = () => {
   ];
 
   const handleStartingPointClick = (path: string) => {
-    navigate(path);
+    // Always pass description if available
+    const descriptionParam = projectDescription.trim() ? 
+      `?description=${encodeURIComponent(projectDescription.trim())}` : '';
+    navigate(`${path}${descriptionParam}`);
   };
 
   const handleStartCreating = () => {
@@ -103,7 +107,7 @@ const Index = () => {
               <p className="text-sm text-muted-foreground mb-6">Share your vision or choose a starting point below</p>
               
               <Textarea
-                placeholder="Enter your idea, project description, or keywords here..."
+                placeholder="e.g., 'organic cotton bedsheet with block printing' or 'handwoven silk saree' or 'ceramic pottery bowl'"
                 value={projectDescription}
                 onChange={(e) => setProjectDescription(e.target.value)}
                 className="min-h-[120px] mb-6 text-base resize-none"
