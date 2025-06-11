@@ -18,7 +18,115 @@ export interface AnalysisResult {
   confidence: number;
 }
 
+export interface ProjectRecommendations {
+  materials: Array<{name: string, reason: string, priority: number}>;
+  crafts: Array<{name: string, reason: string, priority: number}>;
+  techniques: Array<{name: string, reason: string, priority: number}>;
+  projectType: string;
+  contextMessage: string;
+}
+
 class DescriptionAnalysisService {
+  // Enhanced project-specific recommendations
+  private projectRecommendations: Record<string, ProjectRecommendations> = {
+    'bedsheet': {
+      materials: [
+        { name: 'organic cotton', reason: 'Breathable, soft', priority: 1 },
+        { name: 'cotton', reason: 'Classic choice', priority: 2 },
+        { name: 'linen', reason: 'Cool, natural', priority: 3 },
+        { name: 'bamboo', reason: 'Eco-friendly, smooth', priority: 4 }
+      ],
+      crafts: [
+        { name: 'block printing', reason: 'Traditional patterns', priority: 1 },
+        { name: 'ajrakh', reason: 'Indigo heritage', priority: 2 },
+        { name: 'bandhani', reason: 'Tie-dye patterns', priority: 3 },
+        { name: 'hand weaving', reason: 'Textured fabric', priority: 4 }
+      ],
+      techniques: [
+        { name: 'natural dyeing', reason: 'Organic colors', priority: 1 },
+        { name: 'hand weaving', reason: 'Artisan texture', priority: 2 },
+        { name: 'block printing', reason: 'Traditional patterns', priority: 3 },
+        { name: 'embroidery', reason: 'Decorative borders', priority: 4 }
+      ],
+      projectType: 'Bedsheet',
+      contextMessage: 'These options create beautiful, durable bedsheets with traditional appeal'
+    },
+    'saree': {
+      materials: [
+        { name: 'silk', reason: 'Traditional elegance', priority: 1 },
+        { name: 'cotton', reason: 'Comfortable daily wear', priority: 2 },
+        { name: 'wool', reason: 'Warm, luxurious', priority: 3 }
+      ],
+      crafts: [
+        { name: 'hand weaving', reason: 'Traditional method', priority: 1 },
+        { name: 'embroidery', reason: 'Decorative beauty', priority: 2 },
+        { name: 'block printing', reason: 'Heritage patterns', priority: 3 }
+      ],
+      techniques: [
+        { name: 'hand weaving', reason: 'Authentic texture', priority: 1 },
+        { name: 'natural dyeing', reason: 'Rich colors', priority: 2 },
+        { name: 'embroidery', reason: 'Intricate details', priority: 3 }
+      ],
+      projectType: 'Saree',
+      contextMessage: 'These techniques preserve the authentic beauty of traditional sarees'
+    },
+    'curtains': {
+      materials: [
+        { name: 'cotton', reason: 'Durable, washable', priority: 1 },
+        { name: 'linen', reason: 'Natural drape', priority: 2 },
+        { name: 'jute', reason: 'Rustic appeal', priority: 3 }
+      ],
+      crafts: [
+        { name: 'block printing', reason: 'Bold patterns', priority: 1 },
+        { name: 'hand weaving', reason: 'Textured finish', priority: 2 }
+      ],
+      techniques: [
+        { name: 'natural dyeing', reason: 'Fade-resistant', priority: 1 },
+        { name: 'hand weaving', reason: 'Custom texture', priority: 2 }
+      ],
+      projectType: 'Curtains',
+      contextMessage: 'These methods create stunning window treatments with lasting quality'
+    },
+    'pillow': {
+      materials: [
+        { name: 'cotton', reason: 'Soft, breathable', priority: 1 },
+        { name: 'silk', reason: 'Luxurious feel', priority: 2 },
+        { name: 'linen', reason: 'Natural texture', priority: 3 }
+      ],
+      crafts: [
+        { name: 'embroidery', reason: 'Decorative appeal', priority: 1 },
+        { name: 'block printing', reason: 'Pattern variety', priority: 2 },
+        { name: 'applique', reason: 'Textural interest', priority: 3 }
+      ],
+      techniques: [
+        { name: 'embroidery', reason: 'Beautiful details', priority: 1 },
+        { name: 'natural dyeing', reason: 'Rich colors', priority: 2 },
+        { name: 'hand stitching', reason: 'Quality finish', priority: 3 }
+      ],
+      projectType: 'Pillow Cover',
+      contextMessage: 'These techniques add comfort and style to your living space'
+    },
+    'bag': {
+      materials: [
+        { name: 'cotton', reason: 'Strong, durable', priority: 1 },
+        { name: 'jute', reason: 'Eco-friendly', priority: 2 },
+        { name: 'leather', reason: 'Long-lasting', priority: 3 }
+      ],
+      crafts: [
+        { name: 'block printing', reason: 'Unique patterns', priority: 1 },
+        { name: 'embroidery', reason: 'Decorative touch', priority: 2 },
+        { name: 'applique', reason: 'Textural design', priority: 3 }
+      ],
+      techniques: [
+        { name: 'hand stitching', reason: 'Strong seams', priority: 1 },
+        { name: 'natural dyeing', reason: 'Vibrant colors', priority: 2 },
+        { name: 'block printing', reason: 'Personal style', priority: 3 }
+      ],
+      projectType: 'Bag',
+      contextMessage: 'These methods create functional bags with artistic flair'
+    }
+  };
+
   // Common keywords for detection
   private materialKeywords = {
     'cotton': ['cotton', 'organic cotton', 'handspun cotton'],
@@ -53,6 +161,71 @@ class DescriptionAnalysisService {
     'carving': ['carved', 'carving', 'hand carved'],
     'painting': ['painted', 'hand painted', 'miniature painting']
   };
+
+  getProjectRecommendations(description: string): ProjectRecommendations | null {
+    const lowerDesc = description.toLowerCase();
+    
+    // Check for project type keywords
+    for (const [projectType, recommendations] of Object.entries(this.projectRecommendations)) {
+      if (lowerDesc.includes(projectType) || 
+          lowerDesc.includes(projectType.replace(/\s+/g, ''))) {
+        return recommendations;
+      }
+    }
+    
+    // Check for related keywords
+    if (lowerDesc.includes('bed') || lowerDesc.includes('sheet') || lowerDesc.includes('linen')) {
+      return this.projectRecommendations['bedsheet'];
+    }
+    
+    if (lowerDesc.includes('sari') || lowerDesc.includes('saree')) {
+      return this.projectRecommendations['saree'];
+    }
+    
+    if (lowerDesc.includes('curtain') || lowerDesc.includes('drape') || lowerDesc.includes('window')) {
+      return this.projectRecommendations['curtains'];
+    }
+    
+    if (lowerDesc.includes('pillow') || lowerDesc.includes('cushion')) {
+      return this.projectRecommendations['pillow'];
+    }
+    
+    if (lowerDesc.includes('bag') || lowerDesc.includes('tote') || lowerDesc.includes('purse')) {
+      return this.projectRecommendations['bag'];
+    }
+    
+    return null;
+  }
+
+  filterRecommendedItems<T extends {name: string, id?: string}>(
+    allItems: T[], 
+    recommendations: Array<{name: string, reason: string, priority: number}>
+  ): {recommended: Array<T & {reason: string, priority: number}>, others: T[]} {
+    const recommended: Array<T & {reason: string, priority: number}> = [];
+    const others: T[] = [];
+    
+    allItems.forEach(item => {
+      const recommendation = recommendations.find(rec => 
+        item.name.toLowerCase().includes(rec.name.toLowerCase()) ||
+        rec.name.toLowerCase().includes(item.name.toLowerCase())
+      );
+      
+      if (recommendation) {
+        recommended.push({
+          ...item,
+          reason: recommendation.reason,
+          priority: recommendation.priority
+        });
+      } else {
+        others.push(item);
+      }
+    });
+    
+    // Sort recommended items by priority
+    recommended.sort((a, b) => a.priority - b.priority);
+    
+    return { recommended, others };
+  }
 
   analyzeDescription(description: string): AnalysisResult {
     const lowerDesc = description.toLowerCase();

@@ -1,41 +1,70 @@
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useMaterials } from "../hooks/useMaterials";
 import { useIsMobile } from "../hooks/use-mobile";
 import MaterialFirstHeader from "../components/material-first/MaterialFirstHeader";
 import MaterialLoadingScreen from "../components/material-first/MaterialLoadingScreen";
 import MaterialErrorDisplay from "../components/material-first/MaterialErrorDisplay";
-import MaterialSearch from "../components/material-first/MaterialSearch";
-import MaterialGrid from "../components/material-first/MaterialGrid";
-import MaterialActions from "../components/material-first/MaterialActions";
-import MaterialStickyActions from "../components/material-first/MaterialStickyActions";
 import MaterialEmptyState from "../components/material-first/MaterialEmptyState";
+import SmartFiltering from "../components/project-form/SmartFiltering";
+import MaterialStickyActions from "../components/material-first/MaterialStickyActions";
 
 const MaterialFirst = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
   const { materials, loading, error, retryLoading } = useMaterials();
   const [selectedMaterial, setSelectedMaterial] = useState("");
-  const [showAllMaterials, setShowAllMaterials] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
-  // Show first 12 materials initially, all materials when expanded
-  const initialMaterials = materials.slice(0, 12);
-  const allMaterials = materials;
-
-  const filteredMaterials = (showAllMaterials ? allMaterials : initialMaterials).filter(material =>
-    material.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    material.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Get the project description from URL params
+  const projectDescription = searchParams.get('description') || '';
 
   const handleContinue = () => {
     if (selectedMaterial) {
-      const material = allMaterials.find(m => m.id === selectedMaterial);
+      const material = materials.find(m => m.id === selectedMaterial);
       navigate('/collaborate/form', { 
         state: { selectedMaterial: material } 
       });
     }
   };
+
+  const renderMaterial = (material, isRecommended = false, reason = '') => (
+    <div
+      className={`bg-card rounded-2xl p-4 sm:p-6 cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-lg border-2 ${
+        selectedMaterial === material.id
+          ? 'border-primary shadow-lg'
+          : isRecommended
+            ? 'border-primary/30 hover:border-primary/50'
+            : 'border-transparent hover:border-border'
+      }`}
+    >
+      <div className="text-center">
+        <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">{material.icon}</div>
+        <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
+          {material.name}
+        </h3>
+        {isRecommended && reason && (
+          <p className="text-xs text-primary font-medium mb-2">
+            {reason}
+          </p>
+        )}
+        <div className="text-muted-foreground text-xs sm:text-sm font-medium mb-3">
+          <p className="leading-relaxed">{material.description}</p>
+        </div>
+        <div className="text-xs text-muted-foreground space-y-1">
+          <div className="flex justify-between">
+            <span>Category:</span>
+            <span className="font-medium">{material.category}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Sustainability:</span>
+            <span className="font-medium">{material.sustainability_rating}/10</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   if (loading) {
     return <MaterialLoadingScreen />;
@@ -46,60 +75,34 @@ const MaterialFirst = () => {
       <MaterialFirstHeader onBack={() => navigate("/")} />
 
       <main className={`flex-1 px-4 sm:px-6 py-6 sm:py-8 max-w-6xl mx-auto w-full ${isMobile ? 'pb-32' : ''}`}>
-        <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-light text-foreground mb-4 sm:mb-6 leading-tight px-2">
-            Choose Your
-            <br />
-            Material
-          </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground font-light mb-6 sm:mb-8 px-4">
-            Real materials from DirectCreate database
-          </p>
-          
-          <MaterialErrorDisplay error={error} onRetry={retryLoading} />
-          <MaterialSearch 
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            materialsCount={materials.length}
-          />
-        </div>
+        <MaterialErrorDisplay error={error} onRetry={retryLoading} />
         
         {!loading && materials.length === 0 && !error ? (
           <MaterialEmptyState onRetry={retryLoading} />
         ) : (
           materials.length > 0 && (
-            <>
-              <MaterialGrid
-                materials={filteredMaterials}
-                selectedMaterialId={selectedMaterial}
-                onMaterialSelect={setSelectedMaterial}
-                showAllMaterials={showAllMaterials}
-              />
-              
-              {/* Keep original actions for desktop when no material is selected */}
-              {!isMobile && !selectedMaterial && (
-                <MaterialActions
-                  selectedMaterialId={selectedMaterial}
-                  allMaterials={allMaterials}
-                  showAllMaterials={showAllMaterials}
-                  totalMaterialsCount={materials.length}
-                  onShowAll={() => setShowAllMaterials(true)}
-                  onContinue={handleContinue}
-                />
-              )}
-            </>
+            <SmartFiltering
+              title="Choose Your Material"
+              description="Real materials from DirectCreate database"
+              allItems={materials}
+              selectedItem={selectedMaterial}
+              onItemSelect={setSelectedMaterial}
+              projectDescription={projectDescription}
+              itemType="materials"
+              renderItem={renderMaterial}
+            />
           )
         )}
       </main>
 
-      {/* Sticky Actions for both mobile and desktop */}
+      {/* Sticky Actions */}
       {materials.length > 0 && (
         <MaterialStickyActions
           selectedMaterialId={selectedMaterial}
-          allMaterials={allMaterials}
-          showAllMaterials={showAllMaterials}
+          allMaterials={materials}
+          showAllMaterials={true}
           totalMaterialsCount={materials.length}
-          onShowAll={() => setShowAllMaterials(true)}
+          onShowAll={() => {}}
           onContinue={handleContinue}
         />
       )}
