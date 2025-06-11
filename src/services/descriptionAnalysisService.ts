@@ -12,6 +12,23 @@ export interface ProjectAnalysis {
   reasoning: string;
 }
 
+export interface DetectedElements {
+  materials: Array<{id: number, name: string, relevance_score?: number}>;
+  crafts: Array<{id: number, name: string, relevance_score?: number}>;
+  techniques: Array<{id: number, name: string, relevance_score?: number}>;
+  style?: string;
+  colors?: string;
+  use?: string;
+}
+
+export interface ProjectRecommendations {
+  projectType: string;
+  contextMessage: string;
+  materials: Array<{id: number, name: string, reason: string}>;
+  crafts: Array<{id: number, name: string, reason: string}>;
+  techniques: Array<{id: number, name: string, reason: string}>;
+}
+
 class DescriptionAnalysisService {
   private materialKeywords = {
     textile: ['cotton', 'silk', 'fabric', 'cloth', 'textile', 'bedsheet', 'curtain', 'saree', 'dupatta', 'scarf'],
@@ -65,6 +82,38 @@ class DescriptionAnalysisService {
     }
   }
 
+  getProjectRecommendations(description: string): ProjectRecommendations | null {
+    if (!description) return null;
+
+    const lowerDesc = description.toLowerCase();
+    const category = this.detectCategory(description);
+    
+    const recommendations: ProjectRecommendations = {
+      projectType: category,
+      contextMessage: this.getContextMessage(category),
+      materials: this.getRecommendedMaterials(category),
+      crafts: this.getRecommendedCrafts(category),
+      techniques: this.getRecommendedTechniques(category)
+    };
+
+    return recommendations;
+  }
+
+  filterRecommendedItems(allItems: any[], recommendedItems: Array<{id: number, name: string, reason: string}>) {
+    const recommendedIds = new Set(recommendedItems.map(item => item.id));
+    
+    const recommended = allItems
+      .filter(item => recommendedIds.has(parseInt(item.id)))
+      .map(item => {
+        const rec = recommendedItems.find(r => r.id === parseInt(item.id));
+        return { ...item, reason: rec?.reason || 'Recommended for your project' };
+      });
+
+    const others = allItems.filter(item => !recommendedIds.has(parseInt(item.id)));
+
+    return { recommended, others };
+  }
+
   private enhanceApiResult(apiResult: any, description: string): ProjectAnalysis {
     return {
       success: true,
@@ -111,6 +160,71 @@ class DescriptionAnalysisService {
     const keywords = this.materialKeywords[category] || [];
     const matches = keywords.filter(keyword => description.includes(keyword)).length;
     return Math.min(0.6 + (matches * 0.2), 1.0);
+  }
+
+  private getContextMessage(category: string): string {
+    const messages = {
+      textile: 'Perfect for textile and fabric projects',
+      pottery: 'Ideal for ceramic and clay work',
+      jewelry: 'Great for jewelry and ornament making',
+      metal: 'Suitable for metalworking projects',
+      wood: 'Perfect for woodworking and furniture'
+    };
+    return messages[category] || 'Recommended for your project';
+  }
+
+  private getRecommendedMaterials(category: string): Array<{id: number, name: string, reason: string}> {
+    const materialRecommendations = {
+      textile: [
+        {id: 210, name: 'Cotton', reason: 'Versatile natural fiber perfect for textiles'},
+        {id: 211, name: 'Silk', reason: 'Premium fabric with elegant finish'},
+        {id: 212, name: 'Linen', reason: 'Durable and sustainable option'}
+      ],
+      pottery: [
+        {id: 213, name: 'Clay', reason: 'Essential for pottery making'},
+        {id: 214, name: 'Terracotta', reason: 'Traditional ceramic material'}
+      ],
+      jewelry: [
+        {id: 215, name: 'Silver', reason: 'Popular precious metal for jewelry'},
+        {id: 216, name: 'Brass', reason: 'Affordable metal with golden appearance'}
+      ]
+    };
+    
+    return materialRecommendations[category] || [];
+  }
+
+  private getRecommendedCrafts(category: string): Array<{id: number, name: string, reason: string}> {
+    const craftRecommendations = {
+      textile: [
+        {id: 167, name: 'Ajrakh Printing', reason: 'Traditional block printing technique'},
+        {id: 170, name: 'Block Printing', reason: 'Versatile printing method'}
+      ],
+      pottery: [
+        {id: 180, name: 'Pottery Making', reason: 'Core ceramic craft'}
+      ],
+      jewelry: [
+        {id: 185, name: 'Jewelry Making', reason: 'Traditional ornament crafting'}
+      ]
+    };
+    
+    return craftRecommendations[category] || [];
+  }
+
+  private getRecommendedTechniques(category: string): Array<{id: number, name: string, reason: string}> {
+    const techniqueRecommendations = {
+      textile: [
+        {id: 301, name: 'Natural Dyeing', reason: 'Eco-friendly coloring method'},
+        {id: 302, name: 'Block Printing', reason: 'Traditional pattern application'}
+      ],
+      pottery: [
+        {id: 310, name: 'Wheel Throwing', reason: 'Classic pottery shaping technique'}
+      ],
+      jewelry: [
+        {id: 320, name: 'Wire Wrapping', reason: 'Versatile jewelry technique'}
+      ]
+    };
+    
+    return techniqueRecommendations[category] || [];
   }
 
   private getSuggestedMaterials(category: string): Array<{id: number, name: string, relevance_score: number}> {
