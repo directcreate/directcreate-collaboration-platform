@@ -17,6 +17,9 @@ const CraftFirst = () => {
   // Get the project description from URL params
   const projectDescription = searchParams.get('description') || '';
 
+  console.log('🎯 CraftFirst - Project description:', projectDescription);
+  console.log('🎯 CraftFirst - Will show smart filtering for:', projectDescription);
+
   const handleContinue = () => {
     if (selectedCraft) {
       const craft = crafts.find(c => c.id === selectedCraft);

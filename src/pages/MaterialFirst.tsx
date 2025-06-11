@@ -20,6 +20,9 @@ const MaterialFirst = () => {
   // Get the project description from URL params
   const projectDescription = searchParams.get('description') || '';
 
+  console.log('🎯 MaterialFirst - Project description:', projectDescription);
+  console.log('🎯 MaterialFirst - Will show smart filtering for:', projectDescription);
+
   const handleContinue = () => {
     if (selectedMaterial) {
       const material = materials.find(m => m.id === selectedMaterial);

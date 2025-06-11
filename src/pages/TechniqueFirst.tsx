@@ -18,6 +18,9 @@ const TechniqueFirst = () => {
   // Get the project description from URL params
   const projectDescription = searchParams.get('description') || '';
 
+  console.log('🎯 TechniqueFirst - Project description:', projectDescription);
+  console.log('🎯 TechniqueFirst - Will show smart filtering for:', projectDescription);
+
   // Clean HTML content and extract plain text
   const cleanDescription = (htmlDescription) => {
     if (!htmlDescription) return '';

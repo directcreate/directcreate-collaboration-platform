@@ -29,10 +29,18 @@ const SmartFiltering = ({
 }: SmartFilteringProps) => {
   const [showAllItems, setShowAllItems] = useState(false);
   
+  console.log('🔍 SmartFiltering DEBUG:');
+  console.log('🔍 Project description:', projectDescription);
+  console.log('🔍 Item type:', itemType);
+  console.log('🔍 All items count:', allItems.length);
+  
   // Get project-specific recommendations
   const recommendations = descriptionAnalysisService.getProjectRecommendations(projectDescription);
   
+  console.log('🔍 Recommendations found:', recommendations);
+  
   if (!recommendations) {
+    console.log('🔍 No recommendations found, showing all items equally');
     // No specific recommendations, show all items equally
     return (
       <div className="space-y-6">
@@ -61,6 +69,11 @@ const SmartFiltering = ({
     allItems,
     recommendations[itemType]
   );
+
+  console.log('🔍 Filtered results:');
+  console.log('🔍 Recommended items:', recommended.length);
+  console.log('🔍 Other items:', others.length);
+  console.log('🔍 Recommended items details:', recommended);
 
   return (
     <div className="space-y-8">
