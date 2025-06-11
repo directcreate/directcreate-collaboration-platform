@@ -1,73 +1,78 @@
 
-// DirectCreate API Configuration - PRODUCTION CLOUD API
-const DIRECTCREATE_API = 'https://directcreate-api.onrender.com';
-
+// config/apiConfig.ts - SINGLE SOURCE OF TRUTH
 export const API_CONFIG = {
-  BASE_URL: DIRECTCREATE_API,
-  ENDPOINTS: {
-    health: '/',
-    materials: '/?path=materials',
-    crafts: '/?path=crafts', 
-    techniques: '/?path=techniques',
-    artisans: '/?path=artisans',
-    compatibleCrafts: '/?path=compatible-crafts',
-    compatibleMaterials: '/?path=compatible-materials',
-    compatibleTechniques: '/?path=compatible-techniques',
-    compatibleArtisans: '/?path=compatible-artisans',
-    initialize: '/?path=wizard/initialize',
-    saveStep: '/?path=wizard/save-step',
-    analyzeVision: '/?path=wizard/analyze-vision',
-    findArtisans: '/?path=wizard/find-artisans',
-    completeWizard: '/?path=wizard/complete-wizard',
-    aiProjectAnalysis: '/?path=ai-project-analysis',
-    aiMaterialSuggestions: '/?path=ai-material-suggestions'
+  // PRIMARY API - Local DirectCreate with AI
+  primary: {
+    baseUrl: 'http://localhost:8081/api-proxy.php',
+    endpoints: {
+      health: '?path=health',
+      materials: '?path=materials',
+      crafts: '?path=crafts', 
+      techniques: '?path=techniques',
+      artisans: '?path=artisans',
+      compatibleCrafts: '?path=compatible-crafts',
+      compatibleMaterials: '?path=compatible-materials',
+      compatibleTechniques: '?path=compatible-techniques',
+      compatibleArtisans: '?path=compatible-artisans',
+      // AI-POWERED ENDPOINTS
+      aiAnalysis: '?path=ai-project-analysis',
+      aiMaterials: '?path=ai-material-suggestions',
+      aiArtisans: '?path=ai-artisan-matching'
+    }
   }
 };
 
-// Production helper function to build API URLs
-export const buildApiUrl = (endpoint: string) => {
-  const fullUrl = `${API_CONFIG.BASE_URL}${endpoint}`;
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`🔗 Production Cloud API URL: ${fullUrl}`);
-  }
-  return fullUrl;
-};
-
-// Production API health check function
-export const checkApiHealth = async () => {
-  try {
-    const response = await fetch(buildApiUrl(API_CONFIG.ENDPOINTS.health), {
+// Type-safe API client
+export const apiClient = {
+  get: (endpoint: keyof typeof API_CONFIG.primary.endpoints, params?: string) => {
+    const url = `${API_CONFIG.primary.baseUrl}${API_CONFIG.primary.endpoints[endpoint]}${params ? `&${params}` : ''}`;
+    return fetch(url, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-      },
+      }
     });
-    
+  },
+  
+  post: (endpoint: keyof typeof API_CONFIG.primary.endpoints, data: any) =>
+    fetch(`${API_CONFIG.primary.baseUrl}${API_CONFIG.primary.endpoints[endpoint]}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+};
+
+// Legacy exports for backward compatibility (will be removed)
+export const buildApiUrl = (endpoint: string) => {
+  console.warn('buildApiUrl is deprecated, use apiClient instead');
+  return `${API_CONFIG.primary.baseUrl}${endpoint}`;
+};
+
+export const checkApiHealth = async () => {
+  try {
+    const response = await apiClient.get('health');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('❌ Production API Health Check Failed:', error);
+    console.error('❌ API Health Check Failed:', error);
     return { success: false, message: `Health check failed: ${error.message}` };
   }
 };
 
-// Production API call logging (development only)
+// Development logging helpers
 export const logApiCall = (endpoint: string, method: string = 'GET') => {
   if (process.env.NODE_ENV === 'development') {
-    console.log(`📡 Production API Call: ${method} ${buildApiUrl(endpoint)}`);
+    console.log(`📡 API Call: ${method} ${API_CONFIG.primary.baseUrl}${endpoint}`);
   }
 };
 
-// Production API response logging (development only)
 export const logApiResponse = (endpoint: string, response: any, success: boolean) => {
   if (process.env.NODE_ENV === 'development') {
     const status = success ? '✅' : '❌';
-    console.log(`${status} Production API Response for ${endpoint}:`, {
+    console.log(`${status} API Response for ${endpoint}:`, {
       success,
       dataLength: response?.data?.length || 0,
       message: response?.message

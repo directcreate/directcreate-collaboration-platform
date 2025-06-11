@@ -1,22 +1,13 @@
 
-import { API_CONFIG, logApiCall, logApiResponse } from '../config/apiConfig';
-
-const DIRECTCREATE_API = API_CONFIG.BASE_URL;
+import { API_CONFIG, apiClient, logApiCall, logApiResponse } from '../config/apiConfig';
 
 export const materialsService = {
   getMaterials: async () => {
-    const endpoint = '/?path=materials';
-    logApiCall(endpoint);
+    logApiCall('materials');
     
     try {
-      console.log('🔄 Fetching 197 materials from DirectCreate Production Cloud API...');
-      const response = await fetch(`${DIRECTCREATE_API}${endpoint}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
+      console.log('🔄 Fetching materials from local DirectCreate API...');
+      const response = await apiClient.get('materials');
       
       console.log(`📊 HTTP Status: ${response.status} ${response.statusText}`);
       
@@ -25,21 +16,21 @@ export const materialsService = {
       }
       
       const data = await response.json();
-      logApiResponse(endpoint, data, data.success);
+      logApiResponse('materials', data, data.success);
       
       if (data.success && Array.isArray(data.data)) {
-        console.log(`✅ ${data.data.length}/197 materials loaded from Production Cloud API`);
+        console.log(`✅ ${data.data.length} materials loaded from local API`);
         return {
           success: true,
           data: data.data,
-          message: `${data.data.length} real materials loaded from DirectCreate Production Cloud API`
+          message: `${data.data.length} materials loaded from DirectCreate local API`
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate Production Cloud API Error:', error);
-      logApiResponse(endpoint, null, false);
+      console.error('❌ DirectCreate local API Error:', error);
+      logApiResponse('materials', null, false);
       return {
         success: false,
         data: [],
@@ -49,36 +40,29 @@ export const materialsService = {
     }
   },
 
-  // Get compatible materials for a specific craft
   getCompatibleMaterials: async (craftId: number) => {
     try {
       console.log(`🔄 Fetching compatible materials for craft ID: ${craftId}...`);
-      const response = await fetch(`${DIRECTCREATE_API}/?path=compatible-materials&craft_id=${craftId}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await apiClient.get('compatibleMaterials', `craft_id=${craftId}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate compatible materials loaded:', data);
+      console.log('✅ Compatible materials loaded:', data);
       
       if (data.success && Array.isArray(data.data)) {
         return {
           success: true,
           data: data.data,
-          message: "Compatible materials loaded from DirectCreate Production database"
+          message: "Compatible materials loaded from local DirectCreate API"
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate Compatible Materials API Error:', error);
+      console.error('❌ Compatible Materials API Error:', error);
       return {
         success: false,
         data: [],

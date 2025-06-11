@@ -1,10 +1,7 @@
 
-import { API_CONFIG } from '../config/apiConfig';
-
-const DIRECTCREATE_API = API_CONFIG.BASE_URL;
+import { API_CONFIG, apiClient } from '../config/apiConfig';
 
 export const artisansService = {
-  // Get compatible artisans for specific material, craft, and/or technique
   getCompatibleArtisans: async (materialId?: number, craftId?: number, techniqueId?: number) => {
     const params = new URLSearchParams();
     if (materialId) params.append('material_id', materialId.toString());
@@ -13,27 +10,20 @@ export const artisansService = {
     
     try {
       console.log(`🔄 Fetching compatible artisans for material: ${materialId}, craft: ${craftId}, technique: ${techniqueId}...`);
-      const response = await fetch(`${DIRECTCREATE_API}?path=compatible-artisans&${params}`, {
-        method: 'GET',
-        headers: {
-          'ngrok-skip-browser-warning': 'true',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await apiClient.get('compatibleArtisans', params.toString());
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate Enhanced ML compatible artisans loaded:', data);
+      console.log('✅ DirectCreate local compatible artisans loaded:', data);
       
       if (data.success && Array.isArray(data.data)) {
         return {
           success: true,
           data: data.data,
-          message: "Compatible artisans loaded from DirectCreate Enhanced ML API"
+          message: "Compatible artisans loaded from DirectCreate local API"
         };
       } else {
         throw new Error('Invalid API response format');

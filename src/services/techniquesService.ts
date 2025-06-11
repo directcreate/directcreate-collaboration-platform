@@ -1,40 +1,31 @@
 
-import { API_CONFIG } from '../config/apiConfig';
-
-const DIRECTCREATE_API = API_CONFIG.BASE_URL;
+import { API_CONFIG, apiClient } from '../config/apiConfig';
 
 export const techniquesService = {
-  // Get techniques from DirectCreate Production Cloud API
   getTechniques: async () => {
     try {
-      console.log('🔄 Fetching 136 techniques from DirectCreate Production Cloud API...');
-      const response = await fetch(`${DIRECTCREATE_API}/?path=techniques`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
+      console.log('🔄 Fetching techniques from local DirectCreate API...');
+      const response = await apiClient.get('techniques');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate Production Cloud techniques loaded:', data);
+      console.log('✅ DirectCreate local techniques loaded:', data);
       
       if (data.success && Array.isArray(data.data)) {
-        console.log(`✅ ${data.data.length}/136 techniques loaded from Production Cloud API`);
+        console.log(`✅ ${data.data.length} techniques loaded from local API`);
         return {
           success: true,
           data: data.data,
-          message: `${data.data.length} real techniques loaded from DirectCreate Production Cloud API`
+          message: `${data.data.length} techniques loaded from DirectCreate local API`
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate Production Cloud API Error:', error);
+      console.error('❌ DirectCreate local API Error:', error);
       return {
         success: false,
         data: [],
@@ -44,7 +35,6 @@ export const techniquesService = {
     }
   },
 
-  // Get compatible techniques for specific material and/or craft
   getCompatibleTechniques: async (materialId?: number, craftId?: number) => {
     const params = new URLSearchParams();
     if (materialId) params.append('material_id', materialId.toString());
@@ -52,32 +42,26 @@ export const techniquesService = {
     
     try {
       console.log(`🔄 Fetching compatible techniques for material: ${materialId}, craft: ${craftId}...`);
-      const response = await fetch(`${DIRECTCREATE_API}/?path=compatible-techniques&${params}`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await apiClient.get('compatibleTechniques', params.toString());
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate compatible techniques loaded:', data);
+      console.log('✅ Compatible techniques loaded:', data);
       
       if (data.success && Array.isArray(data.data)) {
         return {
           success: true,
           data: data.data,
-          message: "Compatible techniques loaded from DirectCreate Production database"
+          message: "Compatible techniques loaded from local DirectCreate API"
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate Compatible Techniques API Error:', error);
+      console.error('❌ Compatible Techniques API Error:', error);
       return {
         success: false,
         data: [],

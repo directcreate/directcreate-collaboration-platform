@@ -1,16 +1,13 @@
 
-import { API_CONFIG, buildApiUrl } from '../config/apiConfig';
+import { API_CONFIG, apiClient } from '../config/apiConfig';
 
 export const aiService = {
   analyzeProject: async (description: string, imageUrl?: string) => {
     try {
-      console.log('🤖 Sending project analysis request to working DirectCreate AI...');
-      const response = await fetch('/api-proxy.php?path=ai-project-analysis', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ description, image_url: imageUrl })
+      console.log('🤖 Sending project analysis request to local DirectCreate AI...');
+      const response = await apiClient.post('aiAnalysis', { 
+        description, 
+        image_url: imageUrl 
       });
       
       if (!response.ok) {
@@ -29,13 +26,8 @@ export const aiService = {
 
   suggestMaterials: async (projectType: string, style: string) => {
     try {
-      console.log('🤖 Requesting AI material suggestions from working DirectCreate API...');
-      const response = await fetch(`/api-proxy.php?path=ai-material-suggestions?project_type=${projectType}&style=${style}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      console.log('🤖 Requesting AI material suggestions from local DirectCreate API...');
+      const response = await apiClient.get('aiMaterials', `project_type=${projectType}&style=${style}`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -53,17 +45,11 @@ export const aiService = {
 
   matchArtisans: async (materialIds: number[], craftIds: number[], description: string) => {
     try {
-      console.log('🤖 Requesting AI artisan matching from working DirectCreate API...');
-      const response = await fetch('/api-proxy.php?path=ai-artisan-matching', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          material_ids: materialIds, 
-          craft_ids: craftIds,
-          description 
-        })
+      console.log('🤖 Requesting AI artisan matching from local DirectCreate API...');
+      const response = await apiClient.post('aiArtisans', { 
+        material_ids: materialIds, 
+        craft_ids: craftIds,
+        description 
       });
       
       if (!response.ok) {
