@@ -1,19 +1,64 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Upload, MessageSquare, Package, Camera, FileText, Hammer } from "lucide-react";
+import { ArrowLeft, Upload, MessageSquare, Package, Camera, FileText, Hammer, Palette, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { descriptionAnalysisService, AnalysisResult } from "../services/descriptionAnalysisService";
+import SmartDetection from "../components/project-form/SmartDetection";
 
 const VisualUpload = () => {
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  const [selectedPath, setSelectedPath] = useState<'visual' | 'text' | 'materials' | null>(null);
+  const [selectedPath, setSelectedPath] = useState<'visual' | 'text' | 'materials' | 'crafts' | 'techniques' | null>(null);
   const [textDescription, setTextDescription] = useState("");
   const [projectStyle, setProjectStyle] = useState("");
   const [projectColors, setProjectColors] = useState("");
   const [projectUse, setProjectUse] = useState("");
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [showSmartDetection, setShowSmartDetection] = useState(false);
+  const [analyzingDescription, setAnalyzingDescription] = useState(false);
+
+  // Check for initial description from Index page
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const description = urlParams.get('description') || '';
+    
+    if (description) {
+      setTextDescription(description);
+      analyzeInitialDescription(description);
+    }
+  }, []);
+
+  const analyzeInitialDescription = async (description: string) => {
+    if (description.trim().length < 10) return;
+    
+    setAnalyzingDescription(true);
+    try {
+      const result = descriptionAnalysisService.analyzeDescription(description);
+      
+      // Enhance with AI if possible
+      const enhancedDetected = await descriptionAnalysisService.enhanceWithAI(description);
+      result.detected = enhancedDetected;
+      
+      setAnalysisResult(result);
+      
+      // Show smart detection if we found something useful
+      if (result.confidence > 0.5 || result.detected.completeness !== 'minimal') {
+        setShowSmartDetection(true);
+      }
+      
+      // Auto-route if we have complete information
+      if (result.autoRoute && result.confidence > 0.8) {
+        handleSmartProceed();
+      }
+    } catch (error) {
+      console.error('Failed to analyze description:', error);
+    } finally {
+      setAnalyzingDescription(false);
+    }
+  };
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
@@ -22,7 +67,6 @@ const VisualUpload = () => {
 
   const handleSampleSelect = (sampleType: string, description: string) => {
     setSelectedPath('visual');
-    // Simulate sample selection
     console.log(`Selected sample: ${sampleType} - ${description}`);
   };
 
@@ -33,6 +77,23 @@ const VisualUpload = () => {
     if (files.length > 0) {
       handleFileSelect(files[0]);
     }
+  };
+
+  const handleSmartProceed = () => {
+    const projectData = {
+      path: 'smart',
+      textDescription,
+      style: projectStyle || analysisResult?.detected.style,
+      colors: projectColors || analysisResult?.detected.colors,
+      use: projectUse || analysisResult?.detected.use,
+      detectedMaterials: analysisResult?.detected.materials || [],
+      detectedCrafts: analysisResult?.detected.crafts || [],
+      detectedTechniques: analysisResult?.detected.techniques || []
+    };
+
+    navigate('/collaborate/makers', { 
+      state: { ...projectData } 
+    });
   };
 
   const handleContinue = () => {
@@ -60,6 +121,14 @@ const VisualUpload = () => {
       navigate('/collaborate/material', { 
         state: { ...projectData } 
       });
+    } else if (selectedPath === 'crafts') {
+      navigate('/collaborate/craft', { 
+        state: { ...projectData } 
+      });
+    } else if (selectedPath === 'techniques') {
+      navigate('/collaborate/technique', { 
+        state: { ...projectData } 
+      });
     }
   };
 
@@ -67,7 +136,7 @@ const VisualUpload = () => {
     { 
       id: 'cotton-block-print',
       icon: '🌸', 
-      title: 'Cotton Block Print Style',
+      title: 'Cotton Block Print Bedsheet',
       description: 'Traditional hand-blocked patterns on organic cotton',
       category: 'Textile'
     },
@@ -87,10 +156,48 @@ const VisualUpload = () => {
     }
   ];
 
+  const allPaths = [
+    {
+      id: 'visual',
+      title: 'Visual Inspiration',
+      description: 'Upload an image or choose from samples',
+      icon: Camera,
+      available: true
+    },
+    {
+      id: 'text',
+      title: 'Describe Your Vision',
+      description: 'Tell us about your project in detail',
+      icon: FileText,
+      available: true
+    },
+    {
+      id: 'materials',
+      title: 'Start with Materials',
+      description: 'Browse materials and their properties',
+      icon: Package,
+      available: true
+    },
+    {
+      id: 'crafts',
+      title: 'Choose Craft Style',
+      description: 'Explore traditional craft techniques',
+      icon: Palette,
+      available: true
+    },
+    {
+      id: 'techniques',
+      title: 'Select Techniques',
+      description: 'Pick specific making techniques',
+      icon: Settings,
+      available: true
+    }
+  ];
+
   const canContinue = () => {
     if (selectedPath === 'visual') return selectedFile !== null;
     if (selectedPath === 'text') return textDescription.trim().length > 0;
-    if (selectedPath === 'materials') return true;
+    if (['materials', 'crafts', 'techniques'].includes(selectedPath as string)) return true;
     return false;
   };
 
@@ -114,7 +221,7 @@ const VisualUpload = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-6">
+      <div className="flex-1 flex items-center justify-center px-6 overflow-auto">
         <div className="w-full max-w-6xl">
           <div className="text-center mb-12">
             <h1 className="text-4xl lg:text-6xl font-light text-foreground mb-6 leading-tight">
@@ -124,51 +231,52 @@ const VisualUpload = () => {
               Multiple ways to bring your vision to life
             </p>
           </div>
+
+          {/* Smart Detection Results */}
+          {showSmartDetection && analysisResult && (
+            <SmartDetection
+              detected={analysisResult.detected}
+              loading={analyzingDescription}
+              onProceed={handleSmartProceed}
+              onEditDetected={(type, item) => {
+                console.log('Edit detected:', type, item);
+                // TODO: Implement edit functionality
+              }}
+              onAddMoreDetails={() => setShowSmartDetection(false)}
+            />
+          )}
           
           {!selectedPath ? (
-            /* Path Selection */
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              {/* Visual Inspiration Path */}
-              <button
-                onClick={() => setSelectedPath('visual')}
-                className="p-8 bg-card rounded-3xl border border-border/20 hover:border-primary/50 hover:shadow-lg transition-all group text-left"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                  <Camera className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">Visual Inspiration</h3>
-                <p className="text-lg text-muted-foreground">
-                  Upload an image or choose from our sample styles
-                </p>
-              </button>
-
-              {/* Text Description Path */}
-              <button
-                onClick={() => setSelectedPath('text')}
-                className="p-8 bg-card rounded-3xl border border-border/20 hover:border-primary/50 hover:shadow-lg transition-all group text-left"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                  <FileText className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">Describe Your Vision</h3>
-                <p className="text-lg text-muted-foreground">
-                  Tell us about your project in words
-                </p>
-              </button>
-
-              {/* Materials First Path */}
-              <button
-                onClick={() => setSelectedPath('materials')}
-                className="p-8 bg-card rounded-3xl border border-border/20 hover:border-primary/50 hover:shadow-lg transition-all group text-left"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                  <Package className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">Start with Materials</h3>
-                <p className="text-lg text-muted-foreground">
-                  Browse materials and crafts directly
-                </p>
-              </button>
+            /* Path Selection - All 5 Options */
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {allPaths.map((path) => {
+                const Icon = path.icon;
+                const isRecommended = analysisResult?.suggestedPaths.includes(path.id);
+                
+                return (
+                  <button
+                    key={path.id}
+                    onClick={() => setSelectedPath(path.id as any)}
+                    disabled={!path.available}
+                    className={`p-8 bg-card rounded-3xl border border-border/20 hover:border-primary/50 hover:shadow-lg transition-all group text-left relative ${
+                      !path.available ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {isRecommended && (
+                      <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
+                        Recommended
+                      </div>
+                    )}
+                    <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                      <Icon className="w-8 h-8 text-primary" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-foreground mb-3">{path.title}</h3>
+                    <p className="text-lg text-muted-foreground">
+                      {path.description}
+                    </p>
+                  </button>
+                );
+              })}
             </div>
           ) : selectedPath === 'visual' ? (
             /* Visual Path Content */
@@ -341,18 +449,58 @@ const VisualUpload = () => {
             <div className="text-center max-w-2xl mx-auto">
               <div className="bg-card rounded-3xl p-8 border border-border/20">
                 <div className="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center">
-                  <Hammer className="w-10 h-10 text-primary" />
+                  <Package className="w-10 h-10 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold text-foreground mb-4">
-                  Start with Materials & Crafts
+                  Start with Materials
                 </h3>
                 <p className="text-lg text-muted-foreground mb-6">
-                  Browse our collection of traditional materials and crafts to find the perfect match for your project
+                  Browse our collection of 197 traditional materials to find the perfect match for your project
                 </p>
                 <div className="flex flex-wrap gap-3 justify-center">
                   <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">197 Materials</span>
+                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">Sustainable Options</span>
+                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">Regional Varieties</span>
+                </div>
+              </div>
+            </div>
+          ) : selectedPath === 'crafts' ? (
+            /* Crafts Path */
+            <div className="text-center max-w-2xl mx-auto">
+              <div className="bg-card rounded-3xl p-8 border border-border/20">
+                <div className="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Palette className="w-10 h-10 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-4">
+                  Choose Craft Style
+                </h3>
+                <p className="text-lg text-muted-foreground mb-6">
+                  Explore 528 traditional craft styles from across regions
+                </p>
+                <div className="flex flex-wrap gap-3 justify-center">
                   <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">528 Crafts</span>
+                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">Regional Styles</span>
+                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">Master Artisans</span>
+                </div>
+              </div>
+            </div>
+          ) : selectedPath === 'techniques' ? (
+            /* Techniques Path */
+            <div className="text-center max-w-2xl mx-auto">
+              <div className="bg-card rounded-3xl p-8 border border-border/20">
+                <div className="w-20 h-20 mx-auto mb-6 bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <Settings className="w-10 h-10 text-primary" />
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-4">
+                  Select Techniques
+                </h3>
+                <p className="text-lg text-muted-foreground mb-6">
+                  Choose from 136 specific making techniques and processes
+                </p>
+                <div className="flex flex-wrap gap-3 justify-center">
                   <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">136 Techniques</span>
+                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">Traditional Methods</span>
+                  <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm">Expert Knowledge</span>
                 </div>
               </div>
             </div>
@@ -378,7 +526,9 @@ const VisualUpload = () => {
               >
                 {selectedPath === 'visual' ? 'Analyze Image' : 
                  selectedPath === 'text' ? 'Process Description' : 
-                 'Browse Materials'}
+                 selectedPath === 'materials' ? 'Browse Materials' :
+                 selectedPath === 'crafts' ? 'Browse Crafts' :
+                 'Browse Techniques'}
               </Button>
             </div>
           )}

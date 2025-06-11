@@ -59,8 +59,12 @@ const Index = () => {
   };
 
   const handleStartCreating = () => {
-    // TODO: Pass the projectDescription to the next page or store it
-    navigate('/collaborate/visual/upload');
+    if (projectDescription.trim()) {
+      // Pass description as URL parameter for analysis
+      navigate(`/collaborate/visual/upload?description=${encodeURIComponent(projectDescription)}`);
+    } else {
+      navigate('/collaborate/visual/upload');
+    }
   };
 
   return (
