@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { directCreateAPI } from "../config/api";
+import { smartMaterialsService } from "../services/smartMaterialsService";
 
 interface Material {
   id: string;
@@ -38,29 +38,28 @@ export const useMaterials = () => {
     try {
       setLoading(true);
       setError("");
-      console.log('🔄 Loading 197 materials from DirectCreate Production Cloud API...');
+      console.log('🔄 Loading materials from Smart Materials Service...');
       
-      const response = await directCreateAPI.getMaterials();
+      const response = await smartMaterialsService.getMaterials();
       
-      if (response.success && Array.isArray(response.data)) {
-        // Transform API response to match UI format
-        const transformedMaterials = response.data.map((material: any) => ({
-          id: material.id.toString(),
-          name: material.name,
-          icon: getCategoryIcon(material.category || material.type),
-          description: material.description || `High-quality ${material.name.toLowerCase()}`,
-          category: material.category || material.type || "Material",
-          sustainability_rating: material.sustainability_rating || material.sustainability || 8
-        }));
-        
-        setMaterials(transformedMaterials);
-        console.log(`✅ ${transformedMaterials.length}/197 materials loaded from Production Cloud API`);
-      } else {
-        throw new Error(response.message || 'Failed to load materials');
-      }
+      // Combine recommended and others from Smart service
+      const allMaterials = [...response.recommended, ...response.others];
+      
+      // Transform to match UI format
+      const transformedMaterials = allMaterials.map((material: any) => ({
+        id: material.id.toString(),
+        name: material.name,
+        icon: getCategoryIcon(material.category || material.type),
+        description: material.description || `High-quality ${material.name.toLowerCase()}`,
+        category: material.category || material.type || "Material",
+        sustainability_rating: material.sustainability_rating || material.sustainability || 8
+      }));
+      
+      setMaterials(transformedMaterials);
+      console.log(`✅ ${transformedMaterials.length} materials loaded from Smart Materials Service`);
     } catch (error: any) {
-      console.error('❌ Error loading DirectCreate Production materials:', error);
-      setError(`Production API connection failed: ${error.message}`);
+      console.error('❌ Error loading Smart Materials:', error);
+      setError(`Smart Materials Service error: ${error.message}`);
       setMaterials([]);
     } finally {
       setLoading(false);

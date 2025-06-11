@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from "react";
-import { directCreateAPI } from "../config/api";
+import { smartMaterialsService } from "../services/smartMaterialsService";
+import { smartCraftsService } from "../services/smartCraftsService";
+import { smartTechniquesService } from "../services/smartTechniquesService";
 
 export const useDirectCreateData = () => {
   const [materials, setMaterials] = useState([]);
@@ -13,74 +15,83 @@ export const useDirectCreateData = () => {
     try {
       setLoading(true);
       setError("");
-      console.log('🔄 Loading all DirectCreate data for project form...');
+      console.log('🔄 Loading all Smart Service data for project form...');
       
       // Use Promise.allSettled to handle partial failures gracefully
       const results = await Promise.allSettled([
-        directCreateAPI.getMaterials(),
-        directCreateAPI.getCrafts(),
-        directCreateAPI.getTechniques()
+        smartMaterialsService.getMaterials(),
+        smartCraftsService.getCrafts(),
+        smartTechniquesService.getTechniques()
       ]);
 
       const [materialsResult, craftsResult, techniquesResult] = results;
 
-      // Process materials
-      if (materialsResult.status === 'fulfilled' && materialsResult.value?.success) {
-        setMaterials(materialsResult.value.data || []);
-        console.log('✅ Materials loaded:', materialsResult.value.data?.length || 0);
+      // Process materials - combine recommended and others
+      if (materialsResult.status === 'fulfilled') {
+        const allMaterials = [
+          ...materialsResult.value.recommended,
+          ...materialsResult.value.others
+        ];
+        setMaterials(allMaterials || []);
+        console.log('✅ Materials loaded:', allMaterials.length);
       } else {
         console.error('❌ Materials failed to load:', materialsResult);
         setMaterials([]);
       }
 
-      // Process crafts
-      if (craftsResult.status === 'fulfilled' && craftsResult.value?.success) {
-        setCrafts(craftsResult.value.data || []);
-        console.log('✅ Crafts loaded:', craftsResult.value.data?.length || 0);
+      // Process crafts - combine recommended and others
+      if (craftsResult.status === 'fulfilled') {
+        const allCrafts = [
+          ...craftsResult.value.recommended,
+          ...craftsResult.value.others
+        ];
+        setCrafts(allCrafts || []);
+        console.log('✅ Crafts loaded:', allCrafts.length);
       } else {
         console.error('❌ Crafts failed to load:', craftsResult);
         setCrafts([]);
       }
 
-      // Process techniques
-      if (techniquesResult.status === 'fulfilled' && techniquesResult.value?.success) {
-        setTechniques(techniquesResult.value.data || []);
-        console.log('✅ Techniques loaded:', techniquesResult.value.data?.length || 0);
+      // Process techniques - combine recommended and others
+      if (techniquesResult.status === 'fulfilled') {
+        const allTechniques = [
+          ...techniquesResult.value.recommended,
+          ...techniquesResult.value.others
+        ];
+        setTechniques(allTechniques || []);
+        console.log('✅ Techniques loaded:', allTechniques.length);
       } else {
         console.error('❌ Techniques failed to load:', techniquesResult);
         setTechniques([]);
       }
 
       // Check if all requests failed
-      const allFailed = results.every(result => 
-        result.status === 'rejected' || 
-        (result.status === 'fulfilled' && !result.value?.success)
-      );
+      const allFailed = results.every(result => result.status === 'rejected');
 
       if (allFailed) {
-        setError("DirectCreate API unavailable. Please ensure the service is running on localhost:8081");
+        setError("Smart Services unavailable. Please ensure the API is running on localhost:8081");
       } else {
         // Check for partial failures
         const failedAPIs = [];
-        if (materialsResult.status === 'rejected' || !materialsResult.value?.success) {
+        if (materialsResult.status === 'rejected') {
           failedAPIs.push('materials');
         }
-        if (craftsResult.status === 'rejected' || !craftsResult.value?.success) {
+        if (craftsResult.status === 'rejected') {
           failedAPIs.push('crafts');
         }
-        if (techniquesResult.status === 'rejected' || !techniquesResult.value?.success) {
+        if (techniquesResult.status === 'rejected') {
           failedAPIs.push('techniques');
         }
 
         if (failedAPIs.length > 0) {
-          setError(`Some DirectCreate endpoints failed: ${failedAPIs.join(', ')}. Check API server status.`);
+          setError(`Some Smart Services failed: ${failedAPIs.join(', ')}. Check API server status.`);
         }
       }
 
-      console.log('📊 DirectCreate data loading complete');
+      console.log('📊 Smart Services data loading complete');
     } catch (error) {
-      console.error('❌ Error loading DirectCreate data:', error);
-      setError(`DirectCreate connection failed: ${error.message}`);
+      console.error('❌ Error loading Smart Services data:', error);
+      setError(`Smart Services connection failed: ${error.message}`);
       // Set empty arrays as fallback
       setMaterials([]);
       setCrafts([]);
@@ -91,7 +102,7 @@ export const useDirectCreateData = () => {
   };
 
   const handleRetry = () => {
-    console.log('🔄 Retrying DirectCreate data load...');
+    console.log('🔄 Retrying Smart Services data load...');
     loadData();
   };
 

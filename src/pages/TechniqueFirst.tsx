@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Wrench, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SmartFiltering from "../components/project-form/SmartFiltering";
-import { directCreateAPI } from "../config/api";
+import { smartTechniquesService } from "../services/smartTechniquesService";
 
 const TechniqueFirst = () => {
   const navigate = useNavigate();
@@ -65,39 +65,37 @@ const TechniqueFirst = () => {
       try {
         setLoading(true);
         setError("");
-        console.log('🔄 Loading techniques from DirectCreate API...');
+        console.log('🔄 Loading techniques from Smart Techniques Service...');
         
-        const response = await directCreateAPI.getTechniques();
+        const response = await smartTechniquesService.getTechniques(projectDescription);
         
-        if (response.success) {
-          // Transform API response to match UI format
-          const transformedTechniques = response.data.map(technique => ({
-            id: technique.id.toString(),
-            name: technique.name,
-            icon: getTechniqueIcon(technique.category || "Modern Techniques"),
-            description: technique.description,
-            category: technique.category || "Modern Techniques",
-            difficulty: technique.difficulty || "Intermediate",
-            time_required: technique.time_required || "2-4 weeks",
-            tools_needed: technique.tools_needed || []
-          }));
-          
-          setTechniques(transformedTechniques);
-          console.log('✅ DirectCreate techniques loaded:', transformedTechniques.length);
-        } else {
-          setError(response.message || "Failed to load techniques");
-          console.error('❌ DirectCreate techniques API error:', response.message);
-        }
+        // Combine recommended and others from Smart service
+        const allTechniques = [...response.recommended, ...response.others];
+        
+        // Transform to match UI format
+        const transformedTechniques = allTechniques.map(technique => ({
+          id: technique.id.toString(),
+          name: technique.name,
+          icon: getTechniqueIcon(technique.category || "Modern Techniques"),
+          description: technique.description,
+          category: technique.category || "Modern Techniques",
+          difficulty: technique.difficulty || "Intermediate",
+          time_required: technique.time_required || "2-4 weeks",
+          tools_needed: technique.tools_needed || []
+        }));
+        
+        setTechniques(transformedTechniques);
+        console.log('✅ Smart Techniques loaded:', transformedTechniques.length);
       } catch (error) {
-        console.error('❌ Error loading DirectCreate techniques:', error);
-        setError(`Connection error: ${error.message}`);
+        console.error('❌ Error loading Smart Techniques:', error);
+        setError(`Smart Techniques Service error: ${error.message || 'Connection failed'}`);
       } finally {
         setLoading(false);
       }
     };
 
     loadTechniques();
-  }, []);
+  }, [projectDescription]);
 
   const handleContinue = () => {
     if (selectedTechnique) {
@@ -178,7 +176,7 @@ const TechniqueFirst = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-lg text-muted-foreground">Loading DirectCreate techniques...</p>
+          <p className="text-lg text-muted-foreground">Loading Smart Techniques...</p>
         </div>
       </div>
     );

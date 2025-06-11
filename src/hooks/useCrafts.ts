@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { directCreateAPI } from "../config/api";
+import { smartCraftsService } from "../services/smartCraftsService";
 
 interface Craft {
   id: string;
@@ -41,29 +41,30 @@ export const useCrafts = () => {
   useEffect(() => {
     const loadCrafts = async () => {
       try {
-        console.log('🔄 Loading 528 crafts from DirectCreate Production Cloud API...');
-        const response = await directCreateAPI.getCrafts();
+        console.log('🔄 Loading crafts from Smart Crafts Service...');
+        const response = await smartCraftsService.getCrafts();
         
-        if (response.success) {
-          // Transform API response ensuring bannerImage is properly mapped
-          const transformedCrafts = response.data.map((craft: any) => ({
-            id: craft.id.toString(),
-            name: craft.name,
-            icon: getCraftIcon(craft.name),
-            description: craft.description,
-            difficulty: craft.difficulty,
-            time_estimate: craft.time_estimate,
-            banner: craft.banner || '',
-            bannerImage: craft.bannerImage, // Production S3 URL from DirectCreate
-            detailUrl: craft.detailUrl,
-            category: craft.category || 'Traditional Craft'
-          }));
-          
-          setCrafts(transformedCrafts);
-          console.log(`✅ ${transformedCrafts.length}/528 crafts loaded successfully from Production Cloud`);
-        }
+        // Combine recommended and others from Smart service
+        const allCrafts = [...response.recommended, ...response.others];
+        
+        // Transform to match UI format
+        const transformedCrafts = allCrafts.map((craft: any) => ({
+          id: craft.id.toString(),
+          name: craft.name,
+          icon: getCraftIcon(craft.name),
+          description: craft.description,
+          difficulty: craft.difficulty,
+          time_estimate: craft.time_estimate,
+          banner: craft.banner || '',
+          bannerImage: craft.bannerImage,
+          detailUrl: craft.detailUrl,
+          category: craft.category || 'Traditional Craft'
+        }));
+        
+        setCrafts(transformedCrafts);
+        console.log(`✅ ${transformedCrafts.length} crafts loaded from Smart Crafts Service`);
       } catch (error) {
-        console.error('❌ Error loading crafts from Production Cloud:', error);
+        console.error('❌ Error loading crafts from Smart Crafts Service:', error);
       } finally {
         setLoading(false);
       }
