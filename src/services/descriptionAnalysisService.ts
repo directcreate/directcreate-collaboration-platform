@@ -1,3 +1,4 @@
+
 import { aiService } from './aiService';
 
 export interface DetectedElements {
@@ -163,20 +164,36 @@ class DescriptionAnalysisService {
     'bag': ['bag', 'tote', 'purse', 'handbag', 'carry bag', 'shopping bag'],
     
     // Pottery
-    'pottery': ['pottery', 'ceramic', 'clay', 'bowl', 'pot', 'vase', 'mug', 'plate'],
-    
-    // Materials
+    'pottery': ['pottery', 'ceramic', 'clay', 'bowl', 'pot', 'vase', 'mug', 'plate']
+  };
+
+  // Keywords for traditional analysis method
+  private materialKeywords: Record<string, string[]> = {
     'cotton': ['cotton', 'organic cotton', 'handspun cotton'],
     'silk': ['silk', 'mulberry silk', 'tussar silk', 'raw silk'],
     'linen': ['linen', 'flax'],
     'jute': ['jute', 'burlap', 'hessian'],
     'bamboo': ['bamboo', 'bamboo fiber'],
-    
-    // Crafts
+    'clay': ['clay', 'terracotta', 'ceramic'],
+    'leather': ['leather', 'hide', 'skin']
+  };
+
+  private craftKeywords: Record<string, string[]> = {
     'block printing': ['block print', 'block printing', 'woodblock', 'hand block'],
     'embroidery': ['embroidery', 'embroidered', 'thread work', 'zari'],
     'weaving': ['weaving', 'woven', 'handwoven', 'hand woven', 'loom'],
-    'pottery': ['pottery', 'ceramic work', 'clay work']
+    'pottery': ['pottery', 'ceramic work', 'clay work'],
+    'ajrakh': ['ajrakh', 'ajrak', 'indigo printing'],
+    'bandhani': ['bandhani', 'tie dye', 'tie-dye']
+  };
+
+  private techniqueKeywords: Record<string, string[]> = {
+    'natural dyeing': ['natural dye', 'natural dyeing', 'organic dye'],
+    'hand weaving': ['hand weaving', 'handweaving', 'loom weaving'],
+    'embroidery': ['embroidery', 'hand embroidery', 'thread work'],
+    'block printing': ['block printing', 'hand printing', 'stamp printing'],
+    'wheel throwing': ['wheel throwing', 'pottery wheel', 'ceramic throwing'],
+    'glazing': ['glazing', 'ceramic glazing', 'pottery glazing']
   };
 
   getProjectRecommendations(description: string): ProjectRecommendations | null {
