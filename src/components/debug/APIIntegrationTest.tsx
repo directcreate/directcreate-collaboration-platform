@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,11 +22,11 @@ const APIIntegrationTest = () => {
   const [lastTestTime, setLastTestTime] = useState<Date | null>(null);
 
   const endpoints = [
-    { name: 'Health Check', path: '?path=health', testFn: () => checkApiHealth() },
-    { name: 'Materials', path: '?path=materials', testFn: () => directCreateAPI.getMaterials() },
-    { name: 'Crafts', path: '?path=crafts', testFn: () => directCreateAPI.getCrafts() },
-    { name: 'Techniques', path: '?path=techniques', testFn: () => directCreateAPI.getTechniques() },
-    { name: 'Compatible Artisans', path: '?path=compatible-artisans&material_id=90&craft_id=167', testFn: () => directCreateAPI.getCompatibleArtisans(90, 167) }
+    { name: 'Health Check', path: API_CONFIG.primary.endpoints.health, testFn: () => checkApiHealth() },
+    { name: 'Materials', path: API_CONFIG.primary.endpoints.materials, testFn: () => directCreateAPI.getMaterials() },
+    { name: 'Crafts', path: API_CONFIG.primary.endpoints.crafts, testFn: () => directCreateAPI.getCrafts() },
+    { name: 'Techniques', path: API_CONFIG.primary.endpoints.techniques, testFn: () => directCreateAPI.getTechniques() },
+    { name: 'Compatible Artisans', path: API_CONFIG.primary.endpoints.compatibleArtisans + '&material_id=90&craft_id=167', testFn: () => directCreateAPI.getCompatibleArtisans(90, 167) }
   ];
 
   const testEndpoint = async (endpoint: { name: string; path: string; testFn: () => Promise<any> }) => {
@@ -168,7 +167,7 @@ const APIIntegrationTest = () => {
               <div>
                 <CardTitle>DirectCreate API Integration Test</CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Testing: {API_CONFIG.BASE_URL}
+                  Testing: {API_CONFIG.primary.baseUrl}
                 </p>
               </div>
             </div>

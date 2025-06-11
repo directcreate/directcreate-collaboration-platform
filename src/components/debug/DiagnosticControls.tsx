@@ -10,7 +10,7 @@ interface DiagnosticControlsProps {
 
 const DiagnosticControls = ({ testing, onRunDiagnostics }: DiagnosticControlsProps) => {
   const openDirectAPI = () => {
-    window.open(buildApiUrl(API_CONFIG.ENDPOINTS.materials), '_blank');
+    window.open(buildApiUrl(API_CONFIG.primary.endpoints.materials), '_blank');
   };
 
   return (
