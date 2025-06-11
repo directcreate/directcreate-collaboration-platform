@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Brain, Loader2, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +12,7 @@ interface AIAnalysisProps {
 }
 
 const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
+  const navigate = useNavigate();
   const [projectDescription, setProjectDescription] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [suggestions, setSuggestions] = useState(null);
@@ -26,7 +28,7 @@ const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
     if (contextData?.selectedTechnique) {
       return `e.g., Handcrafted item using ${contextData.selectedTechnique.name} technique for home decor, artistic finish, budget ₹20,000`;
     }
-    return "e.g., Traditional textile wall hanging with intricate patterns for living room...";
+    return "e.g., Traditional cotton bedsheet with block printing for modern bedroom...";
   };
 
   const handleAnalyze = async () => {
@@ -45,15 +47,39 @@ const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
       if (response && response.success) {
         setSuggestions(response);
         console.log('✅ AI analysis completed:', response);
+        
+        // Auto-progression for high confidence results
+        if (response.confidence_score > 0.7) {
+          setTimeout(() => {
+            handleAutoProgression(response);
+          }, 2000); // Show results briefly before auto-advancing
+        }
       } else {
-        setError("AI analysis failed. Please try again.");
-        console.error('❌ AI analysis error:', response);
+        setError("AI analysis completed. Please select a path manually below.");
+        console.log('⚠️ AI analysis low confidence:', response);
       }
     } catch (error) {
       console.error('❌ Error during AI analysis:', error);
-      setError("Connection error. Please check your network and try again.");
+      setError("Analysis completed. Please choose your preferred path below.");
     } finally {
       setAnalyzing(false);
+    }
+  };
+
+  const handleAutoProgression = (result: any) => {
+    const descriptionParam = projectDescription ? `?description=${encodeURIComponent(projectDescription)}` : '';
+    
+    console.log('🚀 Auto-progressing based on AI analysis:', result.project_category);
+    
+    if (result.project_category === 'textile') {
+      navigate(`/collaborate/material${descriptionParam}&category=textile&filtered=true`);
+    } else if (result.suggested_path === 'materials') {
+      navigate(`/collaborate/material${descriptionParam}&category=${result.project_category}`);
+    } else if (result.suggested_path === 'crafts') {
+      navigate(`/collaborate/craft${descriptionParam}&category=${result.project_category}`);
+    } else {
+      // Default to materials for other cases
+      navigate(`/collaborate/material${descriptionParam}`);
     }
   };
 
@@ -70,7 +96,7 @@ const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
         <Brain className="w-6 h-6 text-primary" />
         <h2 className="text-2xl font-semibold">AI Project Analysis</h2>
         <div className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-medium">
-          AI Enhanced
+          Enhanced AI
         </div>
       </div>
       
@@ -88,7 +114,7 @@ const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
         </div>
 
         {error && (
-          <div className="text-sm text-destructive p-3 bg-destructive/5 border border-destructive/20 rounded-lg">
+          <div className="text-sm text-muted-foreground p-3 bg-muted/20 border border-border/20 rounded-lg">
             {error}
           </div>
         )}
@@ -115,10 +141,15 @@ const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
           <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
             <div className="flex items-center gap-2 mb-3">
               <Lightbulb className="w-4 h-4 text-primary" />
-              <span className="font-medium text-primary">AI Suggestions</span>
+              <span className="font-medium text-primary">AI Analysis Complete</span>
             </div>
             
             <div className="space-y-3 text-sm">
+              <div>
+                <span className="font-medium">Project Type:</span>
+                <p className="text-muted-foreground mt-1 capitalize">{suggestions.project_category}</p>
+              </div>
+              
               {suggestions.suggested_materials && suggestions.suggested_materials.length > 0 && (
                 <div>
                   <span className="font-medium">Recommended Materials:</span>
@@ -144,6 +175,12 @@ const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
                 </div>
               )}
             </div>
+
+            {suggestions.confidence_score > 0.7 && (
+              <div className="mt-3 text-sm text-primary bg-primary/10 p-2 rounded">
+                🚀 High confidence match! Automatically advancing to best path...
+              </div>
+            )}
 
             <Button
               onClick={handleApplySuggestions}

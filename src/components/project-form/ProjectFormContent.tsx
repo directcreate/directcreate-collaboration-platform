@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import CraftSelection from "./CraftSelection";
 import ArtisanMatching from "./ArtisanMatching";
@@ -5,7 +6,6 @@ import ProjectOverview from "./ProjectOverview";
 import TimelineBudget from "./TimelineBudget";
 import LocationPreferences from "./LocationPreferences";
 import AIAnalysis from "./AIAnalysis";
-import QuickProjectType from "./QuickProjectType";
 import WhatHappensNext from "./WhatHappensNext";
 
 interface ProjectFormContentProps {
@@ -52,18 +52,18 @@ const ProjectFormContent = ({
     console.log('🤖 Applying AI suggestions:', suggestions);
     
     // Auto-populate selections based on AI suggestions
-    if (suggestions.recommended_materials?.length > 0) {
+    if (suggestions.suggested_materials?.length > 0) {
       const suggestedMaterial = materials.find(m => 
-        m.name.toLowerCase().includes(suggestions.recommended_materials[0].name.toLowerCase())
+        m.name.toLowerCase().includes(suggestions.suggested_materials[0].name.toLowerCase())
       );
       if (suggestedMaterial) {
         onMaterialChange(suggestedMaterial.id.toString());
       }
     }
     
-    if (suggestions.recommended_crafts?.length > 0) {
+    if (suggestions.suggested_crafts?.length > 0) {
       const suggestedCraft = crafts.find(c => 
-        c.name.toLowerCase().includes(suggestions.recommended_crafts[0].name.toLowerCase())
+        c.name.toLowerCase().includes(suggestions.suggested_crafts[0].name.toLowerCase())
       );
       if (suggestedCraft) {
         onCraftChange(suggestedCraft.id.toString());
@@ -77,7 +77,7 @@ const ProjectFormContent = ({
         {/* AI-Enhanced Features */}
         <AIAnalysis onSuggestionsApplied={handleAISuggestions} contextData={contextData} />
         
-        <QuickProjectType onSuggestionsApplied={handleAISuggestions} contextData={contextData} />
+        {/* Note: Quick Project Types removed - only on landing page */}
 
         <CraftSelection
           materials={materials}

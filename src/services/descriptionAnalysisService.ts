@@ -1,5 +1,6 @@
 
 import { API_CONFIG } from '../config/apiConfig';
+import { aiService } from './aiService';
 
 export interface ProjectAnalysis {
   success: boolean;
@@ -29,6 +30,17 @@ export interface ProjectRecommendations {
   techniques: Array<{id: number, name: string, reason: string}>;
 }
 
+// Correct material IDs from working API
+const MATERIAL_IDS = {
+  COTTON: 90,
+  SILK: 213,
+  LINEN: 207,
+  CLAY: 89,
+  TERRACOTTA: 91,
+  SILVER: 92,
+  BRASS: 93
+};
+
 class DescriptionAnalysisService {
   private materialKeywords = {
     textile: ['cotton', 'silk', 'fabric', 'cloth', 'textile', 'bedsheet', 'curtain', 'saree', 'dupatta', 'scarf'],
@@ -38,46 +50,19 @@ class DescriptionAnalysisService {
     wood: ['wood', 'wooden', 'furniture', 'table', 'chair', 'cabinet', 'carving']
   };
 
-  private craftKeywords = {
-    printing: ['block print', 'ajrakh', 'bagru', 'kalamkari', 'print'],
-    weaving: ['weaving', 'woven', 'handloom', 'loom'],
-    embroidery: ['embroidery', 'embroidered', 'stitch', 'applique'],
-    pottery: ['pottery', 'ceramic', 'clay work'],
-    metalwork: ['metalwork', 'engraving', 'hammering']
-  };
-
-  private techniqueKeywords = {
-    dyeing: ['dye', 'color', 'natural dye', 'indigo'],
-    printing: ['print', 'stamp', 'block'],
-    weaving: ['weave', 'loom', 'warp', 'weft'],
-    carving: ['carve', 'carved', 'engrave'],
-    shaping: ['shape', 'mold', 'form']
-  };
-
   async analyzeDescription(description: string): Promise<ProjectAnalysis> {
     try {
-      // First try enhanced API
-      const response = await fetch(`${API_CONFIG.BASE_URL}?path=ai-project-analysis`, {
-        method: 'POST',
-        headers: {
-          'ngrok-skip-browser-warning': 'true',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ description })
-      });
+      // Use working AI service
+      const response = await aiService.analyzeProject(description);
 
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          return this.enhanceApiResult(result.data, description);
-        }
+      if (response.success) {
+        return this.enhanceApiResult(response.data, description);
       }
 
       // Fallback to keyword analysis
       return this.performKeywordAnalysis(description);
     } catch (error) {
-      console.error('API analysis failed, using keyword analysis:', error);
+      console.error('AI analysis failed, using keyword analysis:', error);
       return this.performKeywordAnalysis(description);
     }
   }
@@ -85,18 +70,15 @@ class DescriptionAnalysisService {
   getProjectRecommendations(description: string): ProjectRecommendations | null {
     if (!description) return null;
 
-    const lowerDesc = description.toLowerCase();
     const category = this.detectCategory(description);
     
-    const recommendations: ProjectRecommendations = {
+    return {
       projectType: category,
       contextMessage: this.getContextMessage(category),
       materials: this.getRecommendedMaterials(category),
       crafts: this.getRecommendedCrafts(category),
       techniques: this.getRecommendedTechniques(category)
     };
-
-    return recommendations;
   }
 
   filterRecommendedItems(allItems: any[], recommendedItems: Array<{id: number, name: string, reason: string}>) {
@@ -119,11 +101,11 @@ class DescriptionAnalysisService {
       success: true,
       project_category: apiResult.project_category || this.detectCategory(description),
       confidence_score: apiResult.confidence_score || 0.8,
-      suggested_materials: apiResult.recommended_materials || [],
-      suggested_crafts: apiResult.recommended_crafts || [],
-      suggested_techniques: apiResult.recommended_techniques || [],
+      suggested_materials: apiResult.recommended_materials || this.getSuggestedMaterials(this.detectCategory(description)),
+      suggested_crafts: apiResult.recommended_crafts || this.getSuggestedCrafts(this.detectCategory(description)),
+      suggested_techniques: apiResult.recommended_techniques || this.getSuggestedTechniques(this.detectCategory(description)),
       suggested_path: this.determineSuggestedPath(apiResult.project_category || this.detectCategory(description)),
-      reasoning: apiResult.reasoning || 'AI analysis completed'
+      reasoning: apiResult.reasoning || 'AI analysis completed successfully'
     };
   }
 
@@ -176,17 +158,17 @@ class DescriptionAnalysisService {
   private getRecommendedMaterials(category: string): Array<{id: number, name: string, reason: string}> {
     const materialRecommendations = {
       textile: [
-        {id: 210, name: 'Cotton', reason: 'Versatile natural fiber perfect for textiles'},
-        {id: 211, name: 'Silk', reason: 'Premium fabric with elegant finish'},
-        {id: 212, name: 'Linen', reason: 'Durable and sustainable option'}
+        {id: MATERIAL_IDS.COTTON, name: 'Cotton', reason: 'Versatile natural fiber perfect for textiles'},
+        {id: MATERIAL_IDS.SILK, name: 'Silk', reason: 'Premium fabric with elegant finish'},
+        {id: MATERIAL_IDS.LINEN, name: 'Linen', reason: 'Durable and sustainable option'}
       ],
       pottery: [
-        {id: 213, name: 'Clay', reason: 'Essential for pottery making'},
-        {id: 214, name: 'Terracotta', reason: 'Traditional ceramic material'}
+        {id: MATERIAL_IDS.CLAY, name: 'Clay', reason: 'Essential for pottery making'},
+        {id: MATERIAL_IDS.TERRACOTTA, name: 'Terracotta', reason: 'Traditional ceramic material'}
       ],
       jewelry: [
-        {id: 215, name: 'Silver', reason: 'Popular precious metal for jewelry'},
-        {id: 216, name: 'Brass', reason: 'Affordable metal with golden appearance'}
+        {id: MATERIAL_IDS.SILVER, name: 'Silver', reason: 'Popular precious metal for jewelry'},
+        {id: MATERIAL_IDS.BRASS, name: 'Brass', reason: 'Affordable metal with golden appearance'}
       ]
     };
     
@@ -230,17 +212,17 @@ class DescriptionAnalysisService {
   private getSuggestedMaterials(category: string): Array<{id: number, name: string, relevance_score: number}> {
     const materialSuggestions = {
       textile: [
-        {id: 210, name: 'Cotton', relevance_score: 0.9},
-        {id: 211, name: 'Silk', relevance_score: 0.8},
-        {id: 212, name: 'Linen', relevance_score: 0.7}
+        {id: MATERIAL_IDS.COTTON, name: 'Cotton', relevance_score: 0.9},
+        {id: MATERIAL_IDS.SILK, name: 'Silk', relevance_score: 0.8},
+        {id: MATERIAL_IDS.LINEN, name: 'Linen', relevance_score: 0.7}
       ],
       pottery: [
-        {id: 213, name: 'Clay', relevance_score: 0.9},
-        {id: 214, name: 'Terracotta', relevance_score: 0.8}
+        {id: MATERIAL_IDS.CLAY, name: 'Clay', relevance_score: 0.9},
+        {id: MATERIAL_IDS.TERRACOTTA, name: 'Terracotta', relevance_score: 0.8}
       ],
       jewelry: [
-        {id: 215, name: 'Silver', relevance_score: 0.9},
-        {id: 216, name: 'Brass', relevance_score: 0.8}
+        {id: MATERIAL_IDS.SILVER, name: 'Silver', relevance_score: 0.9},
+        {id: MATERIAL_IDS.BRASS, name: 'Brass', relevance_score: 0.8}
       ]
     };
     

@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { directCreateAPI } from "../config/api";
+import { aiService } from "../services/aiService";
 
 export const useCompatibleArtisans = (selectedMaterial: string, selectedCraft: string, selectedTechnique: string) => {
   const [compatibleArtisans, setCompatibleArtisans] = useState([]);
@@ -35,7 +36,29 @@ export const useCompatibleArtisans = (selectedMaterial: string, selectedCraft: s
       if (techniqueId && isNaN(parsedTechniqueId)) {
         throw new Error('Invalid technique ID');
       }
+
+      // Try AI-enhanced artisan matching first
+      const materialIds = parsedMaterialId ? [parsedMaterialId] : [];
+      const craftIds = parsedCraftId ? [parsedCraftId] : [];
       
+      try {
+        const aiResponse = await aiService.matchArtisans(
+          materialIds, 
+          craftIds, 
+          'Find specialized artisans for this project'
+        );
+        
+        if (aiResponse.success && aiResponse.data?.length > 0) {
+          setCompatibleArtisans(aiResponse.data);
+          setMessage(`${aiResponse.data.length} AI-matched specialist${aiResponse.data.length !== 1 ? 's' : ''} found`);
+          console.log('✅ AI-matched artisans loaded:', aiResponse.data.length);
+          return;
+        }
+      } catch (aiError) {
+        console.log('AI artisan matching not available, using standard search...');
+      }
+      
+      // Fallback to standard API
       const response = await directCreateAPI.getCompatibleArtisans(
         parsedMaterialId,
         parsedCraftId,
