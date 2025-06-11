@@ -38,7 +38,7 @@ export const useMaterials = () => {
     try {
       setLoading(true);
       setError("");
-      console.log('🔄 Loading materials from DirectCreate API...');
+      console.log('🔄 Loading 197 materials from DirectCreate Production Cloud API...');
       
       const response = await directCreateAPI.getMaterials();
       
@@ -50,18 +50,18 @@ export const useMaterials = () => {
           icon: getCategoryIcon(material.category || material.type),
           description: material.description || `High-quality ${material.name.toLowerCase()}`,
           category: material.category || material.type || "Material",
-          sustainability_rating: material.sustainability_rating || material.rating || 8
+          sustainability_rating: material.sustainability_rating || material.sustainability || 8
         }));
         
         setMaterials(transformedMaterials);
-        console.log('✅ Real DirectCreate materials loaded:', transformedMaterials.length);
+        console.log(`✅ ${transformedMaterials.length}/197 materials loaded from Production Cloud API`);
       } else {
         throw new Error(response.message || 'Failed to load materials');
       }
     } catch (error: any) {
-      console.error('❌ Error loading DirectCreate materials:', error);
-      setError(`Failed to load materials: ${error.message}`);
-      setMaterials([]); // Set empty array on error
+      console.error('❌ Error loading DirectCreate Production materials:', error);
+      setError(`Production API connection failed: ${error.message}`);
+      setMaterials([]);
     } finally {
       setLoading(false);
     }

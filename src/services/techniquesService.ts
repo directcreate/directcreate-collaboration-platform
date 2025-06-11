@@ -4,14 +4,13 @@ import { API_CONFIG } from '../config/apiConfig';
 const DIRECTCREATE_API = API_CONFIG.BASE_URL;
 
 export const techniquesService = {
-  // Get techniques from real DirectCreate Enhanced ML API
+  // Get techniques from DirectCreate Production Cloud API
   getTechniques: async () => {
     try {
-      console.log('🔄 Fetching techniques from DirectCreate Enhanced ML API...');
-      const response = await fetch(`${DIRECTCREATE_API}?path=techniques`, {
+      console.log('🔄 Fetching 136 techniques from DirectCreate Production Cloud API...');
+      const response = await fetch(`${DIRECTCREATE_API}/?path=techniques`, {
         method: 'GET',
         headers: {
-          'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
@@ -22,19 +21,20 @@ export const techniquesService = {
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate Enhanced ML techniques loaded:', data);
+      console.log('✅ DirectCreate Production Cloud techniques loaded:', data);
       
       if (data.success && Array.isArray(data.data)) {
+        console.log(`✅ ${data.data.length}/136 techniques loaded from Production Cloud API`);
         return {
           success: true,
           data: data.data,
-          message: "Real techniques loaded from DirectCreate Enhanced ML API"
+          message: `${data.data.length} real techniques loaded from DirectCreate Production Cloud API`
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate Enhanced ML API Error:', error);
+      console.error('❌ DirectCreate Production Cloud API Error:', error);
       return {
         success: false,
         data: [],
@@ -52,10 +52,9 @@ export const techniquesService = {
     
     try {
       console.log(`🔄 Fetching compatible techniques for material: ${materialId}, craft: ${craftId}...`);
-      const response = await fetch(`${DIRECTCREATE_API}?path=compatible-techniques&${params}`, {
+      const response = await fetch(`${DIRECTCREATE_API}/?path=compatible-techniques&${params}`, {
         method: 'GET',
         headers: {
-          'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
@@ -72,7 +71,7 @@ export const techniquesService = {
         return {
           success: true,
           data: data.data,
-          message: "Compatible techniques loaded from DirectCreate database"
+          message: "Compatible techniques loaded from DirectCreate Production database"
         };
       } else {
         throw new Error('Invalid API response format');

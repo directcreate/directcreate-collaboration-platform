@@ -35,7 +35,7 @@ const CraftImage = ({ craft }: CraftImageProps) => {
     setImageLoaded(true);
     
     if (process.env.NODE_ENV === 'development' && craft.bannerImage && !imageError) {
-      console.log(`✅ DirectCreate image loaded for ${craft.name}`);
+      console.log(`✅ S3 image loaded successfully for ${craft.name}`);
     }
   };
 
@@ -49,14 +49,11 @@ const CraftImage = ({ craft }: CraftImageProps) => {
         className="w-full h-full object-cover transition-transform duration-200 hover:scale-105"
         onError={handleImageErrorEvent}
         onLoad={handleImageLoad}
-        crossOrigin="anonymous"
       />
       
-      {/* DirectCreate badge for authentic images */}
-      {craft.bannerImage && !imageError && (
-        craft.bannerImage.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com') ||
-        craft.bannerImage.includes('d35l77wxi0xou3.cloudfront.net')
-      ) && (
+      {/* DirectCreate badge for authentic S3 images */}
+      {craft.bannerImage && !imageError && 
+        craft.bannerImage.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com') && (
         <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full">
           DirectCreate
         </div>

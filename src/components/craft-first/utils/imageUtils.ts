@@ -41,24 +41,12 @@ export const getCategorizedFallback = (craftName: string): string => {
   return FALLBACK_IMAGES.default;
 };
 
-// Working image proxy helper function using the correct API endpoint
-export const getProxiedImageUrl = (imageUrl: string): string => {
-  // Only proxy DirectCreate S3/CloudFront URLs
-  if (imageUrl.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com') ||
-      imageUrl.includes('d35l77wxi0xou3.cloudfront.net')) {
-    const encodedUrl = encodeURIComponent(imageUrl);
-    return `${API_CONFIG.BASE_URL}?path=image-proxy&url=${encodedUrl}`;
-  }
-  return imageUrl;
-};
-
-// Image source resolver using working proxy system
+// Image source resolver - S3 images should work directly now with CORS fixed
 export const getImageSource = (craft: { bannerImage?: string; banner?: string; name: string }): string => {
-  // Priority 1: Real DirectCreate S3/CloudFront images - USE PROXY
-  if (craft.bannerImage && 
-      (craft.bannerImage.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com') ||
-       craft.bannerImage.includes('d35l77wxi0xou3.cloudfront.net'))) {
-    return getProxiedImageUrl(craft.bannerImage);
+  // Priority 1: DirectCreate S3 images (CORS fixed - should load directly)
+  if (craft.bannerImage && craft.bannerImage.includes('directcreateecomdev.s3.ap-south-1.amazonaws.com')) {
+    console.log(`🖼️ Using S3 image for ${craft.name}:`, craft.bannerImage);
+    return craft.bannerImage;
   }
   
   // Priority 2: Any other valid HTTP bannerImage URL

@@ -41,7 +41,7 @@ export const useCrafts = () => {
   useEffect(() => {
     const loadCrafts = async () => {
       try {
-        console.log('🔄 Loading crafts from DirectCreate...');
+        console.log('🔄 Loading 528 crafts from DirectCreate Production Cloud API...');
         const response = await directCreateAPI.getCrafts();
         
         if (response.success) {
@@ -60,10 +60,10 @@ export const useCrafts = () => {
           }));
           
           setCrafts(transformedCrafts);
-          console.log(`✅ ${transformedCrafts.length} crafts loaded successfully`);
+          console.log(`✅ ${transformedCrafts.length}/528 crafts loaded successfully from Production Cloud`);
         }
       } catch (error) {
-        console.error('❌ Error loading crafts:', error);
+        console.error('❌ Error loading crafts from Production Cloud:', error);
       } finally {
         setLoading(false);
       }

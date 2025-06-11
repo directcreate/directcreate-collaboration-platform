@@ -4,14 +4,13 @@ import { API_CONFIG } from '../config/apiConfig';
 const DIRECTCREATE_API = API_CONFIG.BASE_URL;
 
 export const craftsService = {
-  // Get crafts from DirectCreate Enhanced ML API
+  // Get crafts from DirectCreate Production Cloud API
   getCrafts: async () => {
     try {
-      console.log('🔄 Fetching crafts from DirectCreate API...');
+      console.log('🔄 Fetching 528 crafts from DirectCreate Production Cloud API...');
       const response = await fetch(`${DIRECTCREATE_API}${API_CONFIG.ENDPOINTS.crafts}`, {
         method: 'GET',
         headers: {
-          'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
@@ -24,7 +23,7 @@ export const craftsService = {
       const data = await response.json();
       
       if (data.success && Array.isArray(data.data)) {
-        // Transform data ensuring proper bannerImage mapping
+        // Transform data ensuring proper bannerImage mapping from S3
         const transformedCrafts = data.data.map((craft: any) => ({
           id: craft.id.toString(),
           name: craft.name,
@@ -32,23 +31,23 @@ export const craftsService = {
           difficulty: craft.difficulty,
           time_estimate: craft.time_estimate,
           banner: craft.banner,
-          bannerImage: craft.bannerImage, // Direct S3 URL from DirectCreate database
+          bannerImage: craft.bannerImage, // Direct S3 URL: https://directcreateecomdev.s3.ap-south-1.amazonaws.com/
           detailUrl: craft.detailUrl,
           category: craft.category || 'Traditional Craft'
         }));
         
-        console.log(`✅ ${transformedCrafts.length} crafts loaded from DirectCreate`);
+        console.log(`✅ ${transformedCrafts.length}/528 crafts loaded from Production Cloud API with S3 images`);
         
         return {
           success: true,
           data: transformedCrafts,
-          message: "Crafts loaded from DirectCreate database"
+          message: `${transformedCrafts.length} crafts loaded from DirectCreate Production Cloud database`
         };
       } else {
         throw new Error('Invalid API response format');
       }
     } catch (error) {
-      console.error('❌ DirectCreate API Error:', error);
+      console.error('❌ DirectCreate Production Cloud API Error:', error);
       return {
         success: false,
         data: [],
@@ -64,7 +63,6 @@ export const craftsService = {
       const response = await fetch(`${DIRECTCREATE_API}${API_CONFIG.ENDPOINTS.compatibleCrafts}&material_id=${materialId}`, {
         method: 'GET',
         headers: {
-          'ngrok-skip-browser-warning': 'true',
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
@@ -80,7 +78,7 @@ export const craftsService = {
         return {
           success: true,
           data: data.data,
-          message: "Compatible crafts loaded"
+          message: "Compatible crafts loaded from Production Cloud"
         };
       } else {
         throw new Error('Invalid API response format');
