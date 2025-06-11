@@ -14,6 +14,18 @@ export const craftsService = {
       }
       
       const data = await response.json();
+      console.log('🎨 Crafts API response:', data);
+      
+      // Handle the actual API response - it returns an error for unknown endpoints
+      if (data.error === 'Unknown endpoint') {
+        console.log('⚠️ Crafts endpoint not available, available endpoints:', data.available_endpoints);
+        return {
+          success: false,
+          data: [],
+          message: 'Crafts endpoint not available on this API version',
+          availableEndpoints: data.available_endpoints
+        };
+      }
       
       if (data.success && Array.isArray(data.data)) {
         const transformedCrafts = data.data.map((craft: any) => ({
@@ -58,6 +70,17 @@ export const craftsService = {
       }
       
       const data = await response.json();
+      console.log('🔗 Compatible crafts API response:', data);
+      
+      // Handle unknown endpoint error
+      if (data.error === 'Unknown endpoint') {
+        return {
+          success: false,
+          data: [],
+          message: 'Compatible crafts endpoint not available',
+          availableEndpoints: data.available_endpoints
+        };
+      }
       
       if (data.success && Array.isArray(data.data)) {
         return {

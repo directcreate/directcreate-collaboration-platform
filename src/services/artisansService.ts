@@ -19,7 +19,18 @@ export const artisansService = {
       }
       
       const data = await response.json();
-      console.log('✅ DirectCreate compatible artisans loaded:', data);
+      console.log('👥 Compatible artisans API response:', data);
+      
+      // Handle the actual API response - it returns an error for unknown endpoints
+      if (data.error === 'Unknown endpoint') {
+        console.log('⚠️ Compatible artisans endpoint not available, available endpoints:', data.available_endpoints);
+        return {
+          success: false,
+          data: [],
+          message: 'Compatible artisans endpoint not available on this API version',
+          availableEndpoints: data.available_endpoints
+        };
+      }
       
       if (data.success && Array.isArray(data.data)) {
         return {

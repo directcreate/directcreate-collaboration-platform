@@ -11,13 +11,13 @@ export const API_CONFIG = {
       techniques: '?path=techniques',
       artisans: '?path=artisans',
       
-      // Compatibility endpoints
+      // Compatibility endpoints (these don't exist on the API)
       compatibleCrafts: '?path=compatible-crafts',
       compatibleMaterials: '?path=compatible-materials',
       compatibleTechniques: '?path=compatible-techniques',
       compatibleArtisans: '?path=compatible-artisans',
       
-      // AI-powered endpoints
+      // AI-powered endpoints (these work)
       aiAnalysis: '?path=ai-project-analysis',
       aiMaterials: '?path=ai-material-suggestions',
       aiArtisans: '?path=ai-artisan-matching'
@@ -78,9 +78,28 @@ export const checkApiHealth = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return await response.json();
+    
+    const data = await response.json();
+    console.log('🔍 Health check response:', data);
+    
+    // Handle the actual API response format
+    if (data.status === 'ok') {
+      return { 
+        success: true, 
+        message: `${data.service} is healthy`,
+        data: data
+      };
+    } else {
+      return { 
+        success: false, 
+        message: `Health check failed: ${data.error || 'Unknown error'}` 
+      };
+    }
   } catch (error) {
     console.error('❌ API Health Check Failed:', error);
-    return { success: false, message: `Health check failed: ${error.message}` };
+    return { 
+      success: false, 
+      message: `Health check failed: ${error.message}` 
+    };
   }
 };
