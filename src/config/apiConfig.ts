@@ -1,4 +1,3 @@
-
 // config/apiConfig.ts - SINGLE SOURCE OF TRUTH FOR DIRECTCREATE API
 export const API_CONFIG = {
   baseUrl: 'https://directcreate-api.onrender.com/api-proxy.php',
@@ -7,17 +6,8 @@ export const API_CONFIG = {
     endpoints: {
       health: '?path=health',
       materials: '?path=materials',
-      crafts: '?path=crafts', 
+      crafts: '?path=crafts',
       techniques: '?path=techniques',
-      artisans: '?path=artisans',
-      
-      // Compatibility endpoints (these don't exist on the API)
-      compatibleCrafts: '?path=compatible-crafts',
-      compatibleMaterials: '?path=compatible-materials',
-      compatibleTechniques: '?path=compatible-techniques',
-      compatibleArtisans: '?path=compatible-artisans',
-      
-      // AI-powered endpoints (these work)
       aiAnalysis: '?path=ai-project-analysis',
       aiMaterials: '?path=ai-material-suggestions',
       aiArtisans: '?path=ai-artisan-matching'
