@@ -26,7 +26,7 @@ const APIIntegrationTest = () => {
     { name: 'Materials', path: API_CONFIG.primary.endpoints.materials, testFn: () => directCreateAPI.getMaterials() },
     { name: 'Crafts', path: API_CONFIG.primary.endpoints.crafts, testFn: () => directCreateAPI.getCrafts() },
     { name: 'Techniques', path: API_CONFIG.primary.endpoints.techniques, testFn: () => directCreateAPI.getTechniques() },
-    { name: 'Compatible Artisans', path: API_CONFIG.primary.endpoints.compatibleArtisans + '&material_id=90&craft_id=167', testFn: () => directCreateAPI.getCompatibleArtisans(90, 167) }
+    { name: 'AI Artisan Matching', path: API_CONFIG.primary.endpoints.aiArtisans, testFn: () => directCreateAPI.getArtisans({ materialId: 90, craftId: 167, description: 'Test project for pottery' }) }
   ];
 
   const testEndpoint = async (endpoint: { name: string; path: string; testFn: () => Promise<any> }) => {
