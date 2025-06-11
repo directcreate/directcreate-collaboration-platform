@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Brain, Loader2, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { directCreateAPI } from "../../config/api";
+import { descriptionAnalysisService } from "../../services/descriptionAnalysisService";
 
 interface AIAnalysisProps {
   onSuggestionsApplied: (suggestions: any) => void;
@@ -40,14 +40,14 @@ const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
       setError("");
       console.log('🤖 Analyzing project with AI:', projectDescription);
       
-      const response = await directCreateAPI.analyzeProject(projectDescription);
+      const response = await descriptionAnalysisService.analyzeDescription(projectDescription);
       
       if (response && response.success) {
-        setSuggestions(response.data);
-        console.log('✅ AI analysis completed:', response.data);
+        setSuggestions(response);
+        console.log('✅ AI analysis completed:', response);
       } else {
         setError("AI analysis failed. Please try again.");
-        console.error('❌ AI analysis error:', response?.message);
+        console.error('❌ AI analysis error:', response);
       }
     } catch (error) {
       console.error('❌ Error during AI analysis:', error);
@@ -119,28 +119,28 @@ const AIAnalysis = ({ onSuggestionsApplied, contextData }: AIAnalysisProps) => {
             </div>
             
             <div className="space-y-3 text-sm">
-              {suggestions.recommended_materials && (
+              {suggestions.suggested_materials && suggestions.suggested_materials.length > 0 && (
                 <div>
                   <span className="font-medium">Recommended Materials:</span>
                   <p className="text-muted-foreground mt-1">
-                    {suggestions.recommended_materials.slice(0, 2).map(m => m.name).join(", ")}
+                    {suggestions.suggested_materials.slice(0, 2).map(m => m.name).join(", ")}
                   </p>
                 </div>
               )}
               
-              {suggestions.recommended_crafts && (
+              {suggestions.suggested_crafts && suggestions.suggested_crafts.length > 0 && (
                 <div>
                   <span className="font-medium">Suggested Crafts:</span>
                   <p className="text-muted-foreground mt-1">
-                    {suggestions.recommended_crafts.slice(0, 2).map(c => c.name).join(", ")}
+                    {suggestions.suggested_crafts.slice(0, 2).map(c => c.name).join(", ")}
                   </p>
                 </div>
               )}
               
-              {suggestions.cultural_context && (
+              {suggestions.reasoning && (
                 <div>
-                  <span className="font-medium">Cultural Context:</span>
-                  <p className="text-muted-foreground mt-1">{suggestions.cultural_context}</p>
+                  <span className="font-medium">Analysis:</span>
+                  <p className="text-muted-foreground mt-1">{suggestions.reasoning}</p>
                 </div>
               )}
             </div>

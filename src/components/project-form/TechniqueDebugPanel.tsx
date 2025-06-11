@@ -1,4 +1,7 @@
 
+// This component is now removed to hide debug information from users
+// Debug information should only be visible in development mode
+
 interface TechniqueDebugPanelProps {
   selectedMaterial: string;
   selectedCraft: string;
@@ -14,6 +17,11 @@ const TechniqueDebugPanel = ({
   loadingCompatibleTechniques,
   techniqueFilterMessage
 }: TechniqueDebugPanelProps) => {
+  // Only show in development mode
+  if (process.env.NODE_ENV !== 'development') {
+    return null;
+  }
+
   return (
     <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
       <p className="font-semibold text-blue-800">🔍 TECHNIQUE SUGGESTIONS DEBUG:</p>

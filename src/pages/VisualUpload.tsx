@@ -17,6 +17,7 @@ const VisualUpload = () => {
   const [detailedDescription, setDetailedDescription] = useState("");
   const [selectedImageFile, setSelectedImageFile] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState(null);
 
   // Get the project description from URL params (passed from home page)
   const initialDescription = searchParams.get('description') || '';
@@ -42,27 +43,47 @@ const VisualUpload = () => {
   const handleAnalyzeDescription = async () => {
     setIsAnalyzing(true);
     try {
-      const analysisResult = await descriptionAnalysisService.analyzeDescription(detailedDescription);
+      const result = await descriptionAnalysisService.analyzeDescription(detailedDescription);
 
-      if (analysisResult.autoRoute) {
-        toast({
-          title: "Intelligent analysis complete!",
-          description: "Automatically routing to the best path based on your description.",
-        });
-      } else {
+      if (result.success) {
+        setAnalysisResult(result);
+        
         toast({
           title: "Analysis complete!",
-          description: "Select a path below to continue.",
+          description: `Detected ${result.project_category} project with ${Math.round(result.confidence_score * 100)}% confidence.`,
         });
+
+        // Auto-progression for high confidence results
+        if (result.confidence_score > 0.7) {
+          setTimeout(() => {
+            handleAutoProgression(result);
+          }, 1500); // Show results briefly before auto-advancing
+        }
+      } else {
+        throw new Error('Analysis failed');
       }
     } catch (error) {
+      setAnalysisResult(null);
       toast({
         variant: "destructive",
-        title: "Analysis failed.",
-        description: "Please try again or provide a clearer description.",
+        title: "Analysis temporarily unavailable",
+        description: "Please select a path manually below.",
       });
     } finally {
       setIsAnalyzing(false);
+    }
+  };
+
+  const handleAutoProgression = (result: any) => {
+    const descriptionParam = detailedDescription ? `?description=${encodeURIComponent(detailedDescription)}` : '';
+    
+    if (result.suggested_path === 'materials') {
+      navigate(`/collaborate/material${descriptionParam}`);
+    } else if (result.suggested_path === 'crafts') {
+      navigate(`/collaborate/craft${descriptionParam}`);
+    } else {
+      // Default to materials for other cases
+      navigate(`/collaborate/material${descriptionParam}`);
     }
   };
 
@@ -82,11 +103,8 @@ const VisualUpload = () => {
       case 'techniques':
         navigate(`/collaborate/technique${descriptionParam}`);
         break;
-      case 'visual':
-        // Stay on current page but show visual options
-        break;
-      case 'text':
-        // Stay on current page but focus on text description
+      case 'gallery':
+        navigate(`/collaborate/product${descriptionParam}`);
         break;
       default:
         console.warn('Unknown path:', pathId);
@@ -149,6 +167,23 @@ const VisualUpload = () => {
           </div>
         )}
 
+        {/* Analysis Results */}
+        {analysisResult && (
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-8">
+            <h3 className="font-semibold text-green-800 mb-2">✨ AI Analysis Complete</h3>
+            <p className="text-green-700 mb-2">
+              Detected: <strong>{analysisResult.project_category}</strong> project 
+              ({Math.round(analysisResult.confidence_score * 100)}% confidence)
+            </p>
+            <p className="text-green-600 text-sm">{analysisResult.reasoning}</p>
+            {analysisResult.confidence_score > 0.7 && (
+              <p className="text-green-600 text-sm mt-2">
+                🚀 Automatically routing to best starting point...
+              </p>
+            )}
+          </div>
+        )}
+
         <div className="space-y-8">
           {/* Description Section */}
           <Card>
@@ -179,7 +214,7 @@ const VisualUpload = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             {/* Image Upload Section */}
-            <Card className="min-h-[320px]">
+            <Card className="min-h-[300px]">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <UploadCloud className="w-5 h-5" />
@@ -220,7 +255,7 @@ const VisualUpload = () => {
             </Card>
 
             {/* Path Selection Section */}
-            <Card className="min-h-[320px]">
+            <Card className="min-h-[300px]">
               <CardHeader>
                 <CardTitle>Choose Your Path</CardTitle>
                 <CardDescription>Select where you'd like to start building your project.</CardDescription>
@@ -229,13 +264,21 @@ const VisualUpload = () => {
                 <div className="grid grid-cols-2 gap-3">
                   {pathOptions.map((option) => {
                     const Icon = option.icon;
+                    const isRecommended = analysisResult?.suggested_path === option.id;
                     return (
                       <button
                         key={option.id}
                         onClick={() => handlePathSelection(option.id)}
-                        className="border border-border rounded-xl p-4 h-24 flex flex-col justify-center items-center hover:border-primary hover:bg-primary/5 transition-all duration-200 group"
+                        className={`border rounded-xl p-4 h-24 flex flex-col justify-center items-center hover:border-primary hover:bg-primary/5 transition-all duration-200 group relative ${
+                          isRecommended ? 'border-primary bg-primary/10 ring-2 ring-primary/20' : 'border-border'
+                        }`}
                       >
-                        <Icon className="w-6 h-6 mb-1 text-muted-foreground group-hover:text-primary" />
+                        {isRecommended && (
+                          <div className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full">
+                            Recommended
+                          </div>
+                        )}
+                        <Icon className={`w-6 h-6 mb-1 ${isRecommended ? 'text-primary' : 'text-muted-foreground group-hover:text-primary'}`} />
                         <span className="font-medium text-sm text-foreground">{option.title}</span>
                         <span className="text-xs text-muted-foreground">{option.subtitle}</span>
                       </button>
@@ -245,7 +288,10 @@ const VisualUpload = () => {
                 
                 <div className="mt-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    Each path will show personalized recommendations based on your description
+                    {analysisResult 
+                      ? "AI recommendations highlighted above"
+                      : "Each path will show personalized recommendations based on your description"
+                    }
                   </p>
                 </div>
               </CardContent>
@@ -255,12 +301,15 @@ const VisualUpload = () => {
           {/* Quick Actions */}
           <div className="text-center">
             <Button 
-              onClick={() => handlePathSelection('materials')}
+              onClick={() => handlePathSelection(analysisResult?.suggested_path || 'materials')}
               disabled={!detailedDescription.trim()}
               size="lg"
               className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-2xl"
             >
-              Start Creating with Materials
+              {analysisResult 
+                ? `Start with ${analysisResult.suggested_path === 'materials' ? 'Materials' : 'Crafts'}`
+                : 'Start Creating with Materials'
+              }
             </Button>
             <p className="text-sm text-muted-foreground mt-2">
               {!detailedDescription.trim() 
