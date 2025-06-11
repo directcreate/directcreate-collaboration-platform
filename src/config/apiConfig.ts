@@ -1,9 +1,9 @@
 
 // config/apiConfig.ts - SINGLE SOURCE OF TRUTH FOR DIRECTCREATE API
 export const API_CONFIG = {
-  baseUrl: 'http://localhost:8081/api-proxy.php',
+  baseUrl: 'https://directcreate-api.onrender.com/api-proxy.php',
   primary: {
-    baseUrl: 'http://localhost:8081/api-proxy.php',
+    baseUrl: 'https://directcreate-api.onrender.com/api-proxy.php',
     endpoints: {
       health: '?path=health',
       materials: '?path=materials',
